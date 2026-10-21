@@ -5,7 +5,16 @@
 **Active implementation:** R2-A/B/C on `feature/r2-skin-texture-uv-foundation` (user-approved).
 **Merged PR:** [#1 — R1 Renderer Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R2 — `IMPLEMENTED ON FEATURE / CORE ANALYZE+TEST PASS / FULL WINDOWS CI IN PROGRESS / DRAFT PR #2 / NO MERGE`; R1 CLOSED.
+**Current checkpoint:** R2 — `LOCAL TESTS 15/15 PASS / EXAMPLE REGRESSION + WINDOWS RELEASE PASS / EARLIER CI GREEN / LATEST CI IN PROGRESS / DRAFT PR #2 / NOT MERGED`; R1 CLOSED.
+
+## 2026-10-22 — User Windows acceptance evidence for R2-A/B/C
+
+- **Checkout:** user's original `main...origin/main` was clean; fetched remote feature branch and switched with `git switch --track origin/feature/r2-skin-texture-uv-foundation`. Local post-test `git status -sb` was **not supplied**; do not infer worktree remains clean after Flutter tooling.
+- **Local R2 core results (user output):** `flutter pub get` PASS; `flutter analyze --no-pub` **No issues found!** (10.8s); `flutter test --no-pub test/` **15/15 passed** (6s), including all legacy mirror tests.
+- **Local R1 example regression (user output):** `flutter pub get` PASS; `flutter analyze --no-pub` **No issues found!** (7.2s); `flutter test --no-pub test/widget_test.dart` **1/1 passed** (2s).
+- **Windows release:** `flutter build windows --release` PASS (25.1s); user launched `build/windows/x64/runner/Release/mtn_minecraft_skin_viewer_example.exe` and reported all interactive controls work, including window resizing. The example still renders the R1 synthetic checker texture, **not** a fully mapped Minecraft skin. No controlled GPU-memory soak or 10–20-cycle measurement was reported.
+- **CI cross-check:** R2 Windows run [39692800346](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39692800346) (earlier feature commit `97a701a9`) **SUCCESS** with root analyze, R2 tests, example analyze, R1 widget test, and release build. Latest source/docs HEAD `9bab7217` runs [39693218190](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39693218190) / [39693213017](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39693213017) were still **IN PROGRESS** at verification; their analyze and R2 tests had already passed.
+- **Status / gate:** R2-A/B/C implemented and local validation successful, but PR [#2](https://github.com/nusretm/minecraft_skin_viewer/pull/2) remains **Draft / unmerged**. Await final CI and explicit user acceptance/merge authorization; do not merge automatically.
 
 ## 2026-10-22 — R2 validation and Draft PR #2
 

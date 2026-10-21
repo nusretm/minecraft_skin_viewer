@@ -85,3 +85,14 @@ Only behavior/coordinate conventions were consulted. No source or assets were co
 - Tests updated to assert the correct alpha contract. On CI run `39692470025`, root analyzer and R2 test suite passed; the example analysis passed too. Remaining example widget test and Windows release build had not completed at last inspection.
 - Extended twelve-face sentinel mirror test on a later feature commit; full rerun status is pending.
 - PR: https://github.com/nusretm/minecraft_skin_viewer/pull/2 (Draft, not merged).
+
+## User local Windows evidence — 2026-10-22
+
+- Root `flutter analyze --no-pub`: PASS.
+- Root `flutter test --no-pub test/`: **15/15 PASS**.
+- Example `flutter analyze --no-pub`: PASS.
+- Example GPU-free widget test: **1/1 PASS**.
+- Windows release compilation: PASS in 25.1s. User launched EXE and confirmed resize and existing interactive controls work. R2 atlas model is unit-tested; it has not yet been connected to real full-skin rendering.
+- R2 CI `39692800346` earlier SHA completed SUCCESS; the two latest `9bab7217` R2 runs were still in progress at this observation. Distinguish current-head CI from prior green CI.
+- Local worktree after builds, bounded GPU memory soak and real skin GPU visual mapping not verified. Last two items remain deferred beyond R2 as planned.
+- No merge approval; Draft PR #2 remains open.
