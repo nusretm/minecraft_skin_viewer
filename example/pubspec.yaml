@@ -1,0 +1,23 @@
+name: mtn_minecraft_skin_viewer_example
+description: Windows-first technical renderer feasibility example for Minecraft Skin Viewer.
+publish_to: none
+
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+  flutter: '>=3.47.1'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  mtn_minecraft_skin_viewer:
+    path: ..
+  flutter_scene: 0.24.3
+  vector_math: ^2.4.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

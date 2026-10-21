@@ -1,0 +1,37 @@
+# Dart / Flutter generated state
+.dart_tool/
+.packages
+.pub/
+build/
+coverage/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata.local
+**/flutter_*.png
+**/.dart_tool/
+**/build/
+**/.flutter-plugins-dependencies
+
+# A reusable Flutter package does not version its own resolved lockfile.
+# The example application lockfile remains trackable.
+/pubspec.lock
+
+# Flutter generated intermediates
+**/ephemeral/
+**/Generated.xcconfig
+**/flutter_export_environment.sh
+**/flutter_scene_generated/
+
+# Editors / OS
+.idea/
+.vscode/
+*.iml
+*.swp
+.DS_Store
+Thumbs.db
+
+# Secrets / private test inputs
+.env
+.env.*
+!.env.example
+**/private_fixtures/
