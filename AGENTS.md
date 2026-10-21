@@ -9,7 +9,7 @@ Before doing **anything** in this repository:
 
 1. Read `docs/WORKING_RULES.md` in full.
 2. Read the newest entry in `docs/continuity/CURRENT_TARGET.md`.
-3. Read `docs/continuity/ARCHITECTURE.md` and the specific active checkpoint document (currently `R1_RENDERER_FOUNDATION.md`); read `PLANNED_*.md` only when relevant.
+3. Read `docs/continuity/ARCHITECTURE.md` and the specific active checkpoint document (currently `R2_TEXTURE_UV_FOUNDATION.md`); read `PLANNED_*.md` only when relevant.
 4. Verify branch, HEAD, worktree status and existing PR/CI state before proposing changes. Continuity is a handoff, not proof that source, tests or CI succeeded.
 
 ## Approval and integration gate

@@ -1,12 +1,50 @@
 # Minecraft Skin Viewer
 
-A reusable Flutter/Dart package for rendering Minecraft Java Edition skins and capes in 2D previews and an interactive 3D character viewer.
+A Flutter/Dart library for Minecraft Java Edition skin/cape textures, shared
+UV layouts and (in later checkpoints) reusable 2D and 3D player widgets.
 
-- Repository: `nusretm/minecraft_skin_viewer`
-- Planned Dart package: `mtn_minecraft_skin_viewer`
+- Repository: nusretm/minecraft_skin_viewer
+- Package: mtn_minecraft_skin_viewer
 - First target: Windows desktop
-- Status: **R1 renderer foundation — planned, not yet validated**
+- R1: GPU-backed 3D feasibility prototype in example/ (closed, Windows-verified).
+- R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs
+  (implemented on feature branch, validation/review pending).
+- R3/R4: production 2D and 3D viewers (not yet implemented).
 
-Development conventions and checkpoint scope live under `docs/`. Implementation takes place on feature branches; `main` is updated only after explicit review/merge approval.
+## R2 usage: atlas data only
 
-No renderer, widgets, or published API are claimed as implemented yet.
+~~~dart
+import 'dart:typed_data';
+import 'package:mtn_minecraft_skin_viewer/mtn_minecraft_skin_viewer.dart';
+
+Future<void> inspectSkin(Uint8List png) async {
+  final skin = await MtnMinecraftSkinTexture.fromPng(
+    png,
+    modelType: MtnMinecraftSkinModelType.slim,
+  );
+
+  // Both modern 64x64 and legacy 64x32 inputs become 64x64 RGBA.
+  final Uint8List pixels = skin.rgba;
+  final uv = const MtnMinecraftSkinUvLayout(
+    MtnMinecraftSkinModelType.slim,
+  ).face(MtnMinecraftSkinBodyPart.head, MtnMinecraftSkinFace.front);
+
+  print('Decoded RGBA bytes: ' + pixels.length.toString());
+  print('Head face UV x/y: ' + uv.x.toString() + '/' + uv.y.toString());
+}
+~~~
+
+The application provides its own PNG bytes and selects Classic or Slim
+explicitly. The package does not fetch Minecraft profiles or manage accounts.
+A 64x32 cape is decoded via MtnMinecraftCapeTexture.fromPng, with pixel-space
+rectangles from MtnMinecraftCapeUvLayout.
+
+The coordinates describe an image with top-left origin; renderer adapters must
+apply their own GPU UV origin and vertex-order conventions. R2 does **not**
+yet display a real Minecraft skin on the R1 block character.
+
+## Repository workflow
+
+See docs/WORKING_RULES.md and docs/continuity/CURRENT_TARGET.md.
+All feature work stays on a feature branch and Draft PR until separately
+accepted and merge-approved.

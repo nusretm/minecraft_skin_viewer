@@ -1,0 +1,98 @@
+# R2 — Java Skin/Cape Texture & UV Foundation
+
+**Date:** 2026-10-22
+**Status:** APPROVED / IMPLEMENTED ON FEATURE / CI VALIDATION PENDING
+**Branch:** `feature/r2-skin-texture-uv-foundation`
+**Base:** `main` at `8a8bb2c`
+**Merge:** Not authorized.
+
+## Authorized scope
+
+- **R2-A:** Accept only modern 64x64 and legacy 64x32 Java PNG skins and
+  64x32 Java capes. Validate signature/IHDR and decode into straight RGBA8888.
+  Normalize legacy to a 64x64 skin atlas, mirrored face by face.
+- **R2-B:** Shared render-backend-independent box-face UV rectangles, geometry
+  dimensions, Classic/Slim arms, and inner/outer layers. Cape is a 10x16x1
+  UV net with a 64x32 atlas.
+- **R2-C:** Deterministic synthetic PNG fixtures/tests, Windows CI regression
+  verification, and renderer integration contract.
+
+## API
+
+- `MtnMinecraftSkinTexture.fromPng(bytes, modelType: ...)` yields a normalized
+  64x64 RGBA snapshot, `isLegacy`, a defensive `rgba` copy and
+  `rgbaAt(x,y)` packed 0xRRGGBBAA.
+- `MtnMinecraftCapeTexture.fromPng(bytes)` yields a verified 64x32 RGBA image.
+- `MtnMinecraftSkinUvLayout(modelType)` maps six body parts x base/outer x
+  six faces; `dimensions(part)` provides pixel dimensions.
+- `MtnMinecraftCapeUvLayout().face(face)` maps 64x32 Java cape box faces.
+- `MtnMinecraftSkinUvRect` exposes pixel bounds, local `pixelAt`, orientation
+  and top-left-origin normalized UV corners.
+
+All types are exported through `lib/mtn_minecraft_skin_viewer.dart`.
+
+## Important data rules
+
+- Model type is explicit, not inferred from transparent pixels or dimensions.
+- Legacy left arm/leg need twelve independent horizontally mirrored rectangles.
+  Mirroring the entire original limb net would interchange wrong face regions.
+- Base-layer used face texels are forced opaque; outer-layer alpha is preserved.
+- A fully opaque legacy input clears the old hat background, while modern
+  opaque overlays are not silently removed.
+- Skin UVs use a canonical 64x64 atlas even when source was legacy 64x32.
+  Bottom-face orientation is flipped vertically in face-local image space.
+- GPU adapters must account for bottom-left UV origin and their vertex order;
+  neither 2D nor 3D renderer should calculate its own Minecraft atlas offsets.
+- No account, network, cache or external texture downloads.
+- Only 64x32 Java cape is supported in R2; HD/Bedrock/22x17/46x22 are excluded.
+
+## Integration contract (R3 / R4 later)
+
+```dart
+final skin = await MtnMinecraftSkinTexture.fromPng(
+  pngBytes, modelType: MtnMinecraftSkinModelType.slim);
+final uv = const MtnMinecraftSkinUvLayout(MtnMinecraftSkinModelType.slim)
+    .face(MtnMinecraftSkinBodyPart.rightArm, MtnMinecraftSkinFace.front);
+
+// R3: crop a 2D Flutter image using uv.x/y/width/height.
+// R4: upload skin.rgba to a 64x64 GPU texture; consume
+// uv.normalizedCorners(64, 64) with the backend's vertex order and V origin.
+```
+
+R2 does **not** replace the R1 demo with a fully textured character and does
+not add production 2D/3D widgets. Keep `flutter_scene` inside `example/`.
+
+## Verification and residual risks
+
+- Tests exercise Classic/Slim UV, six faces, layer bounds, cape, PNG errors,
+  legacy mirroring and alpha semantics with generated RGBA PNG fixtures.
+- CI on Windows must run root `flutter analyze` and `flutter test`,
+  regression-test the GPU-independent R1 controls and compile example release.
+- GitHub CI is **not** a substitute for live UV-render visual smoke in R3/R4.
+- R1 deferred controlled GPU memory soak remains open.
+- Draft PR #2 opened; **no merge** until explicit user approval.
+
+## Coordinate reference comparison
+
+- https://github.com/bs-community/skinview3d/blob/master/src/model.ts
+- https://github.com/bs-community/skinview-utils/blob/master/src/process.ts
+
+Only behavior/coordinate conventions were consulted. No source or assets were copied.
+
+## Test evidence (2026-10-22)
+
+- On CI run `39692378455`, root analyzer passed; two tests initially failed because test fixture expected exact RGB colors under partial/zero alpha after Flutter PNG encode/decode.
+- Tests updated to assert the correct alpha contract. On CI run `39692470025`, root analyzer and R2 test suite passed; the example analysis passed too. Remaining example widget test and Windows release build had not completed at last inspection.
+- Extended twelve-face sentinel mirror test on a later feature commit; full rerun status is pending.
+- PR: https://github.com/nusretm/minecraft_skin_viewer/pull/2 (Draft, not merged).
+
+## User local Windows evidence — 2026-10-22
+
+- Root `flutter analyze --no-pub`: PASS.
+- Root `flutter test --no-pub test/`: **15/15 PASS**.
+- Example `flutter analyze --no-pub`: PASS.
+- Example GPU-free widget test: **1/1 PASS**.
+- Windows release compilation: PASS in 25.1s. User launched EXE and confirmed resize and existing interactive controls work. R2 atlas model is unit-tested; it has not yet been connected to real full-skin rendering.
+- R2 CI `39692800346` earlier SHA completed SUCCESS; the two latest `9bab7217` R2 runs were still in progress at this observation. Distinguish current-head CI from prior green CI.
+- Local worktree after builds, bounded GPU memory soak and real skin GPU visual mapping not verified. Last two items remain deferred beyond R2 as planned.
+- No merge approval; Draft PR #2 remains open.

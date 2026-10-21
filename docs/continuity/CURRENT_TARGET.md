@@ -2,10 +2,47 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Current active implementation:** None. R1 is closed; R2 is **PROPOSED / NOT APPROVED**.
+**Active implementation:** R2-A/B/C on `feature/r2-skin-texture-uv-foundation` (user-approved).
 **Merged PR:** [#1 — R1 Renderer Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R1 — `CLOSED / MERGED / WINDOWS DEBUG+RELEASE LIVE VERIFIED / MEMORY SOAK DEFERRED`
+**Current checkpoint:** R2 — `LOCAL TESTS 15/15 PASS / EXAMPLE REGRESSION + WINDOWS RELEASE PASS / EARLIER CI GREEN / LATEST CI IN PROGRESS / DRAFT PR #2 / NOT MERGED`; R1 CLOSED.
+
+## 2026-10-22 — User Windows acceptance evidence for R2-A/B/C
+
+- **Checkout:** user's original `main...origin/main` was clean; fetched remote feature branch and switched with `git switch --track origin/feature/r2-skin-texture-uv-foundation`. Local post-test `git status -sb` was **not supplied**; do not infer worktree remains clean after Flutter tooling.
+- **Local R2 core results (user output):** `flutter pub get` PASS; `flutter analyze --no-pub` **No issues found!** (10.8s); `flutter test --no-pub test/` **15/15 passed** (6s), including all legacy mirror tests.
+- **Local R1 example regression (user output):** `flutter pub get` PASS; `flutter analyze --no-pub` **No issues found!** (7.2s); `flutter test --no-pub test/widget_test.dart` **1/1 passed** (2s).
+- **Windows release:** `flutter build windows --release` PASS (25.1s); user launched `build/windows/x64/runner/Release/mtn_minecraft_skin_viewer_example.exe` and reported all interactive controls work, including window resizing. The example still renders the R1 synthetic checker texture, **not** a fully mapped Minecraft skin. No controlled GPU-memory soak or 10–20-cycle measurement was reported.
+- **CI cross-check:** R2 Windows run [39692800346](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39692800346) (earlier feature commit `97a701a9`) **SUCCESS** with root analyze, R2 tests, example analyze, R1 widget test, and release build. Latest source/docs HEAD `9bab7217` runs [39693218190](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39693218190) / [39693213017](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39693213017) were still **IN PROGRESS** at verification; their analyze and R2 tests had already passed.
+- **Status / gate:** R2-A/B/C implemented and local validation successful, but PR [#2](https://github.com/nusretm/minecraft_skin_viewer/pull/2) remains **Draft / unmerged**. Await final CI and explicit user acceptance/merge authorization; do not merge automatically.
+
+## 2026-10-22 — R2 validation and Draft PR #2
+
+- **Draft PR:** [#2 — R2 Texture & UV Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/2), feature branch `feature/r2-skin-texture-uv-foundation` against `main`; **not merged**.
+- **Initial CI** [39692378455](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39692378455): Flutter root analyzer **PASS**, 12/14 synthetic tests PASS, 2 codec-dependent RGB-under-alpha exact-value assertions FAIL. This was an overly strict fixture expectation, not evidence that alpha was wrong.
+- **Test fix:** semi-transparent/fully-transparent pixel tests now check preserved alpha without assuming invisible RGB exactness. Deterministic truncated-PNG error fixture added. In the subsequent [39692470025](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39692470025), Windows CI root analyze, R2 texture/UV tests, example resolution and example analyze all **PASS**. At observation, R1 controls regression step was **IN PROGRESS**, and Windows release build result **NOT YET CONFIRMED**.
+- **Additional R2-C test:** all 12 legacy mirroring face copies now compare the destination's left/right sentinel pixels to their corresponding source ends. This newer test is **not yet confirmed by a completed CI run**.
+- **Diff review:** PR #2 contains 12 files and no added-line trailing whitespace found in patch scan. A real local Git worktree is not available in this session; no independent local `git diff --check` or Flutter run was claimed.
+- **Next gate:** finish latest Windows CI, then user may validate with `flutter analyze --no-pub` and `flutter test --no-pub test/`. Do not merge before user acceptance and separate merge authorization.
+
+## 2026-10-22 — R2 texture/UV foundation on feature branch
+
+- User explicitly approved R2-A PNG/legacy normalization, R2-B skin/cape
+  face UVs for Classic/Slim, and R2-C synthetic tests + Windows CI + Draft PR.
+  Merge is **not** approved.
+- Branch `feature/r2-skin-texture-uv-foundation` created from clean main
+  `8a8bb2c`; no unrelated repository modifications.
+- Added normalized 64x64 skin/cape RGBA containers, PNG header/decode checks,
+  legacy left-leg/left-arm per-face mirrors, base alpha rules and the
+  64x64/64x32 UV layouts. Models use explicit Classic/Slim and face/layer enums.
+- Synthetic tests cover face bounds/positions, mirror direction, alpha,
+  malformed images and cape. Separate R2 Windows CI also regression-tests
+  the R1 example. At this writing, successful CI verification is **pending**.
+- Scope boundary: R2 is a shared data contract, not a production skin viewer.
+  Minecraft texture application in a full 3D character remains R4; 2D UI is R3.
+- See `docs/continuity/R2_TEXTURE_UV_FOUNDATION.md` for precise data behavior.
+  Next: review actual CI, resolve failures, and open a Draft PR without merge.
+  The R1 GPU memory soak is still deferred.
 
 ## 2026-10-22 — R1 CLOSED: PR #1 squash-merged into main
 

@@ -1,6 +1,6 @@
 # Architecture — Minecraft Skin Viewer
 
-Status: APPROVED concept / implementation not yet validated. First checkpoint R1.
+Status: R1 CLOSED and user live-validated; R2 approved and implemented on feature, pending test review.
 
 ## Scope
 
@@ -34,4 +34,14 @@ Primary references:
 - https://github.com/bdero/flutter_scene/blob/master/AGENTS.md
 - https://github.com/flutter/flutter/issues/190871
 
-No claim of successful compilation or Windows live render is made yet.
+R1 debug/release visual rendering was user-verified. R2 shared data mapping has not yet been integrated with a full textured GPU character.
+
+## R2 shared atlas authority
+
+The canonical 64x64 skin atlas and pixel-space UV face layout live in
+`lib/src/mtn_minecraft_skin_texture.dart` and
+`lib/src/mtn_minecraft_skin_uv.dart`. Their APIs are renderer-independent,
+with explicit Classic/Slim model input and deterministic legacy mirroring.
+Java 64x32 cape UVs share the same face convention. 2D widgets (R3) and
+3D mesh adapters (R4) must consume these mappings, not maintain separate
+Minecraft coordinate tables.
