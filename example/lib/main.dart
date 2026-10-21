@@ -8,6 +8,8 @@ import 'package:flutter_scene/scene.dart';
 import 'package:flutter_scene/gpu.dart' as gpu;
 import 'package:vector_math/vector_math.dart' as vm;
 
+import 'r3_gallery.dart';
+
 void main() {
   runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -252,7 +254,20 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Minecraft Skin Viewer — R1 renderer test')),
+      appBar: AppBar(
+        title: const Text('Minecraft Skin Viewer — R1 renderer test'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.grid_view),
+            tooltip: 'R3 2D gallery',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const MtnMinecraftR3Gallery(),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Expanded(
