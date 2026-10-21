@@ -1,6 +1,6 @@
 # Architecture — Minecraft Skin Viewer
 
-Status: R1 CLOSED and user live-validated; R2 approved and implemented on feature, pending test review.
+Status: R1/R2 CLOSED; R3 approved and implemented on feature pending Windows visual acceptance.
 
 ## Scope
 
@@ -45,3 +45,11 @@ with explicit Classic/Slim model input and deterministic legacy mirroring.
 Java 64x32 cape UVs share the same face convention. 2D widgets (R3) and
 3D mesh adapters (R4) must consume these mappings, not maintain separate
 Minecraft coordinate tables.
+
+## R3 2D Flutter painting
+
+Three public widgets consume R2 normalized texture objects. A private
+stateful raw-image holder and CustomPainter share painting/lifecycle logic;
+all UV crops come from R2 face mappings, never a second coordinate table.
+Front/back and overlays are widget presentation inputs. No flutter_scene
+dependency is introduced into the root package. See R3_2D_PREVIEW.md.
