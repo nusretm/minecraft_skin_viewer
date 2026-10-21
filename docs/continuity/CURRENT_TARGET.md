@@ -4,8 +4,17 @@
 **Base branch:** `main`
 **Active feature:** `feature/r1-renderer-foundation`
 **Open PR:** [#1 — R1 Renderer Foundation (Draft)](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
-**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / WINDOWS DEBUG VISUALLY VERIFIED / CI FAILED / RELEASE NOT RUN`
+**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / WINDOWS DEBUG INTERACTIONS LIVE VERIFIED / CI RETEST PENDING / RELEASE NOT RUN`
 **Merge:** NOT APPROVED; do not merge.
+
+## 2026-10-22 — Windows R1 pointer controls verified and generated files inventoried
+
+- **User Windows live feedback:** manual mouse drag rotation, mouse-wheel zoom and head overlay toggle all **PASS** in the Flutter 3.47.7 Windows debug example. The GPU-backed 3D character screenshot was previously observed. This is specifically **debug render/interaction validated**, not release validation or 3D skin/cape texture completion.
+- **Local Git status:** `feature/r1-renderer-foundation...origin/feature/r1-renderer-foundation`; no tracked modifications reported; generated untracked paths: `example/.gitignore`, `example/.metadata`, `example/analysis_options.yaml`, `example/pubspec.lock`, `example/test/`, `example/windows/`, `pubspec.lock`.
+- **Git ownership:** `example/windows/` contains Windows runner source and should be reviewed and versioned after confirming `project.set_enable_flutter_gpu(true);` for release; example metadata/analysis config/lockfile should be tracked; root library `pubspec.lock` is ignored; avoid deleting or overwriting any existing local generated assets.
+- **CI blocker fix implemented on feature branch:** added tracked `example/test/widget_test.dart` testing the R1 widget title and overlay control instead of Flutter-generated stale `MyApp` counter test. **CI result for new test not yet confirmed**; it may expose further analyze/build issues.
+- **Local checkout caution:** because user's local `example/test/widget_test.dart` is untracked and remote now contains a tracked replacement, save or rename local test file before fetching/pulling. Never use `git clean -fd` to resolve the conflict.
+- **R1 pending:** Windows release executable launch, nearest-filter/PNG smoke, repeated mount/unmount resource checks and CI green. Draft PR #1 is still open and merge unapproved.
 
 ## 2026-10-22 — Real Windows debug render observed after user Flutter upgrade
 

@@ -12,6 +12,10 @@ coverage/
 **/build/
 **/.flutter-plugins-dependencies
 
+# A reusable Flutter package does not version its own resolved lockfile.
+# The example application lockfile remains trackable.
+/pubspec.lock
+
 # Flutter generated intermediates
 **/ephemeral/
 **/Generated.xcconfig
