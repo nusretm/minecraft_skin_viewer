@@ -1,7 +1,7 @@
 # Minecraft Skin Viewer — Çalışma Kuralları
 
-**Kaynak çalışma standardı:** `nusretm/mtn_launcher_app/docs/WORKING_RULES.md` (`main`, 2026-10-22 incelemesi).  
-**Bu repository için yetkili belge:** `nusretm/minecraft_skin_viewer/docs/WORKING_RULES.md`.  
+**Kaynak çalışma standardı:** `nusretm/mtn_launcher_app/docs/WORKING_RULES.md` (`main`, 2026-10-22 incelemesi).
+**Bu repository için yetkili belge:** `nusretm/minecraft_skin_viewer/docs/WORKING_RULES.md`.
 Kaynak repository'ye özgü Game List, `MtnLauncherService`, `MtnLauncherBloc`, pencere dosyası ve UI ayrıntıları burada birebir kopyalanmaz; yalnız uyarlanabilir süreç, sahiplik ve kalite kuralları aktarılır.
 
 ## 1. Proje kapsamı ve tek repository otoritesi

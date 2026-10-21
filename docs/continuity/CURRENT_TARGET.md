@@ -1,10 +1,10 @@
 # Minecraft Skin Viewer — Current Target
 
-**Repository:** `nusretm/minecraft_skin_viewer`  
-**Base branch:** `main`  
-**Active feature:** `feature/r1-renderer-foundation`  
-**Open PR:** [#1 — R1 Renderer Foundation (Draft)](https://github.com/nusretm/minecraft_skin_viewer/pull/1)  
-**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / CI FAILED / WINDOWS SMOKE NOT RUN`  
+**Repository:** `nusretm/minecraft_skin_viewer`
+**Base branch:** `main`
+**Active feature:** `feature/r1-renderer-foundation`
+**Open PR:** [#1 — R1 Renderer Foundation (Draft)](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
+**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / CI FAILED / WINDOWS SMOKE NOT RUN`
 **Merge:** NOT APPROVED; do not merge.
 
 ## 2026-10-22 — Working rules and continuity aligned with MTN Launcher App (DOCUMENTATION ONLY)

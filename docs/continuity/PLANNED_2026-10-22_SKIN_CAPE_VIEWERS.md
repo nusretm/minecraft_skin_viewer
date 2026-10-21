@@ -1,8 +1,8 @@
 # Planned — Shared 2D & 3D Minecraft Skin/Cape Viewer
 
-**Date:** 2026-10-22  
-**Repository:** `nusretm/minecraft_skin_viewer`  
-**Status:** `PROPOSED / NOT APPROVED FOR IMPLEMENTATION` beyond already approved R1.  
+**Date:** 2026-10-22
+**Repository:** `nusretm/minecraft_skin_viewer`
+**Status:** `PROPOSED / NOT APPROVED FOR IMPLEMENTATION` beyond already approved R1.
 **Dependencies:** finish Windows R1 renderer feasibility and gain acceptance/merge approval first.
 
 ## Goal

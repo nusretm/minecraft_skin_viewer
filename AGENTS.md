@@ -1,8 +1,8 @@
 # Minecraft Skin Viewer — Agent Instructions
 
-**Repository:** `nusretm/minecraft_skin_viewer`  
-**Package:** `mtn_minecraft_skin_viewer`  
-**Authoritative policy:** `docs/WORKING_RULES.md`  
+**Repository:** `nusretm/minecraft_skin_viewer`
+**Package:** `mtn_minecraft_skin_viewer`
+**Authoritative policy:** `docs/WORKING_RULES.md`
 **Active handoff:** `docs/continuity/CURRENT_TARGET.md`
 
 Before doing **anything** in this repository:
