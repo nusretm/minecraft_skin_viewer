@@ -1,6 +1,6 @@
 # R1 — Renderer Foundation (Windows)
 
-Status: **APPROVED / NOT YET IMPLEMENTED**. Approval was given in the conversation to start the first checkpoint; repository created and GitHub access granted on 2026-10-22.
+Status: **APPROVED / PARTIALLY IMPLEMENTED / NOT YET VALIDATED**. Approval was given in the conversation to start the first checkpoint; repository created and GitHub access granted on 2026-10-22.
 
 ## Goal
 
@@ -44,3 +44,11 @@ If GPU features are not feasible or toolchain too old, document precise failure 
 - https://github.com/bdero/flutter_scene/blob/master/packages/flutter_scene/README.md
 - https://github.com/bdero/flutter_scene/blob/master/AGENTS.md
 - https://github.com/flutter/flutter/issues/190871
+
+## Checkpoint progress (2026-10-22)
+
+- Added root Flutter package metadata and R1-only `flutter_scene` example app on feature branch.
+- Procedural Classic-sized six-part model, mouse drag orbit, wheel zoom, and alpha-blended head shell toggle implemented.
+- Added Windows CI static analysis and release compile workflow; current result has not yet been evaluated.
+- Still pending: real texture/nearest filtering test, local Windows debug/release GPU smoke, repeated mount/unmount validation, evidence in continuity and user acceptance.
+- Do not consider R1 complete or approved for merge.
