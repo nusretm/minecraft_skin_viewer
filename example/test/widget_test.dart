@@ -19,7 +19,7 @@ void main() {
     );
 
     expect(find.text('Head overlay'), findsOneWidget);
-    expect(find.text('Drag to orbit · Mouse wheel to zoom · Test cuboids only'), findsOneWidget);
+    expect(find.text('Drag to orbit · Wheel to zoom · Head: 8×8 PNG / nearest sampling'), findsOneWidget);
     expect(find.byType(Switch), findsOneWidget);
 
     await tester.tap(find.byType(Switch));
