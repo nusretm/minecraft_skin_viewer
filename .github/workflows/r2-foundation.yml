@@ -1,0 +1,57 @@
+name: R2 skin texture and UV foundation
+
+on:
+  push:
+    branches:
+      - feature/r2-skin-texture-uv-foundation
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Toolchain
+        shell: pwsh
+        run: flutter --version
+
+      - name: Resolve root package
+        shell: pwsh
+        run: flutter pub get
+
+      - name: Analyze root
+        shell: pwsh
+        run: flutter analyze --no-pub
+
+      - name: Test R2 skin/cape texture and UV models
+        shell: pwsh
+        run: flutter test --no-pub test/
+
+      - name: Resolve example
+        working-directory: example
+        shell: pwsh
+        run: flutter pub get
+
+      - name: Analyze example
+        working-directory: example
+        shell: pwsh
+        run: flutter analyze --no-pub
+
+      - name: Regression test R1 controls without GPU
+        working-directory: example
+        shell: pwsh
+        run: flutter test --no-pub test/widget_test.dart
+
+      - name: Build Windows release example
+        working-directory: example
+        shell: pwsh
+        run: flutter build windows --release
+
+# This workflow does not constitute interactive GPU/UV-render smoke evidence.
