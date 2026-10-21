@@ -2,10 +2,29 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Current active implementation:** None. R1 is closed; R2 is **PROPOSED / NOT APPROVED**.
+**Active implementation:** R2-A/B/C on `feature/r2-skin-texture-uv-foundation` (user-approved).
 **Merged PR:** [#1 — R1 Renderer Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R1 — `CLOSED / MERGED / WINDOWS DEBUG+RELEASE LIVE VERIFIED / MEMORY SOAK DEFERRED`
+**Current checkpoint:** R2 — `APPROVED / IMPLEMENTED ON FEATURE / CI TEST PENDING / NO MERGE`; R1 CLOSED.
+
+## 2026-10-22 — R2 texture/UV foundation on feature branch
+
+- User explicitly approved R2-A PNG/legacy normalization, R2-B skin/cape
+  face UVs for Classic/Slim, and R2-C synthetic tests + Windows CI + Draft PR.
+  Merge is **not** approved.
+- Branch `feature/r2-skin-texture-uv-foundation` created from clean main
+  `8a8bb2c`; no unrelated repository modifications.
+- Added normalized 64x64 skin/cape RGBA containers, PNG header/decode checks,
+  legacy left-leg/left-arm per-face mirrors, base alpha rules and the
+  64x64/64x32 UV layouts. Models use explicit Classic/Slim and face/layer enums.
+- Synthetic tests cover face bounds/positions, mirror direction, alpha,
+  malformed images and cape. Separate R2 Windows CI also regression-tests
+  the R1 example. At this writing, successful CI verification is **pending**.
+- Scope boundary: R2 is a shared data contract, not a production skin viewer.
+  Minecraft texture application in a full 3D character remains R4; 2D UI is R3.
+- See `docs/continuity/R2_TEXTURE_UV_FOUNDATION.md` for precise data behavior.
+  Next: review actual CI, resolve failures, and open a Draft PR without merge.
+  The R1 GPU memory soak is still deferred.
 
 ## 2026-10-22 — R1 CLOSED: PR #1 squash-merged into main
 
