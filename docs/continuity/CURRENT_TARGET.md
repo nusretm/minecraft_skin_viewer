@@ -4,8 +4,18 @@
 **Base branch:** `main`
 **Active feature:** `feature/r1-renderer-foundation`
 **Open PR:** [#1 — R1 Renderer Foundation (Draft)](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
-**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / WINDOWS DEBUG INTERACTIONS LIVE VERIFIED / RELEASE VISUAL FAILED / GPU-FREE WIDGET TEST FIX IN CI`
+**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / WINDOWS DEBUG LIVE VERIFIED / LOCAL WIDGET TEST PASS / RELEASE GPU OPT-IN MISSING (BLOCKED)`
 **Merge:** NOT APPROVED; do not merge.
+
+## 2026-10-22 — Windows GPU release blocker confirmed by local runner inspection
+
+- **User environment:** Windows, Flutter 3.47.7. Local active branch `feature/r1-renderer-foundation` was fast-forwarded from `bbf6080` to `2a684d0` without overwriting untracked example runner files.
+- **PASS — local analyzer:** `flutter analyze --no-pub` in `example/` reported `No issues found!`.
+- **PASS — local widget test:** `flutter test --no-pub test/widget_test.dart` reported `+1: All tests passed!` after GPU-free controls separation.
+- **PASS — release compilation, FAIL — release rendering:** `flutter build windows --release` successfully produced an EXE, but launching it rendered the shell plus red error `Failed to initialize ShaderLibrary: Flutter GPU must be enabled via the Flutter GPU manifest setting`. This is a **runtime GPU configuration failure**, not a successful release smoke.
+- **Confirmed root cause in local generated runner:** `Select-String example/windows/runner/main.cpp 'DartProject project|set_enable_flutter_gpu'` returned only `flutter::DartProject project(L"data");` at line 20; required `project.set_enable_flutter_gpu(true);` was absent. The example Windows runner remains untracked; GitHub CI adds the opt-in to its temporary runner and therefore its green release build does **not** prove the local EXE is properly configured.
+- **Next validation:** add `project.set_enable_flutter_gpu(true);` immediately after `flutter::DartProject project(L"data");` in local `example/windows/runner/main.cpp`, rebuild release, launch EXE and verify actual 3D scene, orbit, zoom and overlay. Stage/review local runner sources only after success; avoid committing generated intermediates.
+- **Not finished:** actual textured PNG nearest sampling and repeated mount/unmount/lifecycle; PR #1 remains Draft and requires explicit merge approval. This continuity update does not change Flutter source code or local runner.
 
 ## 2026-10-22 — Windows release blank screen and GPU-free test correction (R1 still open)
 
