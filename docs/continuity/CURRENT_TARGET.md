@@ -5,7 +5,16 @@
 **Active implementation:** R2-A/B/C on `feature/r2-skin-texture-uv-foundation` (user-approved).
 **Merged PR:** [#1 — R1 Renderer Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R2 — `APPROVED / IMPLEMENTED ON FEATURE / CI TEST PENDING / NO MERGE`; R1 CLOSED.
+**Current checkpoint:** R2 — `IMPLEMENTED ON FEATURE / CORE ANALYZE+TEST PASS / FULL WINDOWS CI IN PROGRESS / DRAFT PR #2 / NO MERGE`; R1 CLOSED.
+
+## 2026-10-22 — R2 validation and Draft PR #2
+
+- **Draft PR:** [#2 — R2 Texture & UV Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/2), feature branch `feature/r2-skin-texture-uv-foundation` against `main`; **not merged**.
+- **Initial CI** [39692378455](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39692378455): Flutter root analyzer **PASS**, 12/14 synthetic tests PASS, 2 codec-dependent RGB-under-alpha exact-value assertions FAIL. This was an overly strict fixture expectation, not evidence that alpha was wrong.
+- **Test fix:** semi-transparent/fully-transparent pixel tests now check preserved alpha without assuming invisible RGB exactness. Deterministic truncated-PNG error fixture added. In the subsequent [39692470025](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39692470025), Windows CI root analyze, R2 texture/UV tests, example resolution and example analyze all **PASS**. At observation, R1 controls regression step was **IN PROGRESS**, and Windows release build result **NOT YET CONFIRMED**.
+- **Additional R2-C test:** all 12 legacy mirroring face copies now compare the destination's left/right sentinel pixels to their corresponding source ends. This newer test is **not yet confirmed by a completed CI run**.
+- **Diff review:** PR #2 contains 12 files and no added-line trailing whitespace found in patch scan. A real local Git worktree is not available in this session; no independent local `git diff --check` or Flutter run was claimed.
+- **Next gate:** finish latest Windows CI, then user may validate with `flutter analyze --no-pub` and `flutter test --no-pub test/`. Do not merge before user acceptance and separate merge authorization.
 
 ## 2026-10-22 — R2 texture/UV foundation on feature branch
 

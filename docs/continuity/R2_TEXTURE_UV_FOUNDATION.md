@@ -70,7 +70,7 @@ not add production 2D/3D widgets. Keep `flutter_scene` inside `example/`.
   regression-test the GPU-independent R1 controls and compile example release.
 - GitHub CI is **not** a substitute for live UV-render visual smoke in R3/R4.
 - R1 deferred controlled GPU memory soak remains open.
-- Draft PR required and **no merge** until explicit user approval.
+- Draft PR #2 opened; **no merge** until explicit user approval.
 
 ## Coordinate reference comparison
 
@@ -78,3 +78,10 @@ not add production 2D/3D widgets. Keep `flutter_scene` inside `example/`.
 - https://github.com/bs-community/skinview-utils/blob/master/src/process.ts
 
 Only behavior/coordinate conventions were consulted. No source or assets were copied.
+
+## Test evidence (2026-10-22)
+
+- On CI run `39692378455`, root analyzer passed; two tests initially failed because test fixture expected exact RGB colors under partial/zero alpha after Flutter PNG encode/decode.
+- Tests updated to assert the correct alpha contract. On CI run `39692470025`, root analyzer and R2 test suite passed; the example analysis passed too. Remaining example widget test and Windows release build had not completed at last inspection.
+- Extended twelve-face sentinel mirror test on a later feature commit; full rerun status is pending.
+- PR: https://github.com/nusretm/minecraft_skin_viewer/pull/2 (Draft, not merged).
