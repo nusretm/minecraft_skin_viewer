@@ -115,7 +115,7 @@ class _MtnMinecraftR3GalleryState extends State<MtnMinecraftR3Gallery> {
           ),
           const SizedBox(height: 20),
           if (_error != null)
-            SelectableText('R3 fixture error: ' + _error.toString(),
+            SelectableText('R3 fixture error: $_error',
                 style: const TextStyle(color: Colors.redAccent))
           else if (skin == null || cape == null)
             const Center(child: CircularProgressIndicator())
@@ -138,7 +138,7 @@ class _MtnMinecraftR3GalleryState extends State<MtnMinecraftR3Gallery> {
                     showOuterLayer: _layers),
                 ),
                 _previewPanel(
-                  'Body — ' + (_legacy ? 'Legacy' : 'Modern'),
+                  _legacy ? 'Body — Legacy' : 'Body — Modern',
                   MtnMinecraftSkinPreview(
                     texture: skin, height: 256,
                     view: _view, showOuterLayer: _layers),
@@ -206,7 +206,9 @@ Future<Uint8List> _makeSkinPng(
   ];
   for (final part in MtnMinecraftSkinBodyPart.values) {
     if (legacy && (part == MtnMinecraftSkinBodyPart.leftArm ||
-        part == MtnMinecraftSkinBodyPart.leftLeg)) continue;
+        part == MtnMinecraftSkinBodyPart.leftLeg)) {
+      continue;
+    }
     final color = colors[part.index];
     for (final face in [MtnMinecraftSkinFace.front, MtnMinecraftSkinFace.back]) {
       final rect = layout.face(part, face);
