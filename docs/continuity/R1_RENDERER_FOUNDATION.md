@@ -67,3 +67,12 @@ If GPU features are not feasible or toolchain too old, document precise failure 
 - **IMPLEMENTED ON FEATURE / WINDOWS NOT RUN:** `Recreate viewer` removes the current viewer for one frame and remounts a new one, offering a manual scene lifecycle stress test. Use 10–20 cycles and check visually and through process memory; do not infer a lack of leaks from the button existing.
 - **NO R2 WORK:** real skin atlases, per-face Minecraft UVs, Classic/Slim texture mapping, capes, 2D public widgets all remain future checkpoints.
 - **Pending acceptance:** clean CI + real Windows debug/release texture and lifecycle smoke results, plus separate merge approval.
+
+## 2026-10-22 — PNG/nearest & recreate Windows verification
+
+- **Windows debug PASS:** Flutter 3.47.7, interactive 3D viewer with sharp synthetic 8x8 checker PNG on head; screenshot and user `herşey çalışıyor` confirmation.
+- **Windows release PASS:** `flutter build windows --release` (24.7s); direct EXE launch shows the same textured head in a screenshot.
+- **Local analysis PASS:** `flutter analyze --no-pub` clean; focused GPU-independent widget test 1/1 passed.
+- **GitHub CI PASS:** exact feature code `4424597`, runs `39689222086` and `39689226713`, root/example analyze, widget test and Windows release build succeeded.
+- **Lifecycle note:** user reports Recreate viewer working, but explicit repeat count and GPU memory measurement are absent; no zero-leak claim. A brief measured soak could strengthen acceptance before merge, or be tracked as explicit deferred risk with user agreement.
+- **Scope / merge:** R1 functional GPU and synthetic texture feasibility verified. Real Minecraft UVs and 2D widgets belong to later milestones. PR #1 remains Draft; separate merge authorization required.

@@ -4,8 +4,16 @@
 **Base branch:** `main`
 **Active feature:** `feature/r1-renderer-foundation`
 **Open PR:** [#1 — R1 Renderer Foundation (Draft)](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
-**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / PREVIOUS DEBUG+RELEASE PASS / TEXTURE+LIFECYCLE CODE NOT YET WINDOWS VERIFIED`
+**Current checkpoint:** R1 Windows 3D renderer feasibility — `WINDOWS DEBUG+RELEASE TEXTURE AND CONTROLS LIVE VERIFIED / CI PASS / LIFECYCLE LEAK MEASUREMENT NOT DONE / REVIEW PENDING`
 **Merge:** NOT APPROVED; do not merge.
+
+## 2026-10-22 — Windows PNG nearest-filter and recreate smoke PASS; Draft PR review next
+
+- **User-confirmed Windows local run on feature commit `4424597056a1f3397f2281608e2144bf033895a4`:** `flutter analyze --no-pub` on `example/` **No issues found!** (7.8s), GPU-free `flutter test --no-pub test/widget_test.dart` **+1 All tests passed**, `flutter run -d windows --enable-flutter-gpu` debug executable built (11.6s) and displayed an interactive 3D character with sharp 8x8 yellow/purple PNG head. `flutter build windows --release` produced release EXE (24.7s), which was launched directly and showed the textured head in a second screenshot.
+- **Manual UI observation:** user stated all functions work, including existing mouse orbit, zoom, overlay and new `Recreate viewer` control. Test images show the new control in debug and release. No measured count of recreate cycles or before/after GPU memory was provided, so do **not** claim a full soak test or absence of GPU leaks.
+- **Texture conclusion:** synthetic PNG -> `Texture2D.fromEncodedBytes` -> nearest min/mag sampling -> cuboid geometry UV pipeline visually works in Windows debug and release. This does **not** validate real Minecraft 64x64/64x32 skin face layout, cape UV, Classic/Slim differences or 2D widget APIs (R2+).
+- **CI verified for exact feature commit:** Windows Actions runs [39689222086](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39689222086) and [39689226713](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39689226713) both completed **success**: root analyze, example analyze, GPU-free widget test and Windows release compilation all **PASS**. CI does not run interactive GPU smoke; Windows screenshots/user feedback provide that evidence.
+- **Gate:** functional R1 acceptance evidence is ready for review. Source remains on [Draft PR #1](https://github.com/nusretm/minecraft_skin_viewer/pull/1). **No merge approval or merge performed.** Optional bounded memory measurement is still an identified, not silently passed, risk.
 
 ## 2026-10-22 — R1 synthetic texture and lifecycle smoke implementation (awaiting Windows validation)
 
