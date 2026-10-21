@@ -92,6 +92,40 @@ void main() {
       expect(skin.rgbaAt(40, 32), 0); // right arm overlay absent
     });
 
+    test('all 12 legacy face copies mirror pixel order independently', () async {
+      final raw = Uint8List(64 * 32 * 4);
+      const regions = <(int, int, int, int, int, int)>[
+        (4, 16, 4, 4, 20, 48),
+        (8, 16, 4, 4, 24, 48),
+        (0, 20, 4, 12, 24, 52),
+        (4, 20, 4, 12, 20, 52),
+        (8, 20, 4, 12, 16, 52),
+        (12, 20, 4, 12, 28, 52),
+        (44, 16, 4, 4, 36, 48),
+        (48, 16, 4, 4, 40, 48),
+        (40, 20, 4, 12, 40, 52),
+        (44, 20, 4, 12, 36, 52),
+        (48, 20, 4, 12, 32, 52),
+        (52, 20, 4, 12, 44, 52),
+      ];
+      for (var n = 0; n < regions.length; n++) {
+        final r = regions[n];
+        pixel(raw, r.$1, r.$2, 10 + n, 0, 0, 255);
+        pixel(raw, r.$1 + r.$3 - 1, r.$2, 100 + n, 0, 0, 255);
+      }
+      final skin = await MtnMinecraftSkinTexture.fromPng(
+        await pngFromRgba(raw, 64, 32),
+        modelType: MtnMinecraftSkinModelType.classic,
+      );
+      for (var n = 0; n < regions.length; n++) {
+        final r = regions[n];
+        expect(skin.rgbaAt(r.$5 + r.$3 - 1, r.$6) >>> 24, 10 + n,
+            reason: 'mirrored first source pixel of region $n');
+        expect(skin.rgbaAt(r.$5, r.$6) >>> 24, 100 + n,
+            reason: 'mirrored final source pixel of region $n');
+      }
+    });
+
     test('legacy fully opaque background clears obsolete hat layer', () async {
       final raw = Uint8List(64 * 32 * 4);
       for (var i = 3; i < raw.length; i += 4) raw[i] = 255;
