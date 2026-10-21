@@ -7,6 +7,14 @@
 **Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / WINDOWS DEBUG+RELEASE 3D LIVE VERIFIED / LOCAL TEST PASS / TEXTURE+LIFECYCLE PENDING`
 **Merge:** NOT APPROVED; do not merge.
 
+## 2026-10-22 — Windows runner persisted to GitHub in commit 84fac44
+
+- **LIVE verified local release setup is now versioned:** user staged 22 generated Flutter example scaffold/source files, reviewed `git diff --cached --check` (**clean**) and the staged `example/windows/runner/main.cpp` diff, committed as `84fac44e64dacaf47f40349a3d64920213cd8a24` (`build(example): persist Windows runner and Flutter GPU configuration`) and successfully pushed `feature/r1-renderer-foundation`.
+- **GitHub independently verified:** feature remote HEAD matched `84fac44e64dacaf47f40349a3d64920213cd8a24`; fetched `example/windows/runner/main.cpp` includes both `flutter::DartProject project(L"data");` and `project.set_enable_flutter_gpu(true);`. `example/.gitignore`, `example/.metadata`, `example/analysis_options.yaml`, `example/pubspec.lock`, and Windows runner files are now tracked; root package lockfile remains ignored.
+- **Line-ending warnings:** Git reported LF-to-CRLF warnings for selected files; successful `git diff --cached --check`, commit, and push provide no evidence of a blocking whitespace error.
+- **CI at observation:** runs [39688345578](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39688345578) and [39688352204](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39688352204) for `84fac44` were **IN PROGRESS**; do not mark new HEAD CI passed yet.
+- **R1 next action:** synthetic PNG textured geometry + nearest-filter verification and repeated widget mount/unmount/lifecycle smoke, followed by Windows validation and review. **Not** full Minecraft skin atlas, 2D production widgets or R2 scope. PR #1 remains Draft, unmerged.
+
 ## 2026-10-22 — Windows release GPU render recovery LIVE VERIFIED
 
 - **Actual user Windows release proof:** after opening/editing the local `example/windows/runner/main.cpp`, user ran `flutter build windows --release` and it succeeded in **8.2s**, then launched `build/windows/x64/runner/Release/mtn_minecraft_skin_viewer_example.exe`. Supplied screenshot shows 3D block character, normal Flutter scaffold, colored geometry and enabled head overlay. User confirmed **all functions still work** (orbit, zoom, overlay) in this release run. This closes the previous release GPU opt-in runtime blocker on the user's local machine.
