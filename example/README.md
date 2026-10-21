@@ -25,10 +25,15 @@ flutter::DartProject project(L"data");
 project.set_enable_flutter_gpu(true);
 ```
 
+The setting above is **not optional for release**. Debug builds with `--enable-flutter-gpu` can work without it; packaged Windows release builds cannot. Re-running `flutter create` does not guarantee that your local runner includes the setting. CI inserts the setting in its own temporary runner, which does not update your machine.
+
+Run `flutter test --no-pub test/widget_test.dart` for GPU-free control checks. A standard `flutter test` runner cannot instantiate `Scene()`; visual GPU checks belong to a real Windows application.
+
 Then run from `example/`:
 
 ```powershell
 flutter analyze
+flutter test --no-pub test/widget_test.dart
 flutter run -d windows --enable-flutter-gpu
 flutter build windows --release
 .\build\windows\x64\runner\Release\mtn_minecraft_skin_viewer_example.exe

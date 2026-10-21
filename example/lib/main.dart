@@ -24,7 +24,7 @@ class MtnMinecraftRendererPrototype extends StatefulWidget {
 }
 
 class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererPrototype> {
-  final Scene _scene = Scene();
+  Scene? _scene;
   Node? _headOverlay;
 
   bool _ready = false;
@@ -45,6 +45,9 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
     try {
       await Scene.initializeStaticResources();
       if (!mounted) return;
+      // Create GPU resources inside the guarded async initializer. A release
+      // runner without Flutter GPU opt-in must show an error, not a blank window.
+      _scene = Scene();
 
       _addPart(
         size: vm.Vector3(0.5, 0.5, 0.5),
@@ -87,7 +90,7 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
           overlayMaterial,
         ),
       )..position = vm.Vector3(0, 1.75, 0);
-      if (_showOverlay) _scene.add(_headOverlay!);
+      if (_showOverlay) _scene!.add(_headOverlay!);
       setState(() => _ready = true);
     } catch (error) {
       if (!mounted) return;
@@ -102,7 +105,7 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
   }) {
     final material = UnlitMaterial()..baseColorFactor = color;
     final node = Node(mesh: Mesh(CuboidGeometry(size), material))..position = position;
-    _scene.add(node);
+    _scene!.add(node);
   }
 
   void _orbit(DragUpdateDetails details) {
@@ -123,9 +126,9 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
     final overlay = _headOverlay;
     if (overlay == null || value == _showOverlay) return;
     if (value) {
-      _scene.add(overlay);
+      _scene!.add(overlay);
     } else {
-      _scene.remove(overlay);
+      _scene!.remove(overlay);
     }
     setState(() => _showOverlay = value);
   }
@@ -142,7 +145,7 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
 
   @override
   void dispose() {
-    _scene.dispose();
+    _scene?.dispose();
     super.dispose();
   }
 
@@ -172,24 +175,50 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
                               behavior: HitTestBehavior.opaque,
                               onPanUpdate: _orbit,
                               child: SizedBox.expand(
-                                child: SceneView(_scene, cameraBuilder: _camera),
+                                child: SceneView(_scene!, cameraBuilder: _camera),
                               ),
                             ),
                           ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                const Expanded(
-                  child: Text('Drag to orbit · Mouse wheel to zoom · Test cuboids only'),
-                ),
-                const Text('Head overlay'),
-                Switch(value: _showOverlay, onChanged: _ready ? _toggleOverlay : null),
-              ],
-            ),
+          MtnMinecraftRendererControls(
+            overlayEnabled: _showOverlay,
+            enabled: _ready,
+            onOverlayChanged: _toggleOverlay,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// GPU-independent R1 controls. Can be widget-tested without creating Scene.
+class MtnMinecraftRendererControls extends StatelessWidget {
+  const MtnMinecraftRendererControls({
+    super.key,
+    required this.overlayEnabled,
+    required this.enabled,
+    required this.onOverlayChanged,
+  });
+
+  final bool overlayEnabled;
+  final bool enabled;
+  final ValueChanged<bool> onOverlayChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          const Expanded(
+            child: Text('Drag to orbit · Mouse wheel to zoom · Test cuboids only'),
+          ),
+          const Text('Head overlay'),
+          Switch(
+            value: overlayEnabled,
+            onChanged: enabled ? onOverlayChanged : null,
           ),
         ],
       ),

@@ -58,6 +58,12 @@ jobs:
         run: |
           flutter analyze
 
+      - name: Test GPU-independent example controls
+        working-directory: example
+        shell: pwsh
+        run: |
+          flutter test --no-pub test/widget_test.dart
+
       - name: Build Windows release example
         working-directory: example
         shell: pwsh

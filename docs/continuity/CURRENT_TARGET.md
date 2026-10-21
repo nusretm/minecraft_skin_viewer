@@ -4,8 +4,16 @@
 **Base branch:** `main`
 **Active feature:** `feature/r1-renderer-foundation`
 **Open PR:** [#1 — R1 Renderer Foundation (Draft)](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
-**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / WINDOWS DEBUG INTERACTIONS LIVE VERIFIED / CI RETEST PENDING / RELEASE NOT RUN`
+**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / WINDOWS DEBUG INTERACTIONS LIVE VERIFIED / RELEASE VISUAL FAILED / GPU-FREE WIDGET TEST FIX IN CI`
 **Merge:** NOT APPROVED; do not merge.
+
+## 2026-10-22 — Windows release blank screen and GPU-free test correction (R1 still open)
+
+- **User evidence:** root and example `flutter analyze --no-pub` both PASS; initial `flutter test --no-pub test/widget_test.dart` FAIL with `Flutter GPU requires the Impeller rendering backend, but Impeller is not enabled` at `Scene()` initialization. Missing title/control assertions are secondary to the exception. This is a real test failure, not CI proof of GPU support.
+- **Windows release:** `flutter build windows --release` produced an EXE; launching it displayed only a blank gray Flutter window (user screenshot). **RELEASE VISUAL SMOKE FAILED** despite successful compile. Local `example/windows/runner/main.cpp` was not provided; missing `project.set_enable_flutter_gpu(true);` is the leading hypothesis, not established fact. The Windows runner is still an untracked local path.
+- **R1 fix on feature branch:** defer `Scene()` creation until guarded initialization so an unavailable GPU can yield a visible error instead of failing during widget state construction. Extract GPU-free overlay controls for normal widget testing. Replace the crashing scene test with a controls-only widget test and run it in GitHub Windows CI. Update example run instructions, leaving user-local generated Windows runner untouched.
+- **CI evidence:** run [39685992762](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39685992762) on previous R1 HEAD passed Windows static analysis and release compilation; does not establish actual release rendering or headless widget-test support.
+- **Next local validation:** confirm/edit `example/windows/runner/main.cpp` using Flutter GPU project opt-in, rebuild and **launch** release EXE; run corrected widget test; inspect generated runner sources before staging. Full R1 PNG nearest sampling and repeated lifecycle testing remain pending. **PR #1 stays Draft; no merge approval.**
 
 ## 2026-10-22 — Windows R1 pointer controls verified and generated files inventoried
 
