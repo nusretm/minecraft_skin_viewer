@@ -1,37 +1,34 @@
-# Current target — R1 renderer foundation
+# Minecraft Skin Viewer — Current Target
 
-Date: 2026-10-22
-Repository: https://github.com/nusretm/minecraft_skin_viewer
-Base branch: `main`
-Feature branch: `feature/r1-renderer-foundation`
+**Repository:** `nusretm/minecraft_skin_viewer`  
+**Base branch:** `main`  
+**Active feature:** `feature/r1-renderer-foundation`  
+**Open PR:** [#1 — R1 Renderer Foundation (Draft)](https://github.com/nusretm/minecraft_skin_viewer/pull/1)  
+**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / CI FAILED / WINDOWS SMOKE NOT RUN`  
+**Merge:** NOT APPROVED; do not merge.
 
-## Implemented in feature branch (unvalidated)
+## 2026-10-22 — Working rules and continuity aligned with MTN Launcher App (DOCUMENTATION ONLY)
 
-- Initial Flutter package metadata and library entrypoint `mtn_minecraft_skin_viewer`.
-- `example/` app with a `flutter_scene 0.24.3` prototype (six cuboids in Classic proportions).
-- Pointer drag orbit, mouse-wheel zoom and alpha-blended translucent head overlay toggle.
-- Windows GitHub Actions workflow to analyze root/example and compile a release build after enabling GPU in generated runner.
-- Repository rules, architecture, and checkpoint plan.
+- **Source of standards:** [`mtn_launcher_app/docs/WORKING_RULES.md`](https://github.com/nusretm/mtn_launcher_app/blob/main/docs/WORKING_RULES.md); its `main` did not contain root `AGENTS.md` at review time. Adapted its single integration gate, explicit implementation/merge approvals, Windows evidence, branch cleanup, ownership and continuity-hand-off discipline to this package.
+- **Files updated:** root `AGENTS.md`, `docs/WORKING_RULES.md`, this `CURRENT_TARGET.md`. **New future-only plan:** `PLANNED_2026-10-22_SKIN_CAPE_VIEWERS.md`.
+- **Scope discipline:** documentation only for this update; no Flutter/source/CI modifications and no Flutter upgrade executed by assistant. User is upgrading their local Flutter SDK.
+- **R1 CI evidence discovered:** [Windows run 39681032211](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39681032211) completed **failure**. Root package `flutter analyze`: **PASS**; `flutter create . --platforms=windows`: **PASS**; runner GPU enable step: **PASS**; example `flutter analyze`: **FAIL** at generated `example/test/widget_test.dart:16:35`, which expects undefined `MyApp` (`creation_with_non_type`); release build: **SKIPPED**. Other run attempts 39680994990, 39680991377, 39680937256 also concluded failure.
+- **Next code task (not part of this doc-only change):** after Flutter upgrade, reconcile the generated example's default widget test with the actual app entrypoint, then rerun analyze/build. Do not prematurely declare GPU support validated.
 
-## Validation status
+## 2026-10-22 — R1 foundation prototype opened in Draft PR #1
 
-- **IMPLEMENTED (PARTIAL) / NOT VALIDATED**. Flutter and Dart SDK are unavailable to the assistant runtime; analyze, test and Windows binary build were not run locally.
-- GitHub Actions workflow is configured but result is pending/not yet inspected.
-- User's Windows debug and **direct executable release GPU rendering** are not validated.
-- Texture UV mapping, nearest-neighbor filter smoke, error/dispose behavior over repeated mount/unmount remain to validate or implement.
-- The root package currently exposes **no production widget API**; `flutter_scene` dependency is isolated in `example/`.
+- **Approved and implemented (partial):** package `pubspec.yaml` and placeholder public Dart library; `example/pubspec.yaml` with `flutter_scene 0.24.3`; six Classic-proportion cuboids; pointer drag orbit, mouse-wheel zoom, alpha-blended head overlay toggle; Windows GitHub Actions analyze/build workflow.
+- **R1 status:** proposed 3D API is *not* public; real skin atlas UV mapping, synthetic pixel texture/nearest-filter verification, final transparency policy, repeated mount/unmount cleanup and 2D previews are **NOT IMPLEMENTED/NOT VALIDATED**.
+- **Live Windows status:** neither debug interactive smoke nor launched release executable observed yet. GitHub build success, if obtained later, will still not replace this visual validation.
+- **Ownership:** root Flutter package owns future skin/cape data and public widgets; experimental `flutter_scene` dependency remains inside `example/`.
+- **Approval:** user authorized starting R1; PR #1 is Draft; merge requires separate explicit user acceptance.
 
-## Approved scope
+## Current work boundary and next action
 
-- Independent package for Minecraft Java Edition 2D skin/cape previews and interactive 3D player model.
-- R1 first: Windows GPU renderer feasibility, not full skin/cape UV mapping.
-- Follow `R1_RENDERER_FOUNDATION.md`. Do not claim other platforms work without live evidence.
-- Feature PR must not merge without explicit user approval.
+1. User finishes local Flutter upgrade and verifies `flutter --version` / `flutter doctor -v`.
+2. Fix R1 example test mismatch on active feature branch after development resumes (separate from the rules-only request); re-run Windows CI.
+3. Run `example/` on actual Windows, then release EXE and interact with orbit, zoom, overlay; test texture filtering and lifecycle. Record real observations, no inferred PASS.
+4. Complete R1 review/acceptance and request merge approval; do not start R2 before resolving approved integration gate.
+5. R2–R5 roadmap exists as `PROPOSED / NOT APPROVED FOR IMPLEMENTATION` in `PLANNED_2026-10-22_SKIN_CAPE_VIEWERS.md`.
 
-## Next action
-
-1. Inspect Windows GitHub Actions result, fix real build/analyze failures within R1.
-2. On user's Windows Flutter 3.47.1+ environment, generate example runner and set GPU opt-in (see `example/README.md`).
-3. Run debug/release visual smoke; test overlay toggle and repeated mount/unmount.
-4. Add synthetic pixel texture + nearest-filter test, document its result.
-5. Update this file with exact validation evidence and offer draft PR for user review.
+See `docs/continuity/ARCHITECTURE.md`, `docs/continuity/R1_RENDERER_FOUNDATION.md` and `docs/WORKING_RULES.md` for authoritative boundaries.
