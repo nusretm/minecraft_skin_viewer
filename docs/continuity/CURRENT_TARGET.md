@@ -4,8 +4,16 @@
 **Base branch:** `main`
 **Active feature:** `feature/r1-renderer-foundation`
 **Open PR:** [#1 — R1 Renderer Foundation (Draft)](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
-**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / WINDOWS DEBUG LIVE VERIFIED / LOCAL WIDGET TEST PASS / RELEASE GPU OPT-IN MISSING (BLOCKED)`
+**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / WINDOWS DEBUG+RELEASE 3D LIVE VERIFIED / LOCAL TEST PASS / TEXTURE+LIFECYCLE PENDING`
 **Merge:** NOT APPROVED; do not merge.
+
+## 2026-10-22 — Windows release GPU render recovery LIVE VERIFIED
+
+- **Actual user Windows release proof:** after opening/editing the local `example/windows/runner/main.cpp`, user ran `flutter build windows --release` and it succeeded in **8.2s**, then launched `build/windows/x64/runner/Release/mtn_minecraft_skin_viewer_example.exe`. Supplied screenshot shows 3D block character, normal Flutter scaffold, colored geometry and enabled head overlay. User confirmed **all functions still work** (orbit, zoom, overlay) in this release run. This closes the previous release GPU opt-in runtime blocker on the user's local machine.
+- **GPU opt-in persistence still pending:** the successful `example/windows/` runner source was generated locally and was previously untracked. **Do not infer it is committed**. Stage and review only intended source/config files, including `windows/runner/main.cpp` with `project.set_enable_flutter_gpu(true);`, and push feature branch after local diff check. Do not remove local files or blindly commit generated build output.
+- **Other actual R1 validation:** Windows debug 3D and interactions PASS; local `flutter analyze --no-pub` and `flutter test --no-pub test/widget_test.dart` PASS. Latest GitHub Actions R1 commit results were still in progress at observation time; green CI not claimed for latest HEAD.
+- **Still outside validated scope:** a real pixel-texture/nearest-neighbor test, face UV mapping, and repeat mount/unmount/lifecycle resource check. Production skin/cape widgets remain unimplemented. PR #1 stays Draft; user has not approved merge.
+- **Next immediate task:** preserve the working Windows runner and its release GPU opt-in in Git, then finish R1 texture sampling and lifecycle tests before checkpoint acceptance.
 
 ## 2026-10-22 — Windows GPU release blocker confirmed by local runner inspection
 

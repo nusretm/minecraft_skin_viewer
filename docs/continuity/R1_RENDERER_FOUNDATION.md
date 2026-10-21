@@ -1,6 +1,6 @@
 # R1 — Renderer Foundation (Windows)
 
-Status: **APPROVED / PARTIALLY IMPLEMENTED / NOT YET VALIDATED**. Approval was given in the conversation to start the first checkpoint; repository created and GitHub access granted on 2026-10-22.
+Status: **APPROVED / PARTIALLY IMPLEMENTED / WINDOWS DEBUG+RELEASE VISUALLY VALIDATED / R1 NOT YET CLOSED**. Approval was given in the conversation to start the first checkpoint; repository created and GitHub access granted on 2026-10-22.
 
 ## Goal
 
@@ -52,3 +52,11 @@ If GPU features are not feasible or toolchain too old, document precise failure 
 - Added Windows CI static analysis and release compile workflow; current result has not yet been evaluated.
 - Still pending: real texture/nearest filtering test, local Windows debug/release GPU smoke, repeated mount/unmount validation, evidence in continuity and user acceptance.
 - Do not consider R1 complete or approved for merge.
+
+## Windows validation update — 2026-10-22
+
+- **PASS (user, real Windows):** Flutter 3.47.7 debug app renders 3D character; mouse orbit/zoom and head overlay toggle work.
+- **PASS (user, real Windows):** Flutter release EXE rebuilt in 8.2 seconds and **launched successfully**, screenshot shows full Flutter UI and 3D model; user says all controls work again. Previous release blank/error screen was caused by missing Flutter GPU project opt-in in the local Windows runner. Local fix worked, but the generated runner source still needs to be committed to the feature branch.
+- **PASS (user, local):** `flutter analyze --no-pub` for root and example; GPU-free `flutter test --no-pub test/widget_test.dart` passed.
+- **NOT DONE:** synthetic pixel texture nearest filtering feasibility proof, lifecycle mount/unmount soak, complete acceptance/merge. Latest R1 CI run should be checked after source synchronization.
+- **Merge:** Draft PR #1 remains open and **not approved for merge**.
