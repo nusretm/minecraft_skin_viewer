@@ -77,7 +77,6 @@ class MtnMinecraftRendererPrototype extends StatefulWidget {
 class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererPrototype> {
   Scene? _scene;
   Node? _headOverlay;
-  Texture2D? _checkerTexture;
 
   bool _ready = false;
   bool _showOverlay = true;
@@ -113,7 +112,6 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
         ),
       );
       if (!mounted) return;
-      _checkerTexture = checker;
 
       _addPart(
         size: vm.Vector3(0.5, 0.5, 0.5),
@@ -246,9 +244,8 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
     _scene?.dispose();
     _scene = null;
     _headOverlay = null;
-    // Texture2D exposes no explicit dispose method; release the scene/material
-    // references here. The manual recreate smoke checks for retained resources.
-    _checkerTexture = null;
+    // Texture2D exposes no explicit dispose method; the released scene owns
+    // the material reference. Check memory behavior with the manual harness.
     super.dispose();
   }
 
