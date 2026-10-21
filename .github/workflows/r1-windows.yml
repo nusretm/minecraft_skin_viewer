@@ -46,9 +46,11 @@ jobs:
           if (-not $code.Contains($needle)) {
             throw "Expected DartProject initialization not found in $path"
           }
-          $replacement = "$needle" + "`r`n  project.set_enable_flutter_gpu(true);"
-          $code = $code.Replace($needle, $replacement)
-          Set-Content -Path $path -Value $code
+          if (-not $code.Contains('project.set_enable_flutter_gpu(true);')) {
+            $replacement = "$needle" + "`r`n  project.set_enable_flutter_gpu(true);"
+            $code = $code.Replace($needle, $replacement)
+            Set-Content -Path $path -Value $code
+          }
 
       - name: Analyze example
         working-directory: example
