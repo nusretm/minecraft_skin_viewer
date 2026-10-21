@@ -1,0 +1,66 @@
+name: R1 Windows Flutter validation
+
+on:
+  push:
+    branches:
+      - feature/r1-renderer-foundation
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Check toolchain
+        shell: pwsh
+        run: |
+          flutter --version
+          flutter doctor -v
+
+      - name: Analyze Flutter package
+        shell: pwsh
+        run: |
+          flutter pub get
+          flutter analyze
+
+      - name: Generate Windows example runner
+        working-directory: example
+        shell: pwsh
+        run: |
+          flutter create . --platforms=windows
+          flutter pub get
+
+      - name: Enable Flutter GPU for Windows release
+        shell: pwsh
+        run: |
+          $path = 'example/windows/runner/main.cpp'
+          $code = Get-Content -Path $path -Raw
+          $needle = 'flutter::DartProject project(L"data");'
+          if (-not $code.Contains($needle)) {
+            throw "Expected DartProject initialization not found in $path"
+          }
+          $replacement = "$needle" + "`r`n  project.set_enable_flutter_gpu(true);"
+          $code = $code.Replace($needle, $replacement)
+          Set-Content -Path $path -Value $code
+
+      - name: Analyze example
+        working-directory: example
+        shell: pwsh
+        run: |
+          flutter analyze
+
+      - name: Build Windows release example
+        working-directory: example
+        shell: pwsh
+        run: |
+          flutter build windows --release
+
+# This workflow checks compilation only. A visual GPU smoke on the user's
+# Windows desktop is required before recording R1 as LIVE_VALIDATED.
