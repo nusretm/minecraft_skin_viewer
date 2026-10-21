@@ -1,6 +1,6 @@
 # R1 Windows renderer smoke example
 
-This application is a **procedural, untextured feasibility prototype**, not a completed Minecraft skin viewer. The six cuboids use Classic Steve proportions (scaled to 1/16 world units). An optional translucent head shell tests alpha blending. Drag to orbit, mouse wheel to zoom.
+This application is a **procedural feasibility prototype**, not a completed Minecraft skin viewer. The six cuboids use Classic Steve proportions (scaled to 1/16 world units). The head uses an in-memory 8×8 yellow/purple checker **PNG** (all faces share simple cube UVs) with mipmaps off and nearest-neighbor sampling. The translucent outer head shell tests alpha blending. Drag to orbit, mouse wheel to zoom.
 
 ## Prerequisites
 
@@ -45,8 +45,9 @@ The exe filename is generated from the example project name and may differ; insp
 
 - Check both debug and release cuboids, orbit and zoom.
 - Toggle head overlay and examine depth/transparency.
-- Repeat mount/unmount or restart while watching resource use.
-- Add synthetic pixel texture and verify nearest-neighbor filtering (not implemented yet).
+- Click **Recreate viewer** 10–20 times while monitoring the Windows process's memory and watching for exceptions, blank frames that persist, or crashes. The button unmounts SceneView for one frame before constructing another; this is a manual stress harness, not proof of no memory leak.
+- With **Head overlay** off, verify the 8×8 yellow/purple checker is crisp and doesn't interpolate between colors when zoomed. Switch overlay on to inspect transparency, rotate the character and repeat in release.
+- This simple cube UV mapping does **not** establish Minecraft atlas face mapping; Classic/Slim UVs are R2.
 - Record exact Flutter/GPU driver/platform versions and findings in `docs/continuity/CURRENT_TARGET.md`.
 
 ## Notes

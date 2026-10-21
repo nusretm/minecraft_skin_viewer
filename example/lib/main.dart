@@ -1,20 +1,71 @@
 import 'dart:math' as math;
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_scene/scene.dart';
+import 'package:flutter_scene/gpu.dart' as gpu;
 import 'package:vector_math/vector_math.dart' as vm;
 
 void main() {
   runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: MtnMinecraftRendererPrototype(),
+    home: MtnMinecraftRendererSmokeHost(),
   ));
+}
+
+/// R1-only mount/unmount harness for manual GPU lifecycle verification.
+///
+/// A frame without SceneView separates disposal from creation of the next
+/// scene. Ordinary flutter_test remains GPU-free.
+class MtnMinecraftRendererSmokeHost extends StatefulWidget {
+  const MtnMinecraftRendererSmokeHost({super.key});
+
+  @override
+  State<MtnMinecraftRendererSmokeHost> createState() => _MtnMinecraftRendererSmokeHostState();
+}
+
+class _MtnMinecraftRendererSmokeHostState extends State<MtnMinecraftRendererSmokeHost> {
+  int _generation = 0;
+  bool _viewerVisible = true;
+
+  void _recreateViewer() {
+    if (!_viewerVisible) return;
+    setState(() => _viewerVisible = false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() {
+        _generation++;
+        _viewerVisible = true;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        if (_viewerVisible)
+          MtnMinecraftRendererPrototype(key: ValueKey(_generation)),
+        Positioned(
+          top: 105,
+          right: 16,
+          child: ElevatedButton.icon(
+            onPressed: _viewerVisible ? _recreateViewer : null,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Recreate viewer'),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 /// R1-only procedural character geometry. This is not a public package API.
 ///
 /// The cuboids prove the renderer, interactions and an alpha-blended overlay.
+/// A synthetic 8x8 PNG checks nearest-neighbor filtering on the head only.
 /// A real Minecraft texture/UV atlas is intentionally deferred until R2.
 class MtnMinecraftRendererPrototype extends StatefulWidget {
   const MtnMinecraftRendererPrototype({super.key});
@@ -26,6 +77,7 @@ class MtnMinecraftRendererPrototype extends StatefulWidget {
 class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererPrototype> {
   Scene? _scene;
   Node? _headOverlay;
+  Texture2D? _checkerTexture;
 
   bool _ready = false;
   bool _showOverlay = true;
@@ -49,10 +101,25 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
       // runner without Flutter GPU opt-in must show an error, not a blank window.
       _scene = Scene();
 
+      final png = await _generateCheckerPng();
+      if (!mounted) return;
+      final checker = await Texture2D.fromEncodedBytes(
+        png,
+        sampling: const TextureSampling(
+          mipmaps: false,
+          minFilter: gpu.MinMagFilter.nearest,
+          magFilter: gpu.MinMagFilter.nearest,
+          maxAnisotropy: 1,
+        ),
+      );
+      if (!mounted) return;
+      _checkerTexture = checker;
+
       _addPart(
         size: vm.Vector3(0.5, 0.5, 0.5),
         position: vm.Vector3(0, 1.75, 0),
-        color: vm.Vector4(0.77, 0.53, 0.39, 1),
+        color: vm.Vector4(1, 1, 1, 1),
+        texture: checker,
       );
       _addPart(
         size: vm.Vector3(0.5, 0.75, 0.25),
@@ -98,12 +165,43 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
     }
   }
 
+  /// Creates an 8x8 PNG in memory; no player skin, external files, or network.
+  Future<Uint8List> _generateCheckerPng() async {
+    final recorder = ui.PictureRecorder();
+    final canvas = ui.Canvas(recorder);
+    final paint = ui.Paint();
+    for (var y = 0; y < 8; y++) {
+      for (var x = 0; x < 8; x++) {
+        paint.color = (x + y).isEven
+            ? const ui.Color(0xFFFFDD00)
+            : const ui.Color(0xFFAA22EE);
+        canvas.drawRect(
+          ui.Rect.fromLTWH(x.toDouble(), y.toDouble(), 1, 1),
+          paint,
+        );
+      }
+    }
+
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(8, 8);
+    picture.dispose();
+    try {
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (bytes == null) throw StateError('Failed to encode the R1 checker PNG.');
+      return bytes.buffer.asUint8List();
+    } finally {
+      image.dispose();
+    }
+  }
+
   void _addPart({
     required vm.Vector3 size,
     required vm.Vector3 position,
     required vm.Vector4 color,
+    TextureSource? texture,
   }) {
     final material = UnlitMaterial()..baseColorFactor = color;
+    if (texture != null) material.baseColorTexture = texture;
     final node = Node(mesh: Mesh(CuboidGeometry(size), material))..position = position;
     _scene!.add(node);
   }
@@ -146,6 +244,11 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
   @override
   void dispose() {
     _scene?.dispose();
+    _scene = null;
+    _headOverlay = null;
+    // Texture2D exposes no explicit dispose method; release the scene/material
+    // references here. The manual recreate smoke checks for retained resources.
+    _checkerTexture = null;
     super.dispose();
   }
 
@@ -213,7 +316,7 @@ class MtnMinecraftRendererControls extends StatelessWidget {
       child: Row(
         children: [
           const Expanded(
-            child: Text('Drag to orbit · Mouse wheel to zoom · Test cuboids only'),
+            child: Text('Drag to orbit · Wheel to zoom · Head: 8×8 PNG / nearest sampling'),
           ),
           const Text('Head overlay'),
           Switch(

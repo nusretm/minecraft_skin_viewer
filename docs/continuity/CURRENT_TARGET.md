@@ -4,8 +4,16 @@
 **Base branch:** `main`
 **Active feature:** `feature/r1-renderer-foundation`
 **Open PR:** [#1 — R1 Renderer Foundation (Draft)](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
-**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / WINDOWS DEBUG+RELEASE 3D LIVE VERIFIED / LOCAL TEST PASS / TEXTURE+LIFECYCLE PENDING`
+**Current checkpoint:** R1 Windows 3D renderer feasibility — `IMPLEMENTED (PARTIAL) / PREVIOUS DEBUG+RELEASE PASS / TEXTURE+LIFECYCLE CODE NOT YET WINDOWS VERIFIED`
 **Merge:** NOT APPROVED; do not merge.
+
+## 2026-10-22 — R1 synthetic texture and lifecycle smoke implementation (awaiting Windows validation)
+
+- **User authorization:** user agreed to proceed with remaining R1 work; no merge authorization.
+- **Implementation on R1 feature branch:** example creates an 8×8 synthetic yellow/purple checker as PNG bytes, uploads via `Texture2D.fromEncodedBytes`, disables mipmaps, sets GPU min/mag filters to `MinMagFilter.nearest`, and applies it to the head cuboid's built-in UVs. This proves a texture pipeline only if visually verified; **not** Minecraft skin atlas mapping or a full UV implementation.
+- **Lifecycle harness:** `Recreate viewer` temporarily unmounts the scene view and reconstructs a new scene. `Scene.dispose()` is called in widget disposal; texture objects do not expose a direct disposal API, so no leak-free claim is made until repeated Windows observation.
+- **No source dependency changes.** CI analysis/widget smoke/release compilation and user-visible debug/release texture and lifecycle verification remain required. R1 remains open in Draft PR #1.
+- **Earlier verified state:** Windows Flutter 3.47.7 debug/release untextured scene, orbit, zoom, overlay successful; Windows runner opt-in committed at `84fac44`.
 
 ## 2026-10-22 — Windows runner persisted to GitHub in commit 84fac44
 

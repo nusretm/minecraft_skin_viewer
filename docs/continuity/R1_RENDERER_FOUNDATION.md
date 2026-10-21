@@ -60,3 +60,10 @@ If GPU features are not feasible or toolchain too old, document precise failure 
 - **PASS (user, local):** `flutter analyze --no-pub` for root and example; GPU-free `flutter test --no-pub test/widget_test.dart` passed.
 - **NOT DONE:** synthetic pixel texture nearest filtering feasibility proof, lifecycle mount/unmount soak, complete acceptance/merge. Latest R1 CI run should be checked after source synchronization.
 - **Merge:** Draft PR #1 remains open and **not approved for merge**.
+
+## R1 texture + lifecycle final smoke addition (2026-10-22)
+
+- **IMPLEMENTED ON FEATURE / WINDOWS NOT RUN:** `example/lib/main.dart` generates an 8x8 yellow/purple checker PNG and uploads it with `Texture2D.fromEncodedBytes`; nearest min/mag filters with mipmaps disabled. The head `CuboidGeometry` receives the texture via `UnlitMaterial.baseColorTexture`.
+- **IMPLEMENTED ON FEATURE / WINDOWS NOT RUN:** `Recreate viewer` removes the current viewer for one frame and remounts a new one, offering a manual scene lifecycle stress test. Use 10–20 cycles and check visually and through process memory; do not infer a lack of leaks from the button existing.
+- **NO R2 WORK:** real skin atlases, per-face Minecraft UVs, Classic/Slim texture mapping, capes, 2D public widgets all remain future checkpoints.
+- **Pending acceptance:** clean CI + real Windows debug/release texture and lifecycle smoke results, plus separate merge approval.
