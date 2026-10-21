@@ -214,8 +214,8 @@ Future<Uint8List> _makeSkinPng(
         ui.Rect.fromLTWH(rect.x.toDouble(), rect.y.toDouble(),
           rect.width.toDouble(), rect.height.toDouble()),
         ui.Paint()..color = face == MtnMinecraftSkinFace.front
-          ? color : Color.fromARGB(255, color.r.toInt() * 180 ~/ 255,
-            color.g.toInt() * 180 ~/ 255, color.b.toInt() * 180 ~/ 255),
+          ? color : Color.fromARGB(255, (color.r * 180).round(),
+            (color.g * 180).round(), (color.b * 180).round()),
       );
       if (!legacy) {
         final outer = layout.face(part, face, layer: MtnMinecraftSkinLayer.outer);
