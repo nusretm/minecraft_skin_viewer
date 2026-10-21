@@ -2,10 +2,20 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** R2-A/B/C on `feature/r2-skin-texture-uv-foundation` (user-approved).
-**Merged PR:** [#1 — R1 Renderer Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
+**Active implementation:** None. R2 CLOSED and merged; R3 is PROPOSED / NOT APPROVED FOR IMPLEMENTATION.
+**Merged PRs:** [#1 — R1 Renderer Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2 Texture & UV Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/2)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R2 — `LOCAL TESTS 15/15 PASS / EXAMPLE REGRESSION + WINDOWS RELEASE PASS / EARLIER CI GREEN / LATEST CI IN PROGRESS / DRAFT PR #2 / NOT MERGED`; R1 CLOSED.
+**Current checkpoint:** R2 `CLOSED / SQUASH MERGED / LOCAL 15/15 TESTS PASS / PRIOR CI PASS`; R3 PROPOSED. R1 CLOSED.
+
+## 2026-10-22 — R2 CLOSED and conditional merge authorization updated
+
+- **Approval:** user explicitly authorized the assistant to merge when necessary, rather than requesting permission for every merge. The existing mandatory *feature implementation approval* remains unchanged. Conditional merge delegation applies only to approved, scoped work after reviewing actual test/CI evidence and material risks; blockers or scope changes must be surfaced rather than silently merged.
+- **R2 PR #2:** marked ready and squash merged as `00da98ab0356cd43d4ebf0de061735a7253a1ea9`; GitHub reports PR #2 closed/merged and `main` HEAD matched the squash SHA immediately afterward.
+- **Included:** R2-A PNG decode/validation and legacy conversion; R2-B backend-independent Classic/Slim UV atlas with overlay/cape; R2-C 15 synthetic tests, root/example CI and integration contract. No full Minecraft-textured 3D player or 2D production widget claimed.
+- **Acceptance evidence:** user Windows root tests **15/15 PASS**, root/example `flutter analyze` clean, existing example widget test 1/1 PASS, Windows release built/launched and resize/interactions fine. CI for earlier functional R2 SHA `19d0ee20` passed; latest feature HEAD `38c20dd8` CI was still running at merge time (docs-only changes from tested code).
+- **Remaining risks:** GPU memory soak not measured; real Minecraft atlas rendering belongs to R3/R4; there is no claim of full 3D player visual proof from R2.
+- **Next:** user should sync local `main` with `origin/main` after checking worktree. R3 is **PROPOSED**, not approved for implementation. Review/approve R3 2D previews before creating feature code. Local/remote feature-branch deletion is not implied by a merge.
+- **Continuity:** merge-related working rules and AGENTS updated on `main`. This closure changes documentation only.
 
 ## 2026-10-22 — User Windows acceptance evidence for R2-A/B/C
 

@@ -14,7 +14,7 @@ Kaynak repository'ye özgü Game List, `MtnLauncherService`, `MtnLauncherBloc`, 
 ## 2. Onay kapısı ve anlamlı checkpoint
 
 - Önce mevcut repo, çalışan API, açık PR, dependency durumu, gereksinim ve continuity okunur; sonra kapsam, risk, owner, non-goal ve kabul ölçütleri belirlenir.
-- Analiz, plan, prompt, inceleme ve Draft PR varlığı **kod veya merge onayı değildir**. Implementation, bağımlılık ekleme, SDK yükseltme ve merge ayrı ayrı açık kullanıcı onayına bağlıdır.
+- Analiz, plan, prompt ve Draft PR varlığı **kod uygulama onayı değildir**. Implementation, bağımlılık ekleme ve SDK yükseltme mevcut açık kullanıcı kapsam/onayına bağlıdır. Kullanıcı 2026-10-22 tarihinde **gerektiğinde merge yapma yetkisini açıkça devretmiştir**; kabul kriterleri doğrulanan ve kapsamı önceden onaylanmış değişikliklerde, ayrıca merge izni istemek zorunlu değildir. Bu delegasyon kod yazma veya kapsam genişletme izni vermez.
 - Onaylanmış işi küçük ama **anlamlı ve tamamlanabilir** checkpoint'lere ayır; test edilebilir tek özelliği gereksiz mikro-adımlarla uzatma.
 - Yan görev veya mimari refactor'a izinsiz geçme. Kullanıcının kapsamını sessiz genişletme.
 - İlk sürüm tamamlanana kadar gereksiz backward-compatibility shim oluşturma.
@@ -26,16 +26,16 @@ Normal akış:
 ```text
 onaylı kapsam → feature branch → reviewable commit → Draft PR
 → Windows analyze + odaklı test + gerçek UI/GPU smoke
-→ kullanıcı kabulü → açık squash-merge onayı
+→ doğrulanmış kabul kriterleri + risk incelemesi (gerekirse kullanıcı görüşü)
 → squash merge → main HEAD doğrulaması
 → CURRENT_TARGET kapanışı → yerel main pull / branch temizliği
 → yeni bağımsız iş
 ```
 
-- Kullanıcının "tamam, merge edelim" gibi açık kabulü merge iznidir. Test geçmiş olması veya PR açılmış olması izin değildir.
-- Merge onaylandıysa yeni bağımsız işe geçmeden mevcut işi merge et, `main` HEAD'ini ve çalışma ağacını doğrula.
+- Kullanıcının güncel yetki devri, yalnız önceden onaylanmış feature kapsamlarında ve anlamlı doğrulama kanıtı olduğunda **koşullu squash merge** izni verir. Açık kullanıcı kabulü veya devredilen koşullu yetki geçerli olabilir. Sadece test geçmiş olması, başarısız/askıda kontrolün gizlenmesi veya PR açılmış olması otomatik merge gerekçesi değildir.
+- Merge için kabul kriterleri sağlandığında, kod diff'i, CI/lokal testler, platform smoke gereksinimi ve riskleri kontrol et. Başarısız veya kritik doğrulanmamış kontrollerde merge yapma; gerçek sonucu bildir. Onaylı kapsam tamamlandıysa ve değerlendirme olumluysa koşullu yetkiyle merge edebilirsin. Merge sonrası `main` HEAD ve continuity doğrulanır; yeni bağımsız işe geçmeden önce entegrasyon kapısı kapanır.
 - Birden çok PR gerekiyorsa bağımlı branch'leri ve ortak dosya çakışmalarını incele; eski `main` üzerinden sessizce merge etme.
-- Force push, geçmişi yeniden yazma, ilgisiz refactor ve kapsam dışı dosya silme ayrı onay ister.
+- Force push, geçmişi yeniden yazma, ilgisiz refactor, kapsam dışı dosya silme ve başka repository'yi değiştirme ayrı onay ister. Merge yetkisi bunları kapsamaz. Branch temizliğinde kullanıcının yerel çalışmalarına dokunma.
 - Yerel kullanıcı dosyaları/IDE ayarları/özel fixture'lar korunur; kaynak repository'nin `window_pos.json` istisnasını buraya aynen taşımaya gerek yoktur. Bu repoda gerçekten mevcut özel kullanıcı dosyaları için eşdeğer koruma uygulanır.
 
 ## 4. Mimari ve kaynak otoritesi

@@ -9,14 +9,14 @@ Before doing **anything** in this repository:
 
 1. Read `docs/WORKING_RULES.md` in full.
 2. Read the newest entry in `docs/continuity/CURRENT_TARGET.md`.
-3. Read `docs/continuity/ARCHITECTURE.md` and the specific active checkpoint document (currently `R2_TEXTURE_UV_FOUNDATION.md`); read `PLANNED_*.md` only when relevant.
+3. Read `docs/continuity/ARCHITECTURE.md` and the specific active checkpoint document (the current active checkpoint document, when approved); read `PLANNED_*.md` only when relevant.
 4. Verify branch, HEAD, worktree status and existing PR/CI state before proposing changes. Continuity is a handoff, not proof that source, tests or CI succeeded.
 
 ## Approval and integration gate
 
 - Do not implement, refactor, introduce dependencies or change a second repository without **explicit user approval for that scope**. A plan, request for review or green test is not such approval.
-- Single integration path: **feature branch → Draft PR → Windows analysis/tests/actual UI smoke → user acceptance + explicit merge approval → squash merge → verify main → continuity closure and local branch cleanup**.
-- After a checkpoint is accepted and merge-approved, complete its merge and verify current `main` before starting unrelated implementation. Do not accumulate conflicting PRs or silently merge.
+- Single integration path: **approved feature scope → feature branch → Draft PR → Windows analysis/tests/applicable live UI smoke → evidence/risk review → conditional squash merge → verify main → continuity closure**. The user has explicitly delegated merge decisions when appropriate; do not ask for a separate merge approval after every completed checkpoint. Do not merge known failures, bypass required verification, or expand scope. If material risks remain, surface them first.
+- When a checkpoint's agreed acceptance criteria are met, its code/scope reviewed and significant checks green, use conditional merge authority when appropriate; verify current `main` before starting unrelated implementation. Implementation still requires explicit user scope approval. Do not accumulate conflicting PRs or silently merge unverified work.
 - Protect local/uncommitted user data. No force push, broad deletion, or unrelated changes without approval.
 
 ## Architecture and code hygiene

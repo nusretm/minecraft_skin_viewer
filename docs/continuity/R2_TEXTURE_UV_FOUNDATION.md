@@ -1,10 +1,10 @@
 # R2 — Java Skin/Cape Texture & UV Foundation
 
 **Date:** 2026-10-22
-**Status:** APPROVED / IMPLEMENTED ON FEATURE / CI VALIDATION PENDING
+**Status:** CLOSED / MERGED AS PR #2 / CORE TESTS AND WINDOWS EXAMPLE VERIFIED
 **Branch:** `feature/r2-skin-texture-uv-foundation`
 **Base:** `main` at `8a8bb2c`
-**Merge:** Not authorized.
+**Merge:** User delegated conditional merge authority; PR #2 squash-merged as `00da98ab0356cd43d4ebf0de061735a7253a1ea9`.
 
 ## Authorized scope
 
@@ -96,3 +96,10 @@ Only behavior/coordinate conventions were consulted. No source or assets were co
 - R2 CI `39692800346` earlier SHA completed SUCCESS; the two latest `9bab7217` R2 runs were still in progress at this observation. Distinguish current-head CI from prior green CI.
 - Local worktree after builds, bounded GPU memory soak and real skin GPU visual mapping not verified. Last two items remain deferred beyond R2 as planned.
 - No merge approval; Draft PR #2 remains open.
+
+## R2 closure — 2026-10-22
+
+- PR #2 squash merged: `00da98ab0356cd43d4ebf0de061735a7253a1ea9`; GitHub confirmed merged/closed.
+- User local Windows validation: 15/15 texture/UV tests, root/example analyzer, R1 widget regression, Windows release build and example UI smoke all passed. Earlier functional CI successful; latest documentation-only CI was still in progress at merge.
+- Scope was data foundation only. Full textured Minecraft player UI, 2D previews, runtime leak soak and production visual quality remain outside R2.
+- R3 proposal is not an implementation approval. Future merge authority is conditional as documented in `docs/WORKING_RULES.md`.
