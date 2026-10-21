@@ -1,6 +1,6 @@
 # R1 — Renderer Foundation (Windows)
 
-Status: **APPROVED / PARTIALLY IMPLEMENTED / WINDOWS DEBUG+RELEASE VISUALLY VALIDATED / R1 NOT YET CLOSED**. Approval was given in the conversation to start the first checkpoint; repository created and GitHub access granted on 2026-10-22.
+Status: **CLOSED / SQUASH-MERGED IN PR #1 / WINDOWS DEBUG+RELEASE FUNCTIONALLY VALIDATED / MEMORY SOAK DEFERRED**. Approval was given in the conversation to start the first checkpoint; repository created and GitHub access granted on 2026-10-22.
 
 ## Goal
 
@@ -76,3 +76,10 @@ If GPU features are not feasible or toolchain too old, document precise failure 
 - **GitHub CI PASS:** exact feature code `4424597`, runs `39689222086` and `39689226713`, root/example analyze, widget test and Windows release build succeeded.
 - **Lifecycle note:** user reports Recreate viewer working, but explicit repeat count and GPU memory measurement are absent; no zero-leak claim. A brief measured soak could strengthen acceptance before merge, or be tracked as explicit deferred risk with user agreement.
 - **Scope / merge:** R1 functional GPU and synthetic texture feasibility verified. Real Minecraft UVs and 2D widgets belong to later milestones. PR #1 remains Draft; separate merge authorization required.
+
+## R1 closure — 2026-10-22
+
+- User explicitly approved squash merge of PR #1; GitHub merged as `530dd4a757b29a162d932bd658d269a7d35f5e23`, verified as `main` HEAD at merge time.
+- Windows debug and release GUI, orbit/zoom/overlay, synthetic 8x8 PNG nearest sampling and basic Recreate viewer control verified by user. Local analyzer and focused widget test passed; CI passed for functional code.
+- The R1 **feasibility checkpoint** is CLOSED. This does not claim production-grade Minecraft UVs or memory leak absence. Controlled GPU-resource/memory soak was not performed and remains a tracked deferred risk.
+- R2/R3/R4/R5 implementation is not authorized by the R1 merge. Continue with design and explicit approval for the next checkpoint.

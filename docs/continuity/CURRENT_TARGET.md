@@ -2,10 +2,20 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active feature:** `feature/r1-renderer-foundation`
-**Open PR:** [#1 — R1 Renderer Foundation (Draft)](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
-**Current checkpoint:** R1 Windows 3D renderer feasibility — `WINDOWS DEBUG+RELEASE TEXTURE AND CONTROLS LIVE VERIFIED / CI PASS / LIFECYCLE LEAK MEASUREMENT NOT DONE / REVIEW PENDING`
-**Merge:** NOT APPROVED; do not merge.
+**Current active implementation:** None. R1 is closed; R2 is **PROPOSED / NOT APPROVED**.
+**Merged PR:** [#1 — R1 Renderer Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/1)
+**R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
+**Current checkpoint:** R1 — `CLOSED / MERGED / WINDOWS DEBUG+RELEASE LIVE VERIFIED / MEMORY SOAK DEFERRED`
+
+## 2026-10-22 — R1 CLOSED: PR #1 squash-merged into main
+
+- **User acceptance and merge authorization:** user explicitly approved squash merge of [PR #1](https://github.com/nusretm/minecraft_skin_viewer/pull/1). GitHub confirmed successful squash merge as `530dd4a757b29a162d932bd658d269a7d35f5e23` and `main` HEAD matched that exact SHA immediately after merge. The PR is closed/merged; it is no longer Draft.
+- **Delivered R1:** independent Flutter package scaffold, Windows example and persistent `project.set_enable_flutter_gpu(true)`, `flutter_scene 0.24.3` 3D six-part prototype, orbit/zoom, translucent head overlay, synthetic 8×8 PNG texture with nearest sampling, and manual `Recreate viewer` lifecycle harness. Production 2D/3D skin/cape widgets and Minecraft atlas UVs **NOT** implemented.
+- **Real Windows acceptance:** Flutter 3.47.7 debug/release binaries both launched and visibly rendered synthetic texture; user confirmed interactions and recreation work. Local Flutter analyzer clean and focused GPU-free widget test 1/1 passed. GitHub Actions runs `39689222086` and `39689226713` green for functional code `4424597`; the final merge also contains documentation-only commits.
+- **Consciously deferred validation:** `Recreate viewer` functional behavior was confirmed, but a controlled 10–20-iteration GPU memory/long-duration leak soak was **not measured**; do not claim leak-free operation. Follow this up before production/publication as appropriate.
+- **Current handoff:** no implementation active on `main`. R2 texture/atlas model remains `PROPOSED`; scope, acceptance criteria and branch should be approved before implementation. See `PLANNED_2026-10-22_SKIN_CAPE_VIEWERS.md`.
+- **Local cleanup still owned by user:** ensure `git status -sb` is safe, then `git fetch origin`, `git switch main`, `git pull --ff-only origin main` and verify `git log -1`. Do not delete working tree/user files. Delete local feature branch only after verifying merge and no unpushed changes.
+- **Continuity closure note:** this entry was written to `main` after verified PR squash merge and does not change rendering source code.
 
 ## 2026-10-22 — Windows PNG nearest-filter and recreate smoke PASS; Draft PR review next
 
