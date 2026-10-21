@@ -81,17 +81,21 @@ const _boundaryKey = ValueKey('preview-boundary');
 
 Future<Uint8List> _capture(WidgetTester tester) async {
   await tester.pumpAndSettle();
-  final boundary = tester.renderObject<RenderRepaintBoundary>(
-    find.byKey(_boundaryKey));
-  final image = await boundary.toImage(pixelRatio: 1);
-  try {
-    final bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-    if (bytes == null) throw StateError('Pixel capture failed');
-    return Uint8List.fromList(
-      bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes));
-  } finally {
-    image.dispose();
-  }
+  final captured = await tester.runAsync(() async {
+    final boundary = tester.renderObject<RenderRepaintBoundary>(
+      find.byKey(_boundaryKey));
+    final image = await boundary.toImage(pixelRatio: 1);
+    try {
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      if (bytes == null) throw StateError('Pixel capture failed');
+      return Uint8List.fromList(
+        bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes));
+    } finally {
+      image.dispose();
+    }
+  });
+  if (captured == null) throw StateError('Capture did not finish');
+  return captured;
 }
 
 (int, int, int, int) _pixel(Uint8List bytes, int width, int x, int y) {
@@ -107,7 +111,31 @@ Future<void> _show(WidgetTester tester, Widget child) async {
       ),
     ),
   ));
+  // ui.ImageDescriptor codec futures run on real engine/IO work. Advance
+  // real asynchronous time outside WidgetTester's fake async zone, then pump
+  // the frame scheduled by the completed decode.
+  await tester.runAsync(() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+  });
   await tester.pumpAndSettle();
+}
+
+Future<MtnMinecraftSkinTexture> _decodeSkin(
+  WidgetTester tester,
+  MtnMinecraftSkinModelType model, {
+  bool legacy = false,
+  bool alternate = false,
+}) async {
+  final decoded = await tester.runAsync(
+    () => _skin(model, legacy: legacy, alternate: alternate));
+  if (decoded == null) throw StateError('Fixture skin codec did not complete');
+  return decoded;
+}
+
+Future<MtnMinecraftCapeTexture> _decodeCape(WidgetTester tester) async {
+  final decoded = await tester.runAsync(_cape);
+  if (decoded == null) throw StateError('Fixture cape codec did not complete');
+  return decoded;
 }
 
 void main() {
@@ -115,7 +143,7 @@ void main() {
 
   testWidgets('head front/back and outer-layer toggle read R2 face rectangles',
       (tester) async {
-    final skin = await _skin(MtnMinecraftSkinModelType.classic);
+    final skin = await _decodeSkin(tester, MtnMinecraftSkinModelType.classic);
     await _show(tester, MtnMinecraftSkinHead(
       texture: skin, size: 8, showOuterLayer: false));
     final front = await _capture(tester);
@@ -136,7 +164,7 @@ void main() {
 
   testWidgets('Classic full body has correct front and rear limb ordering',
       (tester) async {
-    final skin = await _skin(MtnMinecraftSkinModelType.classic);
+    final skin = await _decodeSkin(tester, MtnMinecraftSkinModelType.classic);
     await _show(tester, MtnMinecraftSkinPreview(
       texture: skin, height: 32, showOuterLayer: false));
     final front = await _capture(tester);
@@ -157,7 +185,7 @@ void main() {
 
   testWidgets('Slim arms preserve 3px width and transparent outer pixels',
       (tester) async {
-    final slim = await _skin(MtnMinecraftSkinModelType.slim);
+    final slim = await _decodeSkin(tester, MtnMinecraftSkinModelType.slim);
     await _show(tester, MtnMinecraftSkinPreview(
       texture: slim, height: 32, showOuterLayer: true));
     final bytes = await _capture(tester);
@@ -171,7 +199,7 @@ void main() {
 
   testWidgets('legacy 64x32 skin projects mirrored left arm and leg',
       (tester) async {
-    final skin = await _skin(MtnMinecraftSkinModelType.classic, legacy: true);
+    final skin = await _decodeSkin(tester, MtnMinecraftSkinModelType.classic, legacy: true);
     expect(skin.isLegacy, isTrue);
     await _show(tester, MtnMinecraftSkinPreview(
       texture: skin, height: 32, showOuterLayer: false));
@@ -184,7 +212,7 @@ void main() {
 
   testWidgets('cape preview switches between outer/back and inner/front',
       (tester) async {
-    final cape = await _cape();
+    final cape = await _decodeCape(tester);
     await _show(tester, MtnMinecraftCapePreview(texture: cape, height: 16));
     final back = await _capture(tester);
     expect(_pixel(back, 10, 0, 0), (20, 200, 20, 255));
@@ -197,7 +225,7 @@ void main() {
 
   testWidgets('head remains nearest-neighbor sharp at sizes 32, 64, 128, 256',
       (tester) async {
-    final skin = await _skin(MtnMinecraftSkinModelType.classic);
+    final skin = await _decodeSkin(tester, MtnMinecraftSkinModelType.classic);
     for (final size in [32.0, 64.0, 128.0, 256.0]) {
       await _show(tester, MtnMinecraftSkinHead(
         texture: skin, size: size, showOuterLayer: true));
@@ -212,8 +240,8 @@ void main() {
 
   testWidgets('changing texture invalidates image, toggles do not, and unmount is safe',
       (tester) async {
-    final first = await _skin(MtnMinecraftSkinModelType.classic);
-    final second = await _skin(MtnMinecraftSkinModelType.classic, alternate: true);
+    final first = await _decodeSkin(tester, MtnMinecraftSkinModelType.classic);
+    final second = await _decodeSkin(tester, MtnMinecraftSkinModelType.classic, alternate: true);
     await _show(tester, MtnMinecraftSkinHead(
       texture: first, size: 8, showOuterLayer: false));
     expect(_pixel(await _capture(tester), 8, 1, 0), (20, 0, 0, 255));
