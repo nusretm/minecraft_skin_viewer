@@ -303,7 +303,16 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
     if (!_ready || _scene == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    Widget content = SceneView(_scene!, cameraBuilder: _buildCamera);
+    // The viewer itself already requests a rebuild on camera changes and
+    // on each Walk pose frame. A second SceneView ticker would continuously
+    // redraw even an unchanged Idle character, generating avoidable GPU
+    // work and transient allocations. SceneView explicitly supports a static
+    // (non-autoTick) scene that repaints when its parent rebuilds.
+    Widget content = SceneView(
+      _scene!,
+      cameraBuilder: _buildCamera,
+      autoTick: false,
+    );
     if (widget.enableInteraction) {
       content = Listener(
         onPointerSignal: (event) {
