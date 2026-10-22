@@ -249,10 +249,14 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
             // overlap on coplanar front/back faces at touching joints.
             // flutter_scene 0.24.3 explicitly supports depthLayer as a
             // distance-independent deterministic tiebreak for these faces.
-            // Keep the base at 0 and outer shells at 1/2 so nearby shells
-            // do not fight while their UVs, shape and transparency stay intact.
+            // Give adjoining shell surfaces distinct depth offsets:
+            // body 1, arms/left leg 2, right leg 3. The new right-leg
+            // priority also resolves the remaining body/right-leg overlap
+            // seen when the R4-C hip pivot hierarchy is introduced.
+            // Mesh geometry, Minecraft UVs and alpha are unchanged.
             ..depthLayer = outer
                 ? switch (part) {
+                    MtnMinecraftSkinBodyPart.rightLeg => 3,
                     MtnMinecraftSkinBodyPart.rightArm ||
                     MtnMinecraftSkinBodyPart.leftArm ||
                     MtnMinecraftSkinBodyPart.leftLeg => 2,
