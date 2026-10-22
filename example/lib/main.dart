@@ -278,7 +278,7 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.ThreeDRotation),
+            icon: const Icon(Icons.threed_rotation),
             tooltip: 'R4-D public 3D widget and 20-cycle stress',
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(

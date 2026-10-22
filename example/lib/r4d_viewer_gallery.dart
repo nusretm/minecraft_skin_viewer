@@ -175,6 +175,9 @@ class _MtnMinecraftR4DViewerGalleryState
         _sceneReady = ready;
         setState(() => _visible = true);
         await ready.future.timeout(const Duration(seconds: 25));
+        // Allow the SceneView to present a real frame before unmounting it:
+        // otherwise rapid callback/state cycles can skip GPU presentation.
+        await WidgetsBinding.instance.endOfFrame;
         if (!mounted) return;
         setState(() => _stressCompleted = i + 1);
       }
