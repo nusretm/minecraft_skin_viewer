@@ -40,6 +40,18 @@ The R4 post-stress CPU process Private memory fell from 768.6 MB to 515.3 MB aft
 ## Source-of-truth
 Existing docs/WORKING_RULES.md; docs/continuity/CURRENT_TARGET.md most recent entries; PR in this feature; Windows user results. Do not rewrite R4 historical evidence.
 
+## R5 visual progress and stress selection fix (2026-10-22)
+
+- Windows user screenshot successfully shows 2D Head, 2D Skin Preview and
+  3D Viewer rendered from one Slim skin/cape fixture. No additional
+  angled/iso 2D renderer requested; explicitly deferred.
+- Exact commit `2e5578a` R1/R2/R3/R4 GitHub Windows CI SUCCESS.
+- Feature fix `c9f70e3` stops the R5 example 20-cycle stress button from
+  silently switching Walk back to Idle. This lets the same test run in
+  whichever pose the user selected, without mutating controller state.
+- New source commit CI, root/example tests and real Windows Walk/Idle
+  controls, release lifecycle remain outstanding. PR #5 stays Draft.
+
 ## Implementation evidence and acceptance still needed
 
 - R5-A feature commit `02a3610` and controller tests `993578f`: single authority for 3D pose, layers, cape and camera, reactive UI updates; no GPU uploads for controller state changes. R4-D gallery toggles through controller and controls listen for changes.

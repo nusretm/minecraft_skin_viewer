@@ -22,6 +22,8 @@ Windows-first development. No pub.dev publication has been authorized.
   camera-only.
 - Expand focused controller/2D regression tests and show all three widgets
   with a shared decoded skin in the example gallery.
+- Keep the currently selected Idle or Walk pose through the example's
+  20× scene recreate/dispose stress; the harness no longer resets to Idle.
 
 ### Host integration expectations
 

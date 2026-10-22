@@ -6,7 +6,14 @@
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
-**Current checkpoint:** R5-A/B/C CODE + TESTS/DOCS IMPLEMENTED / R5 package candidate `0.1.0-dev.2` (Git only), Draft PR #5 OPEN / Full Windows CI and actual debug/release visual acceptance PENDING / No merge.
+**Current checkpoint:** R5-A/B/C package candidate `0.1.0-dev.2` (Git only); user screenshot visually confirms all THREE widgets together; four R1–R4 CI runs green on `2e5578a`; Walk stress harness fix `c9f70e3` awaits new CI/Windows validation; PR #5 Draft, NOT MERGED.
+
+## 2026-10-22 — R5 screenshot 2D/3D visual pass and Walk stress harness correction
+
+- **User live screenshot:** R5 example Windows app shows correct shared real Slim skin in **2D Head**, **2D Skin Preview**, and **3D Skin Viewer** side by side. Caped 3D character, correct head and 2D body silhouette visible. This establishes the three-widget visual integration, **not yet** current-head full debug/release and controller interaction acceptance. User explicitly declines an additional angled/isometric 2D renderer; not in this feature scope.
+- **Exact original R5 feature head `2e5578a`:** R1 [39763828947](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39763828947), R2 [39763829127](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39763829127), R3 [39763828957](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39763828957), R4 [39763829092](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39763829092) all Windows **SUCCESS**. PR #5 is Draft and mergeable.
+- **Scoped R5 harness fix `c9f70e3`:** The example 20× recreate button had silently forced Idle before starting, which invalidated Walk+stress exercise. Removed that forced `_camera.setPose(idle)` so tests preserve selected controller `pose` (Idle or Walk), while keeping the same 20-frame mount/unmount flow and explicit Completed count. The example screen header now says R5. No public API, rendering data, GPU or 2D widget changes. New exact-head CI and Windows Walk/Idle stress must be confirmed; do not merge until accepted.
+- **Remaining:** User real Windows local analyzer/tests + controller toggles and GPU debug/release of latest code; 20/20 test in Walk (and optionally Idle). No GPU memory leak-free claim and no `mtn_launcher_app` integration.
 
 ## 2026-10-22 — R5-B/C package readiness on feature, NOT Windows accepted
 
