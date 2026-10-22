@@ -1,7 +1,7 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: R4-A/B/C WINDOWS VERIFIED; R4-D static-tick code release FUNCTIONALLY USER-VERIFIED, three reported 20× stress invocations and 6 CPU process memory samples; GPU trend and 60-second Idle final number unknown; Draft PR #4 remains unmerged
+Status: R4-A/B/C WINDOWS VERIFIED; R4-D static-tick code release FUNCTIONALLY USER-VERIFIED, three reported 20× stress invocations and 6 CPU process memory samples; GPU trend unknown; 60-second Idle memory 515.3/128.0 MB confirmed by user; Draft PR #4 remains unmerged
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
@@ -298,15 +298,17 @@ merge authority requires scope completion, full tests and user live acceptance.
   first 20× button 745.2/128.9;
   second 20× button 538.0/132.1;
   Walk plus third 20× button 768.6/131.6;
-  Walk 515.3/128.0.
-- User also identifies 60 seconds Idle as a stage, but provided only
-  six numeric outputs; there is no seventh Idle measurement to cite.
+  60 seconds Idle 515.3/128.0 (user-confirmed correction).
+- A separate Walk stage was also described but has no distinct numeric
+  sample among the six submitted rows; do not invent a seventh reading.
 - Stress measurements move down significantly between high peaks:
-  745.2→538.0 and 768.6→515.3 Private MB; Working Set 127.7–132.1.
+  745.2→538.0 and 768.6→515.3 Private MB (a 253.3 MB drop by the
+  60-second Idle reading); Working Set 127.7–132.1.
   This is inconsistent with an obvious unbounded monotonic increase,
   but does not prove all resources are reclaimed: 515.3 Private is
   still 138.9 MB above initial public 3D open (376.4 MB).
-- No direct GPU dedicated/shared memory data or post-idle memory number.
+- The 60-second Idle process reading is now confirmed; direct GPU
+  dedicated/shared memory measurements remain unavailable.
   No 20/20 counter screenshot/log, though user reports pressing the
   20× button three times. External GC effects and allocator reuse
   cannot be inferred from CPU working-set values alone.
