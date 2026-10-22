@@ -74,7 +74,17 @@ class MtnMinecraftCapeBoxMesh {
       final face = faceOrder[faceIndex];
       final vertices = vertexCorners[face]!;
       final normal = faceNormals[face]!;
-      final cornersUv = uv.face(face).normalizedCorners(
+      // The cape's decorated atlas 'front' is its outward-facing fabric
+      // surface, which points toward -Z (the character's back) in our
+      // character coordinate system. The atlas 'back' is the inner side,
+      // pointing +Z toward the torso. Swap only these two source faces;
+      // preserve geometry normals, winding, side UVs and hinge rotation.
+      final atlasFace = switch (face) {
+        MtnMinecraftSkinFace.back => MtnMinecraftSkinFace.front,
+        MtnMinecraftSkinFace.front => MtnMinecraftSkinFace.back,
+        _ => face,
+      };
+      final cornersUv = uv.face(atlasFace).normalizedCorners(
         MtnMinecraftCapeUvLayout.atlasWidth,
         MtnMinecraftCapeUvLayout.atlasHeight,
       );
