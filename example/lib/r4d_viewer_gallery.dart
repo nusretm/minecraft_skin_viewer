@@ -6,7 +6,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:mtn_minecraft_skin_viewer/mtn_minecraft_skin_viewer.dart';
 
-/// R4-D production-widget acceptance and manual GPU lifecycle harness.
+/// R5 public 2D/3D widget acceptance and manual GPU lifecycle harness.
 /// The local PNG paths are developer conveniences, never published assets.
 class MtnMinecraftR4DViewerGallery extends StatefulWidget {
   const MtnMinecraftR4DViewerGallery({super.key});
@@ -29,19 +29,21 @@ class _MtnMinecraftR4DViewerGalleryState
   Uint8List? _skinPng;
   Uint8List? _capePng;
 
-  bool _showOuter = true;
-  bool _showCape = true;
   bool _visible = true;
   bool _stressRunning = false;
   int _stressCompleted = 0;
-  MtnMinecraftSkinPose _pose = MtnMinecraftSkinPose.idle;
   Object? _error;
   Completer<void>? _sceneReady;
 
   @override
   void initState() {
     super.initState();
+    _camera.addListener(_refreshControls);
     _loadFixtures();
+  }
+
+  void _refreshControls() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadFixtures() async {
@@ -166,8 +168,9 @@ class _MtnMinecraftR4DViewerGalleryState
       _stressRunning = true;
       _stressCompleted = 0;
       _error = null;
-      _pose = MtnMinecraftSkinPose.idle;
     });
+    // Preserve controller state: the 20x lifecycle stress must exercise
+    // the currently selected Idle or Walk pose, not silently force Idle.
     try {
       for (var i = 0; i < 20 && mounted; i++) {
         setState(() => _visible = false);
@@ -203,6 +206,7 @@ class _MtnMinecraftR4DViewerGalleryState
 
   @override
   void dispose() {
+    _camera.removeListener(_refreshControls);
     _camera.dispose();
     super.dispose();
   }
@@ -211,7 +215,7 @@ class _MtnMinecraftR4DViewerGalleryState
   Widget build(BuildContext context) {
     final skin = _skin;
     return Scaffold(
-      appBar: AppBar(title: const Text('R4-D — Public 3D Viewer & Lifecycle')),
+      appBar: AppBar(title: const Text('R5 — Public Skin Widgets & Controller')),
       body: Column(
         children: [
           Padding(
@@ -238,13 +242,13 @@ class _MtnMinecraftR4DViewerGalleryState
                   ),
                 FilterChip(
                   label: const Text('Outer layers'),
-                  selected: _showOuter,
-                  onSelected: (v) => setState(() => _showOuter = v),
+                  selected: _camera.showOuterLayer,
+                  onSelected: _camera.setShowOuterLayer,
                 ),
                 FilterChip(
                   label: const Text('Cape'),
-                  selected: _showCape,
-                  onSelected: (v) => setState(() => _showCape = v),
+                  selected: _camera.showCape,
+                  onSelected: _camera.setShowCape,
                 ),
                 SegmentedButton<MtnMinecraftSkinPose>(
                   segments: const [
@@ -253,9 +257,8 @@ class _MtnMinecraftR4DViewerGalleryState
                     ButtonSegment(value: MtnMinecraftSkinPose.walk,
                         label: Text('Walk')),
                   ],
-                  selected: {_pose},
-                  onSelectionChanged: (v) =>
-                      setState(() => _pose = v.first),
+                  selected: {_camera.pose},
+                  onSelectionChanged: (v) => _camera.setPose(v.first),
                 ),
                 OutlinedButton(
                   onPressed: _stressRunning ? null : _reloadTextures,
@@ -274,30 +277,63 @@ class _MtnMinecraftR4DViewerGalleryState
             ),
           ),
           Expanded(
-            child: ColoredBox(
-              color: const Color(0xFF252B39),
-              child: _error != null
-                  ? Center(child: SelectableText(_error.toString()))
-                  : skin == null
-                      ? const Center(child: CircularProgressIndicator())
-                      : _visible
-                          ? MtnMinecraftSkinViewer(
-                              texture: skin,
-                              cape: _cape,
-                              controller: _camera,
-                              showOuterLayer: _showOuter,
-                              showCape: _showCape,
-                              pose: _pose,
-                              onReady: _onViewerReady,
-                              onError: (e) {
-                                if (_sceneReady != null &&
-                                    !_sceneReady!.isCompleted) {
-                                  _sceneReady!.completeError(e);
-                                }
-                                if (mounted) setState(() => _error = e);
-                              },
-                            )
-                          : const SizedBox.expand(),
+            child: Row(
+              children: [
+                // R5-B: the exact same decoded skin drives the public
+                // 2D head/full-body widgets and the GPU 3D viewer.
+                // These 2D widgets are declarative; they do not need
+                // their own controller or a duplicate copy of pose state.
+                if (skin != null)
+                  SizedBox(
+                    width: 160,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          const Text('2D Head'),
+                          const SizedBox(height: 8),
+                          MtnMinecraftSkinHead(
+                            texture: skin,
+                            size: 64,
+                            showOuterLayer: _camera.showOuterLayer,
+                          ),
+                          const SizedBox(height: 24),
+                          const Text('2D Skin Preview'),
+                          const SizedBox(height: 8),
+                          MtnMinecraftSkinPreview(
+                            texture: skin,
+                            height: 192,
+                            showOuterLayer: _camera.showOuterLayer,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                Expanded(
+                  child: ColoredBox(
+                    color: const Color(0xFF252B39),
+                    child: _error != null
+                        ? Center(child: SelectableText(_error.toString()))
+                        : skin == null
+                            ? const Center(child: CircularProgressIndicator())
+                            : _visible
+                                ? MtnMinecraftSkinViewer(
+                                    texture: skin,
+                                    cape: _cape,
+                                    controller: _camera,
+                                    onReady: _onViewerReady,
+                                    onError: (e) {
+                                      if (_sceneReady != null &&
+                                          !_sceneReady!.isCompleted) {
+                                        _sceneReady!.completeError(e);
+                                      }
+                                      if (mounted) setState(() => _error = e);
+                                    },
+                                  )
+                                : const SizedBox.expand(),
+                  ),
+                ),
+              ],
             ),
           ),
           const Padding(

@@ -210,6 +210,44 @@ void main() {
     expect(_pixel(bytes, 16, 8, 21).$1, 148);
   });
 
+  testWidgets('2D body responds to new skin, view, layer and size without stale pixels',
+      (tester) async {
+    final first = await _decodeSkin(tester, MtnMinecraftSkinModelType.classic);
+    final next = await _decodeSkin(
+      tester, MtnMinecraftSkinModelType.classic, alternate: true);
+
+    await _show(tester, MtnMinecraftSkinPreview(
+      texture: first, height: 32, showOuterLayer: false));
+    expect(_pixel(await _capture(tester), 16, 4, 9), (52, 0, 0, 255));
+
+    // Same widget type and position, but new immutable skin identity.
+    await _show(tester, MtnMinecraftSkinPreview(
+      texture: next, height: 32, showOuterLayer: false));
+    expect(_pixel(await _capture(tester), 16, 4, 9), (180, 0, 0, 255));
+
+    await _show(tester, MtnMinecraftSkinPreview(
+      texture: next, height: 32,
+      view: MtnMinecraftSkinView.back, showOuterLayer: false));
+    expect(_pixel(await _capture(tester), 16, 4, 9), (180, 180, 0, 255));
+
+    await _show(tester, MtnMinecraftSkinPreview(
+      texture: next, height: 32,
+      view: MtnMinecraftSkinView.front, showOuterLayer: true));
+    expect(_pixel(await _capture(tester), 16, 4, 9), (0, 0, 255, 255));
+    expect(_pixel(await _capture(tester), 16, 5, 9), (180, 0, 0, 255));
+
+    // Nearest filtering and geometry scale together with declared height.
+    await _show(tester, MtnMinecraftSkinPreview(
+      texture: next, height: 64, showOuterLayer: false));
+    final twiceSize = await _capture(tester);
+    expect(_pixel(twiceSize, 32, 8, 18), (180, 0, 0, 255));
+    expect(_pixel(twiceSize, 32, 9, 19), (180, 0, 0, 255));
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('cape preview switches between outer/back and inner/front',
       (tester) async {
     final cape = await _decodeCape(tester);

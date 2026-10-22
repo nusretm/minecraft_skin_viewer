@@ -1,6 +1,6 @@
 # Architecture — Minecraft Skin Viewer
 
-Status: R1/R2/R3/R4 CLOSED and merged to main; direct GPU memory metrics unmeasured and recorded; R5 proposed, not approved.
+Status: R1/R2/R3/R4 CLOSED in main; R5-A/B/C package-only public widget finalization code on Draft PR #5, Windows CI and live verification pending. GPU dedicated-memory metrics remain unmeasured.
 
 ## Scope
 
@@ -97,3 +97,13 @@ mount/unmount stress and visual verification remain explicit gates.
 ## R4 merge closure
 
 R4 public 3D renderer/controller, Java cape, transparent layers and pose logic were Windows user-tested and squash-merged as `6b4bc20` in PR #4. Scene lifecycle stress CPU process readings were not monotonically increasing in the sampled release run; direct GPU memory telemetry was not collected, so leak-free GPU behavior is not certified. R5 launcher embedding/release polish remains an unapproved proposal.
+
+## R5 package-only widget contract (approved 2026-10-22)
+
+- Public widgets: `MtnMinecraftSkinViewer` (GPU 3D), `MtnMinecraftSkinPreview` (2D full-body), `MtnMinecraftSkinHead` (2D avatar). Existing `MtnMinecraftCapePreview` stays exported but is outside the three-widget deliverable.
+- Shared model: R2 decoded and validated skin/cape texture objects are supplied by the host. This package does not own HTTP download, accounts, cache or launcher integration.
+- The 3D `MtnMinecraftSkinViewerController` is the only source of pose (Idle/Walk), outer-layer visibility, cape visibility and camera state. 3D widget constructor keeps texture/cape/controller/interaction callbacks and removes redundant pose/visibility args. There is no second copy of control state on the widget or example.
+- The 2D widgets remain declarative, with `texture`, `size`/`height`, front/back and outer-layer bool parameters. They are intentionally not controlled by the 3D controller.
+- Controller changes update active joint/cape nodes and camera without reconstructing GPU meshes; changing decoded skin/cape identity rebuilds GPU resources but retains a supplied controller. Host-created controller remains host-owned; default controller is widget-owned.
+- `reset()` maintains backward-compatible camera-only semantics; pose/visibility stay unchanged.
+- Breaking API change is allowed before the first stable release, but documented in README and accompanied by updated example/test coverage. All acceptance gates remain subject to CI and actual Windows GPU debug/release smoke; no package publication or launcher code changes in R5.

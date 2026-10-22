@@ -20,18 +20,16 @@ import 'mtn_minecraft_skin_viewer_controller.dart';
 /// straight RGBA and nearest-neighbor sampling. Place it in a bounded area.
 /// Windows applications must enable Flutter GPU.
 ///
-/// [controller] owns only camera orbit/zoom and is caller-owned when supplied.
-/// Skin, cape, pose and visibility are unambiguous widget input state.
-/// A texture object change rebuilds a scene; pose/visibility do not.
+/// [controller] is the only authority for camera, pose and layer visibility;
+/// it remains caller-owned when supplied and is widget-owned otherwise.
+/// Skin/cape textures and interaction enablement are widget inputs.
+/// A texture object change rebuilds the scene; controller changes never do.
 class MtnMinecraftSkinViewer extends StatefulWidget {
   const MtnMinecraftSkinViewer({
     super.key,
     required this.texture,
     this.cape,
     this.controller,
-    this.pose = MtnMinecraftSkinPose.idle,
-    this.showOuterLayer = true,
-    this.showCape = true,
     this.enableInteraction = true,
     this.onReady,
     this.onError,
@@ -40,9 +38,6 @@ class MtnMinecraftSkinViewer extends StatefulWidget {
   final MtnMinecraftSkinTexture texture;
   final MtnMinecraftCapeTexture? cape;
   final MtnMinecraftSkinViewerController? controller;
-  final MtnMinecraftSkinPose pose;
-  final bool showOuterLayer;
-  final bool showCape;
   final bool enableInteraction;
   final VoidCallback? onReady;
   final ValueChanged<Object>? onError;
@@ -60,6 +55,7 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
 
   late MtnMinecraftSkinViewerController _camera;
   late bool _ownsCamera;
+  late MtnMinecraftSkinPose _lastPose;
   late final Ticker _ticker;
   final Map<MtnMinecraftSkinBodyPart, Node> _joints = {};
   final Map<MtnMinecraftSkinBodyPart, Node> _outers = {};
@@ -70,18 +66,33 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
     super.initState();
     _ownsCamera = widget.controller == null;
     _camera = widget.controller ?? MtnMinecraftSkinViewerController();
-    _camera.addListener(_refreshCamera);
+    _lastPose = _camera.pose;
+    _camera.addListener(_refreshController);
     _ticker = createTicker(_tick);
     _syncTicker();
     _createScene();
   }
 
-  void _refreshCamera() {
-    if (mounted) setState(() {});
+  void _refreshController() {
+    if (!mounted) return;
+    // Render presentation updates in place; no GPU mesh/texture re-upload.
+    // Camera-only updates must not reset an ongoing Walk animation.
+    if (_camera.pose != _lastPose) {
+      _lastPose = _camera.pose;
+      _syncTicker();
+      _applyPose(MtnMinecraftSkinPoseFrame.at(_camera.pose));
+    }
+    for (final node in _outers.values) {
+      node.visible = _camera.showOuterLayer;
+    }
+    if (_capeHinge != null) {
+      _capeHinge!.visible = _camera.showCape;
+    }
+    setState(() {});
   }
 
   void _syncTicker() {
-    if (widget.pose == MtnMinecraftSkinPose.walk) {
+    if (_camera.pose == MtnMinecraftSkinPose.walk) {
       if (!_ticker.isActive) _ticker.start();
     } else if (_ticker.isActive) {
       _ticker.stop();
@@ -89,9 +100,9 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
   }
 
   void _tick(Duration elapsed) {
-    if (!mounted || !_ready || widget.pose != MtnMinecraftSkinPose.walk) return;
+    if (!mounted || !_ready || _camera.pose != MtnMinecraftSkinPose.walk) return;
     _applyPose(MtnMinecraftSkinPoseFrame.at(
-      widget.pose, seconds: elapsed.inMicroseconds / 1000000,
+      _camera.pose, seconds: elapsed.inMicroseconds / 1000000,
     ));
     setState(() {});
   }
@@ -100,28 +111,24 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
   void didUpdateWidget(covariant MtnMinecraftSkinViewer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(widget.controller, oldWidget.controller)) {
-      _camera.removeListener(_refreshCamera);
+      _camera.removeListener(_refreshController);
       if (_ownsCamera) _camera.dispose();
       _ownsCamera = widget.controller == null;
       _camera = widget.controller ?? MtnMinecraftSkinViewerController();
-      _camera.addListener(_refreshCamera);
+      _lastPose = _camera.pose;
+      _camera.addListener(_refreshController);
+      _syncTicker();
+      _applyPose(MtnMinecraftSkinPoseFrame.at(_camera.pose));
+      for (final node in _outers.values) {
+        node.visible = _camera.showOuterLayer;
+      }
+      if (_capeHinge != null) {
+        _capeHinge!.visible = _camera.showCape;
+      }
     }
     if (!identical(widget.texture, oldWidget.texture) ||
         !identical(widget.cape, oldWidget.cape)) {
       _createScene();
-      return;
-    }
-    if (widget.showOuterLayer != oldWidget.showOuterLayer) {
-      for (final node in _outers.values) {
-        node.visible = widget.showOuterLayer;
-      }
-    }
-    if (widget.showCape != oldWidget.showCape && _capeHinge != null) {
-      _capeHinge!.visible = widget.showCape;
-    }
-    if (widget.pose != oldWidget.pose) {
-      _syncTicker();
-      _applyPose(MtnMinecraftSkinPoseFrame.at(widget.pose));
     }
   }
 
@@ -195,7 +202,7 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
               center.x - pivot.x, center.y - pivot.y, center.z - pivot.z,
             );
           if (outer) {
-            node.visible = widget.showOuterLayer;
+            node.visible = _camera.showOuterLayer;
             node.renderOrder = 1;
             outers[part] = node;
           }
@@ -224,7 +231,7 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
             MtnMinecraftSkinPivot.cape.y,
             MtnMinecraftSkinPivot.cape.z,
           )
-          ..visible = widget.showCape;
+          ..visible = _camera.showCape;
         hinge.add(Node(
           name: 'cape/fabric',
           mesh: Mesh(MeshGeometry.fromArrays(
@@ -245,7 +252,7 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
       _joints.addAll(joints);
       _outers.addAll(outers);
       _capeHinge = hinge;
-      _applyPose(MtnMinecraftSkinPoseFrame.at(widget.pose));
+      _applyPose(MtnMinecraftSkinPoseFrame.at(_camera.pose));
       _ready = true;
       setState(() {});
       widget.onReady?.call();
@@ -289,7 +296,7 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
   void dispose() {
     _generation++;
     _ticker.dispose();
-    _camera.removeListener(_refreshCamera);
+    _camera.removeListener(_refreshController);
     if (_ownsCamera) _camera.dispose();
     _clearScene();
     super.dispose();

@@ -66,6 +66,59 @@ void main() {
       expect(updates, 4);
     });
 
+    test('pose and visibility form one observable controller authority', () {
+      final viewer = MtnMinecraftSkinViewerController(
+        pose: MtnMinecraftSkinPose.walk,
+        showOuterLayer: false,
+        showCape: false,
+      );
+      addTearDown(viewer.dispose);
+      expect(viewer.pose, MtnMinecraftSkinPose.walk);
+      expect(viewer.showOuterLayer, isFalse);
+      expect(viewer.showCape, isFalse);
+
+      var changes = 0;
+      void listener() => changes++;
+      viewer.addListener(listener);
+      viewer.setPose(MtnMinecraftSkinPose.walk);
+      viewer.setShowOuterLayer(false);
+      viewer.setShowCape(false);
+      expect(changes, 0, reason: 'unchanged state must not notify');
+
+      viewer.setPose(MtnMinecraftSkinPose.idle);
+      viewer.setShowOuterLayer(true);
+      viewer.setShowCape(true);
+      expect(changes, 3);
+      expect(viewer.pose, MtnMinecraftSkinPose.idle);
+      expect(viewer.showOuterLayer, isTrue);
+      expect(viewer.showCape, isTrue);
+
+      // reset() is deliberately camera-only, not a pose/layer reset.
+      viewer.reset();
+      expect(viewer.pose, MtnMinecraftSkinPose.idle);
+      expect(viewer.showOuterLayer, isTrue);
+      expect(viewer.showCape, isTrue);
+      viewer.removeListener(listener);
+      viewer.setPose(MtnMinecraftSkinPose.walk);
+      expect(changes, 3);
+    });
+
+    test('camera changes do not mutate pose or visibility', () {
+      final viewer = MtnMinecraftSkinViewerController(
+        pose: MtnMinecraftSkinPose.walk,
+        showOuterLayer: false,
+        showCape: true,
+      );
+      addTearDown(viewer.dispose);
+      viewer.orbitBy(25, -12);
+      viewer.zoomBy(200);
+      viewer.setOrbit(yaw: 1.1, pitch: 0.5);
+      viewer.reset();
+      expect(viewer.pose, MtnMinecraftSkinPose.walk);
+      expect(viewer.showOuterLayer, isFalse);
+      expect(viewer.showCape, isTrue);
+    });
+
     test('invalid camera values are explicitly rejected', () {
       expect(
         () => MtnMinecraftSkinViewerController(yaw: double.nan),
