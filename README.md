@@ -9,7 +9,8 @@ UV layouts and (in later checkpoints) reusable 2D and 3D player widgets.
 - R1: GPU-backed 3D feasibility prototype in example/ (closed, Windows-verified).
 - R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs
   (implemented on feature branch, validation/review pending).
-- R3/R4: production 2D and 3D viewers (not yet implemented).
+- R3: 2D head/body/cape widgets (on feature, acceptance pending).
+- R4: complete textured 3D player (not implemented).
 
 ## R2 usage: atlas data only
 
@@ -48,3 +49,14 @@ yet display a real Minecraft skin on the R1 block character.
 See docs/WORKING_RULES.md and docs/continuity/CURRENT_TARGET.md.
 All feature work stays on a feature branch and Draft PR until separately
 accepted and merge-approved.
+
+## R3 2D widget example (on feature, not yet accepted)
+
+```dart
+MtnMinecraftSkinHead(texture: skin, size: 64, showOuterLayer: true);
+MtnMinecraftSkinPreview(texture: skin, height: 256, view: MtnMinecraftSkinView.back);
+MtnMinecraftCapePreview(texture: cape, height: 160);
+```
+
+Here `skin` and `cape` are R2 validated textures. In the Windows example,
+use the app bar's R3 2D gallery button for a generated-atlas demonstration.

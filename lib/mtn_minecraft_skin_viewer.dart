@@ -1,7 +1,7 @@
-/// Minecraft Java Edition skin/cape atlas foundation.
+/// Minecraft Java Edition skin/cape texture, UV and 2D preview widgets.
 ///
-/// R2 exports render-backend-independent decoded textures and pixel-space UV
-/// mappings. 2D and 3D widget APIs will be introduced in later checkpoints.
+/// The R2 atlas is shared by 2D and future 3D renderers; no GPU backend is
+/// exposed through this public library.
 library mtn_minecraft_skin_viewer;
 
 export 'src/mtn_minecraft_skin_texture.dart'
@@ -16,3 +16,9 @@ export 'src/mtn_minecraft_skin_uv.dart'
         MtnMinecraftSkinUvLayout,
         MtnMinecraftCapeUvLayout,
         mtnMinecraftBoxFace;
+export 'src/mtn_minecraft_skin_2d.dart'
+    show
+        MtnMinecraftSkinView,
+        MtnMinecraftSkinHead,
+        MtnMinecraftSkinPreview,
+        MtnMinecraftCapePreview;

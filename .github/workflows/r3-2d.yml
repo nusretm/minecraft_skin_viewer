@@ -1,0 +1,57 @@
+name: R3 2D skin and cape previews
+
+on:
+  push:
+    branches:
+      - feature/r3-2d-skin-cape-preview
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Flutter toolchain
+        shell: pwsh
+        run: flutter --version
+
+      - name: Root dependencies
+        shell: pwsh
+        run: flutter pub get
+
+      - name: Root analysis
+        shell: pwsh
+        run: flutter analyze --no-pub
+
+      - name: R1/R2/R3 root tests including pixel capture
+        shell: pwsh
+        run: flutter test --no-pub test/
+
+      - name: Example dependencies
+        shell: pwsh
+        working-directory: example
+        run: flutter pub get
+
+      - name: Example analysis
+        shell: pwsh
+        working-directory: example
+        run: flutter analyze --no-pub
+
+      - name: R1 controls regression
+        shell: pwsh
+        working-directory: example
+        run: flutter test --no-pub test/widget_test.dart
+
+      - name: Windows release example
+        shell: pwsh
+        working-directory: example
+        run: flutter build windows --release
+
+# Live 2D GUI review on Windows is a separate user acceptance gate.

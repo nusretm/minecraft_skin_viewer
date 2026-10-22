@@ -2,10 +2,38 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** None. R2 CLOSED and merged; R3 is PROPOSED / NOT APPROVED FOR IMPLEMENTATION.
+**Active implementation:** R3 user-approved on feature/r3-2d-skin-cape-preview; R1/R2 CLOSED.
 **Merged PRs:** [#1 — R1 Renderer Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2 Texture & UV Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/2)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R2 `CLOSED / SQUASH MERGED / LOCAL 15/15 TESTS PASS / PRIOR CI PASS`; R3 PROPOSED. R1 CLOSED.
+**Current checkpoint:** R3 IMPLEMENTED ON FEATURE / WINDOWS CI + LIVE GALLERY PENDING / NOT MERGED. R1/R2 CLOSED.
+
+## 2026-10-22 — R3 Draft PR #3 and initial Windows CI findings
+
+- **Draft PR:** [#3](https://github.com/nusretm/minecraft_skin_viewer/pull/3), base main, active feature `feature/r3-2d-skin-cape-preview`. NOT MERGED.
+- **Initial failure:** Windows [CI 39695839244](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39695839244) stopped at root `flutter analyze --no-pub` with three `example/lib/r3_gallery.dart` lints: two `prefer_interpolation_to_compose_strings` and one `curly_braces_in_flow_control_structures`; downstream tests and release build SKIPPED. The three lines were fixed in commit `3405360`.
+- **Async widget-test hardening:** R3 capture/fixture tests involve engine codec and pixel readback Futures. To prevent Flutter widget FakeAsync from blocking those I/O completions, `test/mtn_minecraft_skin_2d_test.dart` now uses `tester.runAsync` for fixture encoding/capture and pumps after actual decode in commit `3e97145`. Validation of this correction is still **NOT CONFIRMED**.
+- **Current source verification:** earlier pre-gallery R3 root analysis passed, but later gallery lints failed as above; no confirmed fully green current-head CI or Windows R3 gallery live visual smoke yet. Preserve Draft and do not conditionally merge until checks and user visual acceptance pass.
+- **Diff:** PR contains eleven R3-specific files, with no added-line trailing whitespace found in GitHub patch scan. No local Windows commands were run by the assistant.
+- **Next:** verify current head's root analyze/pixel tests, example analyzer/regression and Windows release build; user to inspect head/body/cape gallery and controls in debug/release.
+
+## 2026-10-22 — R3 2D previews implementation (not yet accepted)
+
+- User explicitly approved the R3 2D head/body/cape plan with front/back,
+  outer layers, Classic/Slim, nearest scaling, lifecycle and Windows tests.
+  The optional conditional merge delegation **does not override** quality gates.
+- Branch: feature/r3-2d-skin-cape-preview from main 6493273; only this
+  repository changed. Production 2D API exports MtnMinecraftSkinHead,
+  MtnMinecraftSkinPreview, MtnMinecraftCapePreview and MtnMinecraftSkinView.
+- Widget internals use R2 atlas UVs, CustomPainter and cached/disposed Flutter
+  ui.Image from correctly premultiplied R2 RGBA; no Flutter GPU at package root.
+- Pixel-capture fixture tests check head/body/cape, front/back, layers,
+  Classic/Slim, legacy left limbs, 32/64/128/256 nearest sizes and texture
+  replacement. Example adds a generated-fixture gallery accessible from R1.
+- This is IMPLEMENTED source, not yet Windows LIVE_VALIDATED. GitHub CI must
+  complete root tests + example analyze/regression + Windows release; user
+  must inspect actual gallery visuals/resize before the PR can merge.
+- R1 GPU memory soak deferred. R4 full 3D mapping not included.
+- Detailed checkpoint: docs/continuity/R3_2D_PREVIEW.md.
 
 ## 2026-10-22 — R2 CLOSED and conditional merge authorization updated
 
