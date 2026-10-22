@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_scene/gpu.dart' as gpu;
 import 'package:flutter_scene/scene.dart';
 import 'package:mtn_minecraft_skin_viewer/mtn_minecraft_skin_viewer.dart';
@@ -19,7 +20,8 @@ class MtnMinecraftR4AMeshGallery extends StatefulWidget {
   State<MtnMinecraftR4AMeshGallery> createState() => _MtnMinecraftR4AMeshGalleryState();
 }
 
-class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery> {
+class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
+    with SingleTickerProviderStateMixin {
   // Local-only test convenience. This file is NOT committed or distributed.
   static const _defaultSkinPath =
       r'D:\development\cross-platform\9fede215f7cb6884.png';
@@ -34,6 +36,14 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
   Uint8List? _localPng;
   final TextEditingController _skinPathController = TextEditingController();
   Map<MtnMinecraftSkinBodyPart, Node> _outerNodes = {};
+  Map<MtnMinecraftSkinBodyPart, Node> _pivotNodes = {};
+  Node? _capePivot;
+  late final Ticker _animationTicker;
+  MtnMinecraftSkinPose _pose = MtnMinecraftSkinPose.idle;
+  bool _showCape = true;
+  Uint8List? _capePng;
+  final TextEditingController _capePathController = TextEditingController();
+  int _capeRequest = 0;
 
   MtnMinecraftSkinModelType _model = MtnMinecraftSkinModelType.classic;
   double _yaw = -math.pi / 3;
@@ -43,8 +53,59 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
   @override
   void initState() {
     super.initState();
+    _animationTicker = createTicker(_onAnimationTick)..start();
     _skinPathController.text = _defaultSkinPath;
     _initializeDefaultSkin();
+  }
+
+  void _onAnimationTick(Duration elapsed) {
+    if (!mounted || !_ready || _pose != MtnMinecraftSkinPose.walk) return;
+    _applyPose(MtnMinecraftSkinPoseFrame.at(
+      _pose, seconds: elapsed.inMicroseconds / 1000000));
+    setState(() {});
+  }
+
+  void _applyPose(MtnMinecraftSkinPoseFrame frame) {
+    final angles = <MtnMinecraftSkinBodyPart, double>{
+      MtnMinecraftSkinBodyPart.rightArm: frame.rightArmX,
+      MtnMinecraftSkinBodyPart.leftArm: frame.leftArmX,
+      MtnMinecraftSkinBodyPart.rightLeg: frame.rightLegX,
+      MtnMinecraftSkinBodyPart.leftLeg: frame.leftLegX,
+    };
+    for (final entry in angles.entries) {
+      _pivotNodes[entry.key]?.rotation = vm.Quaternion.axisAngle(
+        vm.Vector3(1, 0, 0), entry.value);
+    }
+    _capePivot?.rotation = vm.Quaternion.axisAngle(
+      vm.Vector3(1, 0, 0), frame.capeX);
+  }
+
+  void _changePose(MtnMinecraftSkinPose pose) {
+    _pose = pose;
+    _applyPose(MtnMinecraftSkinPoseFrame.at(pose));
+    setState(() {});
+  }
+
+  void _toggleCape(bool enabled) {
+    _showCape = enabled;
+    _capePivot?.visible = enabled;
+    setState(() {});
+  }
+
+  Future<void> _loadLocalCape() async {
+    final request = ++_capeRequest;
+    final path = _capePathController.text.trim();
+    if (path.isEmpty) return;
+    try {
+      final bytes = await io.File(path).readAsBytes();
+      await MtnMinecraftCapeTexture.fromPng(bytes);
+      if (!mounted || request != _capeRequest) return;
+      _capePng = bytes;
+      _rebuild();
+    } catch (error) {
+      if (!mounted || request != _capeRequest) return;
+      setState(() => _error = error);
+    }
   }
 
   Future<void> _initializeDefaultSkin() async {
@@ -80,6 +141,8 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
     _scene?.dispose();
     _scene = null;
     _outerNodes = {};
+    _pivotNodes = {};
+    _capePivot = null;
     setState(() {
       _ready = false;
       _error = null;
@@ -127,6 +190,7 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
     final generation = ++_generation;
     final selectedModel = _model;
     final sourceBytes = _localPng;
+    final capeSource = _capePng;
     Scene? created;
     try {
       await Scene.initializeStaticResources();
@@ -135,6 +199,10 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
       final png = sourceBytes ?? await _syntheticFacePng(selectedModel);
       final skin = await MtnMinecraftSkinTexture.fromPng(
         png, modelType: selectedModel);
+      if (!mounted || generation != _generation) return;
+
+      final capePng = capeSource ?? await _syntheticCapePng();
+      final capeTexture = await MtnMinecraftCapeTexture.fromPng(capePng);
       if (!mounted || generation != _generation) return;
 
       created = Scene();
@@ -151,6 +219,7 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
       );
 
       final outerNodes = <MtnMinecraftSkinBodyPart, Node>{};
+      final pivotNodes = <MtnMinecraftSkinBodyPart, Node>{};
       for (final layer in MtnMinecraftSkinLayer.values) {
         for (final part in MtnMinecraftSkinBodyPart.values) {
           final cpu = MtnMinecraftSkinBoxMesh.forBodyPart(
