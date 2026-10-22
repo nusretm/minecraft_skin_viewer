@@ -11,8 +11,9 @@ import 'package:flutter_scene/scene.dart';
 import 'package:mtn_minecraft_skin_viewer/mtn_minecraft_skin_viewer.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
-/// R4-A/B Windows skin mesh UV smoke. Synthetic atlas and optional local PNG.
-/// No cape, joint pivots, animation or production viewer is provided here.
+/// R4-A/B/C Windows skin + cape GPU and pose smoke.
+/// Synthetic 64x32 cape fallback; optional local skin/cape PNG files.
+/// The production 3D widget/controller and leak test belong to R4-D.
 class MtnMinecraftR4AMeshGallery extends StatefulWidget {
   const MtnMinecraftR4AMeshGallery({super.key});
 
@@ -22,7 +23,7 @@ class MtnMinecraftR4AMeshGallery extends StatefulWidget {
 
 class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
     with SingleTickerProviderStateMixin {
-  // Local-only test convenience. This file is NOT committed or distributed.
+  // Local-only test convenience. The skin PNG is not committed or distributed.
   static const _defaultSkinPath =
       r'D:\development\cross-platform\9fede215f7cb6884.png';
 
@@ -564,7 +565,7 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
               color: const Color(0xFF252B39),
               child: Center(
                 child: _error != null
-                    ? SelectableText('R4-A mesh error: $_error',
+                    ? SelectableText('3D preview error: $_error',
                         style: const TextStyle(color: Colors.redAccent))
                     : !_ready
                         ? const CircularProgressIndicator()

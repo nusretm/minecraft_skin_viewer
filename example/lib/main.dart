@@ -269,7 +269,7 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
           ),
           IconButton(
             icon: const Icon(Icons.view_in_ar),
-            tooltip: 'R4-A 3D UV gallery',
+            tooltip: 'R4 3D skin, cape and poses',
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const MtnMinecraftR4AMeshGallery(),
