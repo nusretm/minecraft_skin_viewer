@@ -89,3 +89,12 @@ binary is distributed, and CI uses synthetic PNG instead. The gallery
 now supports a separate local Java 64x32 cape PNG, a generated fallback
 cape, Cape toggle and Idle/Walk animation. R4-D public 3D viewer and GPU
 resource benchmark remain separate.
+
+### Local Windows cape test fixture (R4-C pending acceptance)
+
+The example's 3D gallery tries `D:\development\cross-platform\cape.png`
+alongside the optional local skin. Both PNG files are user-local and
+are **not** checked into the repository. If unavailable, the example
+generates a synthetic cape. The decorated atlas surface should render
+on the cape's outward-facing rear (-Z); confirm visually in Windows
+debug and release before R4-C closure.

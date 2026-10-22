@@ -5,7 +5,16 @@
 **Active implementation:** R4-A verified; R4-B depth correction Windows DEBUG accepted but post-patch release smoke pending; R4-C implemented on feature and awaiting CI/Windows live checks. R4-D not started.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R4-C — WINDOWS DEBUG/RELEASE FUNCTIONALLY VERIFIED ON 1537f5d (40/40 ROOT TESTS) / ONE COPLANAR OVERLAP PATCHED IN 44d219d / CURRENT CI AND WINDOWS LOG RECHECK PENDING / DRAFT PR #4 / NOT MERGED. R4-D not started.
+**Current checkpoint:** R4-C — WINDOWS 40/40 ROOT TESTS / DEPTH WARNING GONE IN 36b054d DEBUG / CAPE EXTERIOR UV + DEFAULT LOCAL CAPE FIX ON FEATURE, CURRENT CI AND WINDOWS CAPE ORIENTATION RECHECK PENDING / DRAFT PR #4 / NOT MERGED. R4-D not started.
+
+## 2026-10-22 — R4-C overlap resolved, cape exterior UV correction and local default
+
+- User tested feature HEAD 36b054d on Windows: root analyzer NO ISSUES (17.4s), root tests 40/40 PASS (15s), example analyzer NO ISSUES (69.2s), Flutter GPU debug build/launched (24.5s). The previous single `body/outer` vs `rightLeg/outer` coplanar-overlap warning is absent; only informational 24-bit depth messages remain. `Lost connection to device` after window close is the user's confirmed normal termination. A post-36b054d local release build/launch was not included in this log; do not claim otherwise.
+- User supplied side/rear screenshots and Minecraft cape reference screenshot plus actual `cape.png`: **decorative face with white number 1 must be visible on the outside/back of the character**, but the GPU mesh showed the inner/rainbow face outside. This is a verified cape UV face-orientation defect despite green tests.
+- Fix `4f40a8e`: in `MtnMinecraftCapeBoxMesh.build()`, swap the **source atlas** front/back face for mesh geometry back(-Z) and front(+Z), retaining R2 atlas mapping, winding, physical mesh, hinge and side/top/bottom faces. The R2 cape atlas `front` region holds the decorative outward surface, R2 `back` the inside. Do NOT rotate the cape node; its pose/pivot motion must remain unchanged.
+- User's requested default cape path is `D:\development\cross-platform\cape.png`, alongside existing skin default. Example init pre-fills cape path, validates and auto-loads it when present, with synthetic cape fallback if absent/unreadable/invalid. No user PNG binary was committed.
+- `test/mtn_minecraft_skin_pose_cape_test.dart` updated to verify all six face UV corners and explicit -Z outer decorated / +Z inner UV correspondence; old test that assumed face names matched geometrical outward/inner orientation was corrected.
+- Windows release and actual debug/release visual recheck of changed cape UV, its left-right orientation, idle/walk motion, and latest CI pending. Draft PR #4 remains unmerged; R4-D not started until R4-C accepted.
 
 ## 2026-10-22 — R4-C Windows test and remaining torso/right-leg overlap
 

@@ -1,7 +1,7 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: R4-A/B WINDOWS VERIFIED / R4-C FUNCTIONALLY DEBUG+RELEASE TESTED, ONE DEPTH WARNING PATCHED, WINDOWS RECHECK PENDING / R4-D NOT STARTED
+Status: R4-A/B WINDOWS VERIFIED / R4-C DEPTH OVERLAP CLEARED IN 36b054d DEBUG, CAPE EXTERIOR UV FIX NEEDS WINDOWS LIVE CHECK / R4-D NOT STARTED
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
@@ -12,7 +12,7 @@ Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
   part centers, synthetic Windows GPU atlas-face smoke and automated tests.
 - R4-B **DEBUG GPU VERIFIED, PATCH RELEASE CHECK PENDING**: Independently offset outer-layer geometries, their
   face UVs and alpha handling, Classic/Slim real full skin appearance.
-- R4-C **WINDOWS FUNCTIONALLY TESTED, DEPTH WARNING FIX RECHECK PENDING**: 64x32 cape geometry+UV with back hinge, simple
+- R4-C **WINDOWS 40/40 AND DEPTH DEBUG VERIFIED; CAPE UV ORIENTATION CORRECTION PENDING LIVE TEST**: 64x32 cape geometry+UV with back hinge, simple
   shoulder/hip pivots and idle/walk basic poses; no cloth physics.
 - R4-D **NOT STARTED**: Public MtnMinecraftSkinViewer (3D), working
   controller/interaction/lifecycle, true skin+cape hot swapping,
@@ -177,3 +177,25 @@ merge authority requires scope completion, full tests and user live acceptance.
 - Patch 44d219d gives rightLeg.outer depthLayer=3 (vs body 1 and other limb shells 2). Base meshes remain at 0. No physical size, texture, UV, cape hinge or motion changes.
 - Fix not yet Windows GPU verified. Must re-run debug with front/back orbit and verify overlap diagnostic disappears; Windows release and current CI must pass. Do not merge or proceed to R4-D before evidence.
 - The observed Lost connection to device after closing the window is normal user behavior, not an application crash.
+
+## R4-C cape outside/inside UV regression and default local cape (2026-10-22)
+
+- On feature 36b054d, user Windows root analyze clean, 40/40 root tests
+  PASS, example analyze clean and debug GPU launched. The previous
+  body/rightLeg overlap warning disappeared; only normal depth messages.
+  Post-36b054d release smoke is still not shown.
+- Screenshots reveal decorated cape texture is on the wrong side: the
+  intended external face (with white 1) was not shown on the cape's
+  world-facing -Z rear side. User provided cape reference and 64x32 PNG.
+- `MtnMinecraftCapeBoxMesh.build()` now maps R2 atlas `front` source
+  onto world rear (-Z) mesh face, and atlas `back` source onto world
+  front (+Z) inner mesh face. Side/top/bottom unchanged; no hinge,
+  pose or geometry rotation. Mesh UV tests explicitly lock the outer
+  decorative face and inner face mapping, including UV corner order.
+- Example R4 gallery now defaults local optional cape path to
+  `D:\development\cross-platform\cape.png`, validates on startup and
+  loads it if present; otherwise synthetic cape fallback. As before,
+  only local file paths are committed, never skin/cape PNG bytes.
+- Current source CI and real Windows cape rear/front/side orientation,
+  Idle/Walk and post-fix release visual acceptance still pending.
+  Keep feature PR #4 Draft and R4-D unstarted.
