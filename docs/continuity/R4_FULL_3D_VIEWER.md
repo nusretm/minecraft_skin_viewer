@@ -1,7 +1,7 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: R4-A/B/C WINDOWS VERIFIED; R4-D CODE+46/46 TESTS+WINDOWS CI AND DEBUG/RELEASE BUILD PASS; GPU 20× LIFECYCLE/MEMORY TREND STILL PENDING
+Status: R4-A/B/C WINDOWS VERIFIED; R4-D 46/46+CI PASS on f3ad33c, repeated release stress memory series reported; new static-tick fix dda15f8 pending CI/Windows/GPU memory retest
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
@@ -267,3 +267,24 @@ merge authority requires scope completion, full tests and user live acceptance.
 - Explicit R4-D interactive smoke (20/20, public viewer texture/model
   replacement, layer/cape separation, pose, camera, resize) and memory
   plateau still required. Keep Draft PR #4 unmerged.
+
+## Release 20× stress and production SceneView tick review (2026-10-22)
+
+- Five user Windows release measurements in sample order:
+  Private MB 315.4, 445.8, 741.2, 657.2, 664.2;
+  Working Set MB 130.8, 136.8, 131.2, 129.9, 133.8.
+- Baseline EXE start, public 3D view, stress cycles invoked repeatedly.
+  UI `20/20` completion text and sampling intervals not supplied.
+- Private MB fell 84.0 MB after 741.2 MB peak, then last two differed
+  by 7.0 MB; not a monotonic leak pattern. Later ~660 MB private remains
+  ~218 MB above first 3D-open 445.8 MB: cannot certify plateau/leak-free.
+  Stable Working Set ~130MB is not sufficient to exonerate GPU memory.
+- Upstream flutter_scene 0.24.3 Scene.dispose() removes scene internals;
+  GPU texture memory becomes reclaimable when wrappers are collected.
+  Upstream SceneView defaults autoTick=true even for idle scenes.
+- Approved R4-D scoped optimization dda15f8 disables redundant
+  SceneView autoTick; this viewer already rebuilds for camera input and
+  its own Walk ticker. Scene disposal semantics remain unchanged.
+- Current head CI, Windows Idle/Walk/camera repaint behavior, and a new
+  controlled Private/WorkingSet/GPU memory comparison required.
+  PR #4 stays Draft and not merged.
