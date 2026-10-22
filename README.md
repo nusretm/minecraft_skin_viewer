@@ -9,7 +9,7 @@ UV layouts and (in later checkpoints) reusable 2D and 3D player widgets.
 - R1: GPU-backed 3D feasibility prototype in example/ (closed, Windows-verified).
 - R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs (closed, merged).
 - R3: 2D head/body/cape Flutter widgets (closed, Windows-verified and merged).
-- R4: R4-A/B verified, R4-C cape/poses Windows tested, cape mirroring + independent layer compositing fixes pending live recheck; R4-D not implemented.
+- R4: R4-A/B/C Windows verified; R4-D public 3D widget and lifecycle harness implemented on feature, validation pending.
 
 ## R2 usage: atlas data only
 
@@ -98,3 +98,25 @@ are **not** checked into the repository. If unavailable, the example
 generates a synthetic cape. The decorated atlas surface should render
 on the cape's outward-facing rear (-Z); confirm visually in Windows
 debug and release before R4-C closure.
+
+## R4-D public 3D widget (feature; Windows live review pending)
+
+```dart
+MtnMinecraftSkinViewer(
+  texture: decodedSkin,
+  cape: decodedCape, // optional
+  showOuterLayer: true,
+  showCape: true,
+  pose: MtnMinecraftSkinPose.idle,
+  enableInteraction: true,
+)
+```
+
+Use pre-decoded R2 skin/cape objects; no file paths or network in public
+widget. Optional `MtnMinecraftSkinViewerController` owns orbit/zoom and
+can be retained through skin/model changes. The caller owns and disposes
+a supplied controller, otherwise the widget manages one internally.
+The example's R4-D button triggers 20 distinct GPU viewer mount/unmount
+cycles, waiting for readiness and a rendered frame on each. Check
+Task Manager/Process Explorer GPU/dedicated-memory trends externally
+before claiming lifecycle stability. GPU opt-in required on Windows.

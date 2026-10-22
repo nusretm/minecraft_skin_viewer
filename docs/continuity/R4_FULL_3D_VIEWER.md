@@ -1,7 +1,7 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: R4-A/B WINDOWS VERIFIED / R4-C 41/41 + RELEASE ON 7ba661e, CAPE HORIZONTAL UV + DRAW ORDER FIX NOT YET LIVE RECHECKED / R4-D NOT STARTED
+Status: R4-A/B/C WINDOWS VERIFIED; R4-D IMPLEMENTED ON FEATURE, CI+WINDOWS/20-CYCLE MEMORY ACCEPTANCE PENDING
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
@@ -14,7 +14,7 @@ Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
   face UVs and alpha handling, Classic/Slim real full skin appearance.
 - R4-C **WINDOWS 40/40 AND DEPTH DEBUG VERIFIED; CAPE UV ORIENTATION CORRECTION PENDING LIVE TEST**: 64x32 cape geometry+UV with back hinge, simple
   shoulder/hip pivots and idle/walk basic poses; no cloth physics.
-- R4-D **NOT STARTED**: Public MtnMinecraftSkinViewer (3D), working
+- R4-D **IMPLEMENTED ON FEATURE, NOT ACCEPTED**: Public MtnMinecraftSkinViewer (3D), working
   controller/interaction/lifecycle, true skin+cape hot swapping,
   repeated mount/unmount and memory observations, Windows release checks.
 
@@ -220,3 +220,29 @@ merge authority requires scope completion, full tests and user live acceptance.
   Windows before accepting this ordering tradeoff.
 - Changes are R4-C-scoped and have not been live GPU-validated; current
   HEAD CI and Windows debug/release must complete before R4-D can begin.
+
+## R4-C Windows closure and R4-D production viewer implementation
+
+- User Windows acceptance on 029f4ac: root 42/42 PASS, root/example analysis
+  clean, Windows debug GPU scene running, Windows release EXE built and
+  launched; user image shows cape white 1 no longer mirrored, with no
+  z-fighting warning. Feature HEAD R1/R2/R3/R4 CI all green.
+- R4-D adds a public MtnMinecraftSkinViewer for already decoded R2 skin
+  and optional cape objects. Model type comes only from skin.modelType.
+  Controller owns camera only; pose, outer layers and cape visibility are
+  widget props. No local test file paths, network, authentication or
+  backend renderer classes exposed through the widget interface.
+- flutter_scene 0.24.3 and vector_math are explicitly added to the root
+  package as the Windows-validated GPU backend. Previous example-only
+  renderer prototype and R4-C test gallery remain available.
+- State generational guard prevents stale asynchronous GPU scene setup
+  from becoming active; texture object swap rebuilds scene, while layer
+  and pose changes reuse meshes; all scene resources, ticker and internally
+  owned camera dispose at unmount. Caller-owned camera never disposed.
+- R4-D example includes controls and a real 20-cycle mount/unmount and
+  GPU frame-present stress loop; run it on Windows release, observe memory
+  before/after and capture any exceptions/diagnostics. The button by
+  itself cannot certify zero memory leaks without external measurements.
+- **Not yet verified on Windows.** Current source CI, real debug+release
+  viewer controls, rapid texture changes and 20-cycle memory readings
+  must pass before R4-D closure and before any conditional merge.

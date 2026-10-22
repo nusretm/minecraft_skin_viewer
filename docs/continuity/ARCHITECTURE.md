@@ -1,6 +1,6 @@
 # Architecture — Minecraft Skin Viewer
 
-Status: R1/R2/R3 CLOSED; R4-A implemented on feature pending Windows tests; R4-B/C/D user-approved but not started.
+Status: R1/R2/R3 CLOSED; R4-A/B/C accepted; R4-D production 3D viewer implemented on feature awaiting Windows GPU/lifecycle validation.
 
 ## Scope
 
@@ -12,7 +12,7 @@ One Flutter package: `mtn_minecraft_skin_viewer` in repository `nusretm/minecraf
 2. **Minecraft mapping**: Classic vs Slim geometry dimensions; 64x64 and legacy 64x32 UV/overlay layout; cape layout. Explicit model type input.
 3. **2D renderer**: head and body previews rendered with Flutter primitives from the common atlas model.
 4. **3D geometry and render adapter**: character parts, local transforms, camera/gesture interaction; texture/UV data is not owned by Flutter Scene-specific public classes.
-5. **Public widget layer**: `MtnMinecraftSkinHead`, `MtnMinecraftSkinPreview`, and `MtnMinecraftCapePreview` are implemented in R3. `MtnMinecraftSkinViewer` (3D) remains a planned, unimplemented contract.
+5. **Public widget layer**: `MtnMinecraftSkinHead`, `MtnMinecraftSkinPreview`, and `MtnMinecraftCapePreview` are implemented in R3. `MtnMinecraftSkinViewer` (3D) is now implemented on the R4 feature branch and awaits validation.
 
 Package does not log in to accounts, download user profile skins, manage credentials or call Mojang/Microsoft APIs.
 
@@ -82,3 +82,14 @@ not GPU-specific types. Example-only flutter_scene Node parenting
 implements shoulder/hip rotation and a cape hinge. A frame Ticker updates
 rotations for the Walk pose without re-generating mesh/UV buffers.
 Full public viewer/lifecycle integration belongs to R4-D.
+
+## R4-D production renderer
+
+Root package now depends on flutter_scene 0.24.3 for the proven Windows
+GPU backend, isolated inside MtnMinecraftSkinViewer. R2 textures, R4
+geometry/pose remain pure data. MtnMinecraftSkinViewerController only
+owns camera angles and zoom; parent widget provides skin/cape, pose and
+layer visibility, with no duplicate state. The viewer owns scenes,
+texture uploads, optional internal controller and animation ticker;
+generation checks discard stale async scene builds. Manual repeated GPU
+mount/unmount stress and visual verification remain explicit gates.
