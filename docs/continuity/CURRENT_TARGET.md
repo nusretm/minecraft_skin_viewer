@@ -2,11 +2,19 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** None. R1/R2/R3/R4 CLOSED and squash-merged into `main`; R5 PROPOSED, not approved. GPU memory direct measurement remains a documented deferred R4 limitation.
+**Active implementation:** R5-A APPROVED and IMPLEMENTED on feature `feature/r5-public-widget-controller-api` (Windows CI/live validation pending); R5-B (2D widget API regression) and R5-C (package readiness) APPROVED in scope but NOT STARTED. R1–R4 remain CLOSED in `main`. No launcher integration work.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
-**Current checkpoint:** R4 CLOSED / USER Windows functionally verified / PR #4 squash-merged to `main` at `6b4bc20` / Direct GPU-memory telemetry unverified and deferred / R5 proposed, not approved.
+**Current checkpoint:** R5-A — controller sole 3D pose/layer/cape authority; existing 2D widgets unchanged. Automated GitHub CI and Windows release smoke PENDING. R5-A/B/C single Draft PR; no merge.
+
+## 2026-10-22 — R5 public-only scope approved; R5-A implementation in feature
+
+- **Explicit user scope:** 'Buradan entegrasyon yapmayalım ... Widget içerisine gereken parametreleri gönderelim ... 3D viewer için ise bir controller ile idle/walk ... Widget'lar: 3D skin viewer, 2D skin preview, 2D player head.' User subsequently said **'başlayalım'** to approved R5-A/B/C package-only plan. **No** `mtn_launcher_app`, Account Service, downloader, cache or networking changes are authorized. `MtnMinecraftCapePreview` remains available, but is not a new fourth deliverable.
+- **Feature:** `feature/r5-public-widget-controller-api` branched from verified `main` `f21d3dd`. R5-A changes `MtnMinecraftSkinViewerController` to own `pose`, `showOuterLayer`, `showCape` (constructor defaults, getters, `setPose`, `setShowOuterLayer`, `setShowCape`, change-only notifications). Camera yaw/pitch/distance and `reset()` behavior unchanged; `reset()` intentionally resets **camera only**. The 3D widget no longer duplicates pose/layer/cape props. Reuses existing controller listener, adapts Ticker and in-place node visibility, and preserves GPU scene on controller changes. Texture object identity changes still rebuild GPU scene.
+- **Tests/example:** Extended pure Flutter controller tests for pose/layer visibility, initial state, unchanged notification suppression and camera independence. Updated independent R4-D example controls to drive the controller directly, with one state authority and no duplicate booleans. 2D preview/head code left untouched; existing R1–R4 test suite is regression gate. New/changed behavior **NOT YET Windows live validated**.
+- **Remaining R5:** R5-A Windows root+example analyzers/tests, GPU debug and release UI control verification; R5-B public 2D widget/API regression and controller swap/texture change exercise; R5-C docs, API review, CI, packaging (no pub.dev publication). Only after these gates and user acceptance may the Draft PR be considered for merge. Direct GPU memory metrics remain a known R4 residual limit, not silently declared solved.
+- **Repo boundaries:** Only `nusretm/minecraft_skin_viewer` is writable. No main updates, unapproved SDK upgrades, nonessential refactors, or pub.dev publishing.
 
 ## 2026-10-22 — R4 CLOSED: PR #4 squash-merged into main
 

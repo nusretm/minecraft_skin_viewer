@@ -9,7 +9,7 @@ UV layouts and (in later checkpoints) reusable 2D and 3D player widgets.
 - R1: GPU-backed 3D feasibility prototype in example/ (closed, Windows-verified).
 - R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs (closed, merged).
 - R3: 2D head/body/cape Flutter widgets (closed, Windows-verified and merged).
-- R4: R4-A/B/C Windows verified; R4-D public 3D widget and lifecycle harness implemented on feature, validation pending.
+- R4: 3D viewer Windows validated and merged in PR #4; R5 public-controller finalization is in Draft feature review.
 
 ## R2 usage: atlas data only
 
@@ -99,23 +99,62 @@ generates a synthetic cape. The decorated atlas surface should render
 on the cape's outward-facing rear (-Z); confirm visually in Windows
 debug and release before R4-C closure.
 
-## R4-D public 3D widget (feature; Windows live review pending)
+## R5 — Three public widgets (feature branch; Windows validation pending)
+
+`MtnMinecraftSkinViewerController` is the single 3D authority for
+camera, Idle/Walk pose, outer layers and cape visibility. The host application
+only provides a decoded R2 skin and optional cape texture; this package does
+not fetch profile URLs, manage accounts or cache downloads.
 
 ```dart
+final controller = MtnMinecraftSkinViewerController(
+  pose: MtnMinecraftSkinPose.idle,
+  showOuterLayer: true,
+  showCape: true,
+);
+
 MtnMinecraftSkinViewer(
   texture: decodedSkin,
   cape: decodedCape, // optional
-  showOuterLayer: true,
-  showCape: true,
-  pose: MtnMinecraftSkinPose.idle,
-  enableInteraction: true,
-)
+  controller: controller,
+);
+
+// UI events:
+controller.setPose(MtnMinecraftSkinPose.walk);
+controller.setShowOuterLayer(false);
+controller.setShowCape(true);
+controller.reset(); // camera only; does not reset pose or layers
+
+// Dispose caller-owned controllers in the host widget's dispose().
 ```
 
-Use pre-decoded R2 skin/cape objects; no file paths or network in public
-widget. Optional `MtnMinecraftSkinViewerController` owns orbit/zoom and
-can be retained through skin/model changes. The caller owns and disposes
-a supplied controller, otherwise the widget manages one internally.
+The two 2D widgets do not need a controller and are already public:
+```dart
+MtnMinecraftSkinPreview(
+  texture: decodedSkin,
+  height: 256,
+  view: MtnMinecraftSkinView.front,
+  showOuterLayer: true,
+);
+
+MtnMinecraftSkinHead(
+  texture: decodedSkin,
+  size: 64,
+  view: MtnMinecraftSkinView.front,
+  showOuterLayer: true,
+);
+```
+
+Use `MtnMinecraftSkinTexture.fromPng(bytes, modelType: ...)` to decode and
+normalize an input skin; Classic/Slim must be selected explicitly. Optional
+`MtnMinecraftCapeTexture.fromPng(bytes)` requires 64×32 Java cape pixels.
+
+Unlike the R4 public API, the R5 3D widget no longer accepts `pose`,
+`showOuterLayer` or `showCape` constructor arguments. These state values
+live **only** on its controller. Passing a controller means the caller owns and
+disposes it; omitting one uses a widget-owned default controller.
+Skin/cape object replacement rebuilds the GPU scene without resetting
+the supplied controller; pose/visibility/camera changes do not re-upload meshes.
 The example's R4-D button triggers 20 distinct GPU viewer mount/unmount
 cycles, waiting for readiness and a rendered frame on each. Check
 Task Manager/Process Explorer GPU/dedicated-memory trends externally
