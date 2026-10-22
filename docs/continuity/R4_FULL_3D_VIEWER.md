@@ -1,7 +1,7 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: R4-A WINDOWS-VALIDATED / R4-B REAL PNG WINDOWS-VALIDATED ON 6caca7d BUT COPLANAR DEPTH-LAYER PATCH PENDING RECHECK / R4-C/D NOT STARTED
+Status: R4-A WINDOWS VERIFIED / R4-B DEPTH FIX WINDOWS DEBUG VERIFIED, RELEASE RECHECK PENDING / R4-C IMPLEMENTED ON FEATURE, CI AND LIVE SMOKE PENDING / R4-D NOT STARTED
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
@@ -10,9 +10,9 @@ Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 - R4-A **WINDOWS-VALIDATED**: Backend-neutral 24-vertex/36-index cuboid mesh data,
   source-of-truth R2 six-face UV mapping, Classic/Slim sizes, standing pose
   part centers, synthetic Windows GPU atlas-face smoke and automated tests.
-- R4-B **IMPLEMENTED ON FEATURE; AWAITING CI AND WINDOWS LIVE SMOKE**: Independently offset outer-layer geometries, their
+- R4-B **DEBUG GPU VERIFIED, PATCH RELEASE CHECK PENDING**: Independently offset outer-layer geometries, their
   face UVs and alpha handling, Classic/Slim real full skin appearance.
-- R4-C **NOT STARTED**: 64x32 cape geometry+UV with back hinge, simple
+- R4-C **IMPLEMENTED ON FEATURE, CI AND WINDOWS LIVE CHECK PENDING**: 64x32 cape geometry+UV with back hinge, simple
   shoulder/hip pivots and idle/walk basic poses; no cloth physics.
 - R4-D **NOT STARTED**: Public MtnMinecraftSkinViewer (3D), working
   controller/interaction/lifecycle, true skin+cape hot swapping,
@@ -138,3 +138,33 @@ merge authority requires scope completion, full tests and user live acceptance.
   unknown origin, not as a proven renderer crash.
 - R4-C cape and poses (already approved) must not start until this
   R4-B visual/memory-risk checkpoint is accepted.
+
+## R4-B closure evidence and R4-C implementation — 2026-10-22
+
+- User verified R4-B depthLayer fix in Windows debug: warning about 6
+  coplanar overlaps no longer appears, root tests 36/36 pass and analyzers
+  have zero issues. All CI workflows for commit f0da7fc succeeded.
+  Local post-depth-fix Windows release EXE launch was not reported.
+- User clarified Lost connection to device is expected after closing
+  the example window; it is not a renderer crash in their workflow.
+- Default example Windows test skin path:
+  D:\development\cross-platform\9fede215f7cb6884.png.
+  Auto-loaded when present/valid with explicitly selected Slim model;
+  falls back to synthetic atlas in CI/other environments.
+  The PNG file is not checked in or embedded.
+- R4-C provides pure Dart cape cuboid with R2 Java cape UV, and pose/pivot
+  definitions, exported publicly without a Flutter GPU dependency.
+  Automated tests cover six cape UV faces, geometry, winding, shoulder
+  and hip pivots, idle/walk opposite-limb motion and cape hinge range.
+- Example R4-C adds scene pivot parents for base/outer meshes, a hinged
+  nearest-sampled cape with its own 64x32 atlas and optional local cape
+  path, plus Cape and Idle/Walk controls. Synthetic cape is generated
+  in memory if no file selected. Animation Ticker is tied to widget
+  lifespan; the real GPU/resource 20-cycle stress test is deferred to R4-D.
+- Intermediate incomplete commits during R4-C screen construction failed
+  analyzer because helper/UI methods were not yet connected. Current code
+  must be judged by its own Windows CI, not earlier incomplete commits.
+- No complete R4-C Windows live visual validation is claimed yet.
+  Check correct cape orientation and pivot direction from all viewpoints,
+  Classic/Slim switching while walking, outer layers, zoom/resize,
+  quick scene replacement, and both debug/release GPU runs.

@@ -2,10 +2,19 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** R4 user-approved (A/B/C/D), R4-A Windows-verified and R4-B implemented on `feature/r4-full-3d-skin-viewer` awaiting Windows verification; R4-C/D not started.
+**Active implementation:** R4-A verified; R4-B depth correction Windows DEBUG accepted but post-patch release smoke pending; R4-C implemented on feature and awaiting CI/Windows live checks. R4-D not started.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R4-B — `USER WINDOWS LIVE-VALIDATED BEFORE DEPTH-LAYER FIX / 36/36 ROOT TESTS PASS / CI GREEN ON 6caca7d / DEPTH-LAYER RECHECK REQUIRED / DRAFT PR #4 / NOT MERGED`. R4-A validated; R4-C/D not started.
+**Current checkpoint:** R4-C — IMPLEMENTED ON FEATURE / CURRENT CI AND WINDOWS LIVE CAPE+POSE VALIDATION PENDING / DRAFT PR #4 / NOT MERGED. R4-D not started.
+
+## 2026-10-22 — R4-B depth fix accepted in debug; R4-C code and local test skin default
+
+- User ran R4-B source f0da7fc: root analyzer PASS (10.6s), root suite 36/36 PASS, example analyzer PASS (6.0s), Windows debug/Impeller launched. Prior repeating 6 surface overlaps warning is absent after the Material.depthLayer patch. All R1/R2/R3/R4 Windows CI workflows for f0da7fc completed SUCCESS. A post-patch local Windows release EXE smoke was NOT included in latest evidence; keep it open.
+- User explicitly explains Lost connection to device is normal when they close the application window, not a crash; using CLI q exits without that line. Treat this as expected in their Windows test workflow, superseding older uncertainty.
+- User supplied their default Windows test skin: D:\development\cross-platform\9fede215f7cb6884.png. Example's 3D gallery pre-fills and auto-loads the path on startup if a valid PNG exists, selecting Slim explicitly. When unavailable or invalid it uses the generated UV atlas. Only the path is in source; PNG data NOT committed.
+- R4-C renderer-independent geometry now implemented on approved feature: MtnMinecraftCapeBoxMesh for all six faces of R2 Java 64x32 cape, 10x16x1 dimensions, 24 vertices / 36 outward triangles; MtnMinecraftSkinPivot and MtnMinecraftSkinPoseFrame.at(idle/walk) for shoulder/hip/cape hinge and limb counter-swing. New tests cover UV, geometry winding, physical size, pivot positions, pose symmetry/limits.
+- Example R4-C GPU gallery: parent Node pivots for six parts, separate straight-alpha cape texture with generated cape fallback or optional local cape PNG, visibility toggles for outer layer and cape, idle/walk selection and Ticker-driven motion. Existing orbit, zoom and model switch remain. R4-D production widget/controller, 20-cycle GPU memory soak and other-repo work not started.
+- Validation state: Latest R4-C source not yet Windows live-validated; Windows CI initiated but complete green checks not established at this entry. Earlier intermediate commits with incomplete gallery methods caused analyzer failures; those do not establish final-head failure or success. Draft PR #4 stays open and unmerged. Next: finish current-head CI, correct any issues, user debug/release cape & animation acceptance, then R4-D.
 
 ## 2026-10-22 — R4-B real PNG Windows acceptance; coplanar overlap follow-up
 

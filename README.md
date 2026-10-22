@@ -9,7 +9,7 @@ UV layouts and (in later checkpoints) reusable 2D and 3D player widgets.
 - R1: GPU-backed 3D feasibility prototype in example/ (closed, Windows-verified).
 - R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs (closed, merged).
 - R3: 2D head/body/cape Flutter widgets (closed, Windows-verified and merged).
-- R4: R4-A Windows atlas verified; R4-B expanded outer meshes and optional local PNG demo on feature, CI/live acceptance pending. R4-C/D not implemented.
+- R4: R4-A verified, R4-B debug depth fix verified, R4-C cape/poses implemented on feature awaiting Windows checks; R4-D not implemented.
 
 ## R2 usage: atlas data only
 
@@ -80,3 +80,12 @@ Use Classic/Slim model selection; camera orientation/zoom is retained
 while the GPU mesh scene is rebuilt. Outer geometry follows the shared
 R2 UV layout and is independently expanded. Real cape, animation and
 public 3D viewer remain R4-C/D.
+
+## R4-C Windows example (feature, not live validated)
+
+The 3D gallery uses D:\development\cross-platform\9fede215f7cb6884.png
+as its local default skin when present/valid, selecting Slim; no fixture
+binary is distributed, and CI uses synthetic PNG instead. The gallery
+now supports a separate local Java 64x32 cape PNG, a generated fallback
+cape, Cape toggle and Idle/Walk animation. R4-D public 3D viewer and GPU
+resource benchmark remain separate.

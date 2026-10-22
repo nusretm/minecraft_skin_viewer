@@ -73,3 +73,12 @@ draws six opaque base meshes and six transparent alpha-blended outer meshes
 from the same uploaded straight-RGBA texture. Outer layer visibility is a
 presentation control that does not mutate source texture data. Real Windows
 blend sorting remains an explicit visual-acceptance gate, not proven by CI.
+
+## R4-C renderer-neutral cape, pose and GUI hinge
+
+MtnMinecraftCapeBoxMesh, MtnMinecraftSkinPivot and
+MtnMinecraftSkinPoseFrame are pure Dart models built from the R2 atlas,
+not GPU-specific types. Example-only flutter_scene Node parenting
+implements shoulder/hip rotation and a cape hinge. A frame Ticker updates
+rotations for the Walk pose without re-generating mesh/UV buffers.
+Full public viewer/lifecycle integration belongs to R4-D.
