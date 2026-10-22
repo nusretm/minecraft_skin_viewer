@@ -1,26 +1,34 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: R4-A/B/C WINDOWS VERIFIED; R4-D static-tick code release FUNCTIONALLY USER-VERIFIED, three reported 20× stress invocations and 6 CPU process memory samples; GPU trend unknown; 60-second Idle memory 515.3/128.0 MB confirmed by user; Draft PR #4 remains unmerged
+Status: R4-A/B/C/D CLOSED; user Windows functionally accepted; PR #4 SQUASH MERGED as 6b4bc20; direct GPU memory still unmeasured, not a zero-leak claim.
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
+## Final R4 closure — 2026-10-22
+
+- PR #4 **squash merged** into `main` as `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2` with user's explicit instruction to merge. Verified PR merged state and exact main ref.
+- R4-A/B/C: six-face Minecraft model, Classic/Slim, outer shells and 64×32 cape UV/mirroring, independent cape alpha, Idle/Walk and hinge, actual Windows preview. R4-D: reusable public `MtnMinecraftSkinViewer` and `MtnMinecraftSkinViewerController`; Windows debug/release built and user confirmed all R4-D functions operate.
+- Last code-tip `570ca3e` R1–R4 Windows CI all green, prior local root 46/46 and example regression 1/1 successful. Last two feature commits `dfabd852`, `c86df2b3` only corrected documentation of memory samples; their CI was in-progress at merge. This was disclosed to the user when proceeding under explicit approval.
+- Release 20× recreate button invoked three times according to user, with process Private memory: 317.0, 376.4, 745.2, 538.0, 768.6, **515.3 MB after 60 seconds Idle**, Working Set: 127.7, 129.4, 128.9, 132.1, 131.6, 128.0 MB. No clearly monotonic growth; GPU dedicated/shared memory not captured. This is an **accepted residual measurement risk**, not a guarantee of zero resource leaks.
+- Preserve historic entries below unchanged as period evidence. A future optional long-duration/GPU-memory profile is a **deferred recommendation**, not a blocker to this user-authorized R4 merge or an automatic authorization for R5.
+
 ## Approved plan and sequencing
 
-- R4-A **WINDOWS-VALIDATED**: Backend-neutral 24-vertex/36-index cuboid mesh data,
+- R4-A **CLOSED / WINDOWS-VALIDATED**: Backend-neutral 24-vertex/36-index cuboid mesh data,
   source-of-truth R2 six-face UV mapping, Classic/Slim sizes, standing pose
   part centers, synthetic Windows GPU atlas-face smoke and automated tests.
-- R4-B **DEBUG GPU VERIFIED, PATCH RELEASE CHECK PENDING**: Independently offset outer-layer geometries, their
+- R4-B **CLOSED / WINDOWS-VALIDATED**: Independently offset outer-layer geometries, their
   face UVs and alpha handling, Classic/Slim real full skin appearance.
-- R4-C **WINDOWS 40/40 AND DEPTH DEBUG VERIFIED; CAPE UV ORIENTATION CORRECTION PENDING LIVE TEST**: 64x32 cape geometry+UV with back hinge, simple
+- R4-C **CLOSED / WINDOWS-VALIDATED**: 64x32 cape geometry+UV with back hinge, simple
   shoulder/hip pivots and idle/walk basic poses; no cloth physics.
-- R4-D **IMPLEMENTED ON FEATURE, NOT ACCEPTED**: Public MtnMinecraftSkinViewer (3D), working
+- R4-D **CLOSED / WINDOWS FUNCTIONALLY ACCEPTED; GPU MEMORY DIRECT MEASUREMENT DEFERRED**: Public MtnMinecraftSkinViewer (3D), working
   controller/interaction/lifecycle, true skin+cape hot swapping,
   repeated mount/unmount and memory observations, Windows release checks.
 
-Feature implementation approval does not mean all checkpoints are completed.
-Code will remain on the one approved feature branch and Draft PR. Conditional
-merge authority requires scope completion, full tests and user live acceptance.
+All four R4 checkpoints are now merged. Detailed prior acceptance risks and pending
+states below are historical snapshots; this header and final closure record
+supersede those statuses. No new R5 implementation authorization is implied.
 
 ## R4-A design and source files
 
