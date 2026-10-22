@@ -15,6 +15,7 @@ class MtnMinecraftSkinBoxMesh {
   MtnMinecraftSkinBoxMesh._(
     this.part,
     this.modelType,
+    this.layer,
     Float32List positions,
     Float32List normals,
     Float32List texCoords,
@@ -26,6 +27,7 @@ class MtnMinecraftSkinBoxMesh {
 
   final MtnMinecraftSkinBodyPart part;
   final MtnMinecraftSkinModelType modelType;
+  final MtnMinecraftSkinLayer layer;
 
   final Float32List _positions;
   final Float32List _normals;
@@ -40,17 +42,25 @@ class MtnMinecraftSkinBoxMesh {
 
   static const double modelPixel = 1 / 16;
 
-  /// Builds one base-layer cuboid, including all six Minecraft atlas faces.
-  /// R4-B will add independently expanded outer-layer meshes.
+  /// Builds a cuboid for either R2 skin layer, including all six atlas faces.
+  ///
+  /// Outer mesh faces are independently inflated by half a model pixel for
+  /// hats and one quarter model pixel for jacket/sleeves/trousers. UV regions
+  /// still have the *base* face dimensions, so the pixels stretch over the
+  /// slightly larger shell without bleeding into adjacent atlas cells.
   factory MtnMinecraftSkinBoxMesh.forBodyPart(
     MtnMinecraftSkinBodyPart part,
-    MtnMinecraftSkinModelType modelType,
-  ) {
+    MtnMinecraftSkinModelType modelType, {
+    MtnMinecraftSkinLayer layer = MtnMinecraftSkinLayer.base,
+  }) {
     final layout = MtnMinecraftSkinUvLayout(modelType);
     final dimensions = layout.dimensions(part);
-    final halfX = dimensions.width * modelPixel / 2;
-    final halfY = dimensions.height * modelPixel / 2;
-    final halfZ = dimensions.depth * modelPixel / 2;
+    final inflation = layer == MtnMinecraftSkinLayer.outer
+        ? (part == MtnMinecraftSkinBodyPart.head ? 0.5 : 0.25)
+        : 0.0;
+    final halfX = (dimensions.width / 2 + inflation) * modelPixel;
+    final halfY = (dimensions.height / 2 + inflation) * modelPixel;
+    final halfZ = (dimensions.depth / 2 + inflation) * modelPixel;
 
     // Vertex order for each face: face-local top-left, top-right,
     // bottom-right, bottom-left as viewed from outside the cuboid.
@@ -102,7 +112,7 @@ class MtnMinecraftSkinBoxMesh {
       final face = faceOrder[faceIndex];
       final four = vertexCorners[face]!;
       final normal = faceNormals[face]!;
-      final uv = layout.face(part, face).normalizedCorners(
+      final uv = layout.face(part, face, layer: layer).normalizedCorners(
         MtnMinecraftSkinUvLayout.atlasWidth,
         MtnMinecraftSkinUvLayout.atlasHeight,
       );
@@ -123,7 +133,7 @@ class MtnMinecraftSkinBoxMesh {
     }
 
     return MtnMinecraftSkinBoxMesh._(
-      part, modelType, positions, normals, texCoords, indices);
+      part, modelType, layer, positions, normals, texCoords, indices);
   }
 
   /// Default standing model centers, with soles at y=0 and head top at y=2.
