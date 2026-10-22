@@ -5,7 +5,14 @@
 **Active implementation:** R4 user-approved (A/B/C/D); **R4-A active on `feature/r4-full-3d-skin-viewer`**; R4-B/C/D approved but not started.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R4-A — `IMPLEMENTED ON FEATURE / AUTOMATED WINDOWS CI + LIVE UV SMOKE PENDING / DRAFT PR TO OPEN / NOT MERGED`; R1/R2/R3 CLOSED.
+**Current checkpoint:** R4-A — `IMPLEMENTED ON FEATURE / ROOT+MESH TESTS AND EXAMPLE ANALYSIS CI PASS / RELEASE AND LIVE UV SMOKE PENDING / DRAFT PR #4 / NOT MERGED`; R1/R2/R3 CLOSED.
+
+## 2026-10-22 — R4-A Draft PR #4 and first CI evidence
+
+- **Draft PR:** [#4 — R4-A 3D Mesh UV Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/4), targeting `main`. Draft, not merged. R4-B/C/D approved but **not implemented**.
+- **Initial Windows CI:** [run 39699923786](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39699923786) on feature code `9657bfb8`: `flutter --version`, root dependencies, root analyzer, **entire root test suite including R4-A mesh tests**, example dependencies and example analyzer **PASS**. R1 controls regression was **IN PROGRESS** and Windows release compile **NOT YET RUN** at inspection; no complete green CI claim.
+- **Reviewer diff:** 11 files on PR #4; no added-line trailing whitespace found in GitHub patch scan. Geometric cross-product arithmetic checked separately for all six face quads: outward winding matches face normal. Real `git diff --check` on a Windows worktree and direct GPU visual validation have **not** been run by assistant.
+- **Next required evidence:** completed current-head Windows CI and user's actual debug+release R4-A gallery UV-face/corner marker check. Keep PR Draft and do not merge; R4-B begins only after R4-A visual checkpoint review.
 
 ## 2026-10-22 — R4 approved; R4-A Mesh & UV Foundation implementation
 

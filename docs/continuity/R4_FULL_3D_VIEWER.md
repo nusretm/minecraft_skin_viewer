@@ -64,3 +64,15 @@ merge authority requires scope completion, full tests and user live acceptance.
 - No merge from this Draft PR until all four checkpoints and actual Windows
   acceptance, unless user explicitly requests a separately reviewed
   intermediate integration boundary.
+
+## Draft PR and interim Windows CI (2026-10-22)
+
+- Draft PR #4: https://github.com/nusretm/minecraft_skin_viewer/pull/4
+- Initial Windows R4-A CI run 39699923786 on functional SHA 9657bfb8:
+  root analyzer and entire R1-R4A root test suite PASS, example analyzer PASS.
+  R1 control regression and release compilation were still pending.
+- Six face triangle-winding vectors separately inspected: outward-facing
+  normals match indexed triangles for back/right/front/left/top/bottom.
+- Actual GPU atlas UV orientation, Classic/Slim appearance, release EXE
+  interaction, resize, repeated scene disposal and GPU memory remain NOT
+  LIVE-VALIDATED. No merge until agreed gates are complete.
