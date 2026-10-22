@@ -2,11 +2,18 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** R5-A APPROVED and IMPLEMENTED on feature `feature/r5-public-widget-controller-api` (Windows CI/live validation pending); R5-B (2D widget API regression) and R5-C (package readiness) APPROVED in scope but NOT STARTED. R1–R4 remain CLOSED in `main`. No launcher integration work.
+**Active implementation:** R5-A/B/C approved package-only scope IMPLEMENTED on feature `feature/r5-public-widget-controller-api`, Draft PR #5. Current source Windows CI and user live debug/release GPU + 2D visual acceptance PENDING. R1–R4 CLOSED in `main`; no launcher integration.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
-**Current checkpoint:** R5-A — controller sole 3D pose/layer/cape authority; existing 2D widgets unchanged. Automated GitHub CI and Windows release smoke PENDING. R5-A/B/C single Draft PR; no merge.
+**Current checkpoint:** R5-A/B/C CODE + TESTS/DOCS IMPLEMENTED / R5 package candidate `0.1.0-dev.2` (Git only), Draft PR #5 OPEN / Full Windows CI and actual debug/release visual acceptance PENDING / No merge.
+
+## 2026-10-22 — R5-B/C package readiness on feature, NOT Windows accepted
+
+- **R5-B code:** Public `MtnMinecraftSkinPreview` and `MtnMinecraftSkinHead` implementations remain unchanged (existing R3 coverage was already extensive: Classic/Slim, legacy mirror, head alpha/front-back, cape 2D, nearest head scaling, image swap/disposal). Added a focused 2D body regression in `test/mtn_minecraft_skin_2d_test.dart` for a new decoded skin texture identity, front/back and outer-layer switch, 2× scaling pixel correctness, and disposal. Expanded existing R4-D gallery with declarative **2D Head + 2D Skin Preview** in a side column, driven by the exact same R2 decoded skin as the 3D viewer; shared controller controls outer visibility without a second 2D controller.
+- **R5-C code/docs:** `pubspec.yaml` pre-stable version `0.1.0-dev.1` → `0.1.0-dev.2`; new `CHANGELOG.md` documents breaking R5 constructor API (removing 3D `pose`, `showOuterLayer`, `showCape` props), controller ownership, Git-only distribution and Windows GPU runtime. Updated README three-widget example and architecture. Existing root Flutter constraint `>=3.47.1` and `flutter_scene 0.24.3` unchanged. No dependency addition or SDK upgrade, no pub.dev publication, no tag/release before approval.
+- **Git/CI status:** feature branch `feature/r5-public-widget-controller-api`, [Draft PR #5](https://github.com/nusretm/minecraft_skin_viewer/pull/5); code integrated only on feature, `main` unchanged. An earlier controller-only R4 CI on `d3445eeb` succeeded; current source CI still running. **No full current-head Windows pass or actual R5 visual acceptance yet**. Example visual controls and GPU lifecycle must be validated on Windows before merge.
+- **Risk:** R4 20× stress memory results do not certify zero GPU leaks. Retain separate user Windows release test. `dart format` never run on pure Dart sources. No other repository changed.
 
 ## 2026-10-22 — R5 public-only scope approved; R5-A implementation in feature
 

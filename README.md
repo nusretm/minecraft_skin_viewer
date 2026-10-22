@@ -1,7 +1,7 @@
 # Minecraft Skin Viewer
 
 A Flutter/Dart library for Minecraft Java Edition skin/cape textures, shared
-UV layouts and (in later checkpoints) reusable 2D and 3D player widgets.
+UV layouts, and reusable 2D and 3D player widgets.
 
 - Repository: nusretm/minecraft_skin_viewer
 - Package: mtn_minecraft_skin_viewer
@@ -159,3 +159,33 @@ The example's R4-D button triggers 20 distinct GPU viewer mount/unmount
 cycles, waiting for readiness and a rendered frame on each. Check
 Task Manager/Process Explorer GPU/dedicated-memory trends externally
 before claiming lifecycle stability. GPU opt-in required on Windows.
+
+## Git-only package candidate (R5-C)
+
+The next candidate is `0.1.0-dev.2`, not a published package.
+A host Flutter project can **later**, after Windows R5 acceptance, pin
+`mtn_minecraft_skin_viewer` as a Git dependency to an explicitly verified
+commit SHA rather than a moving `main` reference:
+
+```yaml
+dependencies:
+  mtn_minecraft_skin_viewer:
+    git:
+      url: https://github.com/nusretm/minecraft_skin_viewer.git
+      ref: <verified-commit-sha>
+```
+
+This package's `pubspec.yaml` requires Flutter **3.47.1 or newer** and
+uses `flutter_scene: 0.24.3`. The three public widgets are imported through
+`package:mtn_minecraft_skin_viewer/mtn_minecraft_skin_viewer.dart`.
+Run 3D on Windows with Flutter GPU enabled (`--enable-flutter-gpu`) and
+check the built release executable; 2D head/body widgets do not create GPU
+scenes. Local example PNG fixture paths are optional and never bundled.
+
+Changing 3D controller pose/layers/cape is an in-place presentation update;
+changing the decoded skin/cape texture object reconstructs scene resources.
+`onReady` and `onError` expose scene setup outcomes, while invalid PNG
+input raises a `FormatException` during `fromPng`. No network, accounts,
+cache, launcher integration, pub.dev upload or release binaries are owned
+by this package. See `CHANGELOG.md` and
+`docs/continuity/R5_PUBLIC_WIDGET_API.md`.

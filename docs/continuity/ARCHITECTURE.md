@@ -1,6 +1,6 @@
 # Architecture — Minecraft Skin Viewer
 
-Status: R1/R2/R3/R4 CLOSED in main; R5-A/B/C package-only public widget finalization approved, R5-A code on Draft feature awaiting Windows evidence. GPU dedicated-memory metrics remain unmeasured.
+Status: R1/R2/R3/R4 CLOSED in main; R5-A/B/C package-only public widget finalization code on Draft PR #5, Windows CI and live verification pending. GPU dedicated-memory metrics remain unmeasured.
 
 ## Scope
 
