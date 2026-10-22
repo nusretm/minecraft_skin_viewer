@@ -7,6 +7,11 @@
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **Current checkpoint:** R4-C — WINDOWS 40/40 ROOT TESTS / DEPTH WARNING GONE IN 36b054d DEBUG / CAPE EXTERIOR UV + DEFAULT LOCAL CAPE FIX ON FEATURE, CURRENT CI AND WINDOWS CAPE ORIENTATION RECHECK PENDING / DRAFT PR #4 / NOT MERGED. R4-D not started.
 
+## 2026-10-22 — Intermediate CI failure after cape UV code change
+
+- Early functional source 4f40a8e and example-path source 7cb2833 updated mesh UVs without yet updating the previous cape UV test expectation. Windows R4 workflow [39744017453](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39744017453) failed at `Test root R1-R4A`: 39 passed / 1 failed in `test/mtn_minecraft_skin_pose_cape_test.dart` (expected 0.1875, actual 0.015625), so downstream example/release steps were skipped in that workflow. Windows R2 workflow [39744074694](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39744074694) also failed at `Test R2 skin/cape texture and UV models` for that same outdated expectation.
+- Follow-up test commit b10ce01d updated the R4-C assertion for the intended rear world-face / decorated atlas-face swap and added explicit inner-versus-outer UV regression coverage. Current-head CI on docs commit e07ac804 must pass before acceptance; **the intermediate failures are not passing evidence, nor are they necessarily current-head failures.**
+
 ## 2026-10-22 — R4-C overlap resolved, cape exterior UV correction and local default
 
 - User tested feature HEAD 36b054d on Windows: root analyzer NO ISSUES (17.4s), root tests 40/40 PASS (15s), example analyzer NO ISSUES (69.2s), Flutter GPU debug build/launched (24.5s). The previous single `body/outer` vs `rightLeg/outer` coplanar-overlap warning is absent; only informational 24-bit depth messages remain. `Lost connection to device` after window close is the user's confirmed normal termination. A post-36b054d local release build/launch was not included in this log; do not claim otherwise.
