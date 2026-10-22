@@ -32,9 +32,12 @@ void main() {
       final uv = layout.face(atlasFace).normalizedCorners(64, 32);
       for (var i = 0; i < 4; i++) {
         final at = (f * 4 + i) * 2;
-        expect(mesh.texCoords[at], uv[i].x,
+        final sourceCorner = faces[f] == MtnMinecraftSkinFace.back
+            ? switch (i) { 0 => 1, 1 => 0, 2 => 3, _ => 2 }
+            : i;
+        expect(mesh.texCoords[at], uv[sourceCorner].x,
             reason: 'cape ${faces[f].name} UV corner $i horizontal');
-        expect(mesh.texCoords[at + 1], uv[i].y,
+        expect(mesh.texCoords[at + 1], uv[sourceCorner].y,
             reason: 'cape ${faces[f].name} UV corner $i vertical');
       }
     }
@@ -56,10 +59,38 @@ void main() {
       final frontIndex = (2 * 4 + corner) * 2;
       expect(mesh.normals[corner * 3 + 2], -1);
       expect(mesh.normals[(2 * 4 + corner) * 3 + 2], 1);
-      expect(mesh.texCoords[backIndex], exterior[corner].x);
-      expect(mesh.texCoords[backIndex + 1], exterior[corner].y);
+      final mirroredCorner = switch (corner) {
+        0 => 1, 1 => 0, 2 => 3, _ => 2,
+      };
+      expect(mesh.texCoords[backIndex], exterior[mirroredCorner].x);
+      expect(mesh.texCoords[backIndex + 1], exterior[mirroredCorner].y);
       expect(mesh.texCoords[frontIndex], interior[corner].x);
       expect(mesh.texCoords[frontIndex + 1], interior[corner].y);
+    }
+  });
+
+  test('outward cape mirror flips only U: vertical orientation is unchanged', () {
+    const layout = MtnMinecraftCapeUvLayout();
+    final source = layout.face(MtnMinecraftSkinFace.front)
+        .normalizedCorners(64, 32);
+    final texCoords = MtnMinecraftCapeBoxMesh.build().texCoords;
+    // -Z face first four vertices are top-left, top-right, bottom-right,
+    // bottom-left as viewed from behind the player.
+    expect(texCoords[0], source[1].x);
+    expect(texCoords[1], source[0].y);
+    expect(texCoords[2], source[0].x);
+    expect(texCoords[3], source[1].y);
+    expect(texCoords[4], source[3].x);
+    expect(texCoords[5], source[2].y);
+    expect(texCoords[6], source[2].x);
+    expect(texCoords[7], source[3].y);
+    // No horizontal flip is permitted on the inward (+Z) atlas face.
+    final inner = layout.face(MtnMinecraftSkinFace.back)
+        .normalizedCorners(64, 32);
+    for (var i = 0; i < 4; i++) {
+      final at = (2 * 4 + i) * 2;
+      expect(texCoords[at], inner[i].x);
+      expect(texCoords[at + 1], inner[i].y);
     }
   });
 
