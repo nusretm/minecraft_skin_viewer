@@ -92,8 +92,16 @@ class MtnMinecraftCapeBoxMesh {
         final index = faceIndex * 4 + corner;
         positions.setRange(index * 3, index * 3 + 3, corners[vertices[corner]]);
         normals.setRange(index * 3, index * 3 + 3, normal);
-        texCoords[index * 2] = cornersUv[corner].x;
-        texCoords[index * 2 + 1] = cornersUv[corner].y;
+        // The outward (-Z) quad has reversed horizontal winding relative
+        // to the Java cape atlas's decorated surface. After mapping the
+        // correct source face, flip U within *that face only* to preserve
+        // the left/right design seen on the original cape preview.
+        // Leave V, the inner face and all thin-edge faces unchanged.
+        final uvCorner = face == MtnMinecraftSkinFace.back
+            ? switch (corner) { 0 => 1, 1 => 0, 2 => 3, _ => 2 }
+            : corner;
+        texCoords[index * 2] = cornersUv[uvCorner].x;
+        texCoords[index * 2 + 1] = cornersUv[uvCorner].y;
       }
       final first = faceIndex * 4;
       indices.addAll([
