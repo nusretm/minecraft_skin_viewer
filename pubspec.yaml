@@ -1,6 +1,6 @@
 name: mtn_minecraft_skin_viewer
 description: Reusable Minecraft Java skin and cape 2D/3D viewers for Flutter (under development).
-version: 0.1.0-dev.1
+version: 0.1.0-dev.2
 publish_to: none
 
 environment:
