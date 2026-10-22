@@ -35,6 +35,7 @@ class _MtnMinecraftR4DViewerGalleryState
   bool _stressRunning = false;
   int _stressCompleted = 0;
   MtnMinecraftSkinPose _pose = MtnMinecraftSkinPose.idle;
+  MtnMinecraftSkinView _twoDView = MtnMinecraftSkinView.front;
   Object? _error;
   Completer<void>? _sceneReady;
 
@@ -300,6 +301,49 @@ class _MtnMinecraftR4DViewerGalleryState
                           : const SizedBox.expand(),
             ),
           ),
+          if (skin != null)
+            SizedBox(
+              height: 170,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MtnMinecraftSkinPreview(
+                    texture: skin,
+                    height: 128,
+                    view: _twoDView,
+                    showOuterLayer: _showOuter,
+                  ),
+                  const SizedBox(width: 24),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      MtnMinecraftSkinHead(
+                        texture: skin,
+                        size: 64,
+                        view: _twoDView,
+                        showOuterLayer: _showOuter,
+                      ),
+                      const SizedBox(height: 8),
+                      SegmentedButton<MtnMinecraftSkinView>(
+                        segments: const [
+                          ButtonSegment(
+                            value: MtnMinecraftSkinView.front,
+                            label: Text('Front'),
+                          ),
+                          ButtonSegment(
+                            value: MtnMinecraftSkinView.back,
+                            label: Text('Back'),
+                          ),
+                        ],
+                        selected: {_twoDView},
+                        onSelectionChanged: (views) =>
+                            setState(() => _twoDView = views.first),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           const Padding(
             padding: EdgeInsets.all(10),
             child: Text('Real package widget; 20-cycle button tests GPU '
