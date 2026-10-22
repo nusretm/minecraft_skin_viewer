@@ -22,12 +22,44 @@ void main() {
 
     const layout = MtnMinecraftCapeUvLayout();
     for (var f = 0; f < faces.length; f++) {
-      final uv = layout.face(faces[f]).normalizedCorners(64, 32);
+      // The cape's decorated atlas front belongs on the outward-facing
+      // character-back (-Z) surface. Inner fabric (+Z) gets atlas back.
+      final atlasFace = switch (faces[f]) {
+        MtnMinecraftSkinFace.back => MtnMinecraftSkinFace.front,
+        MtnMinecraftSkinFace.front => MtnMinecraftSkinFace.back,
+        _ => faces[f],
+      };
+      final uv = layout.face(atlasFace).normalizedCorners(64, 32);
       for (var i = 0; i < 4; i++) {
         final at = (f * 4 + i) * 2;
-        expect(mesh.texCoords[at], uv[i].x);
-        expect(mesh.texCoords[at + 1], uv[i].y);
+        expect(mesh.texCoords[at], uv[i].x,
+            reason: 'cape ${faces[f].name} UV corner $i horizontal');
+        expect(mesh.texCoords[at + 1], uv[i].y,
+            reason: 'cape ${faces[f].name} UV corner $i vertical');
       }
+    }
+  });
+
+  test('cape rear -Z outward fabric has decorated face, not inner atlas UV', () {
+    const layout = MtnMinecraftCapeUvLayout();
+    final mesh = MtnMinecraftCapeBoxMesh.build();
+
+    // Mesh face indices: back (-Z) = 0, front (+Z) = 2.
+    final exterior = layout.face(MtnMinecraftSkinFace.front)
+        .normalizedCorners(64, 32);
+    final interior = layout.face(MtnMinecraftSkinFace.back)
+        .normalizedCorners(64, 32);
+    expect(exterior.first.x, isNot(interior.first.x));
+
+    for (var corner = 0; corner < 4; corner++) {
+      final backIndex = corner * 2;
+      final frontIndex = (2 * 4 + corner) * 2;
+      expect(mesh.normals[corner * 3 + 2], -1);
+      expect(mesh.normals[(2 * 4 + corner) * 3 + 2], 1);
+      expect(mesh.texCoords[backIndex], exterior[corner].x);
+      expect(mesh.texCoords[backIndex + 1], exterior[corner].y);
+      expect(mesh.texCoords[frontIndex], interior[corner].x);
+      expect(mesh.texCoords[frontIndex + 1], interior[corner].y);
     }
   });
 
