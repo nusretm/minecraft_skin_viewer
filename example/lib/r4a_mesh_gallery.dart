@@ -175,6 +175,8 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
   }
 
   void _toggleOuterLayers(bool enabled) {
+    // Only skin hat/jacket/sleeve/pants mesh nodes belong to this toggle.
+    // The cape has a separate pivot, texture and visibility controller.
     for (final node in _outerNodes.values) {
       node.visible = enabled;
     }
@@ -334,7 +336,14 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
           texCoords: cape.texCoords,
           indices: cape.indices,
         ), capeMaterial),
-      )..position = vm.Vector3(0, -0.5, -0.03125));
+      )
+        ..position = vm.Vector3(0, -0.5, -0.03125)
+        // Render the cape independently after translucent skin shells
+        // (shell nodes use order 1). Otherwise changing Outer layers
+        // composites shell pixels over the cape even though the two
+        // toggles control independent objects. Opaque skin still masks
+        // cape fragments through the depth test.
+        ..renderOrder = 2);
       created.add(capePivot);
 
       if (!mounted || generation != _generation) return;
