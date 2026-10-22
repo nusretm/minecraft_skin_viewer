@@ -2,10 +2,17 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** R4-A/B/C Windows user-verified; R4-D public 3D widget/controller and 20-cycle acceptance harness IMPLEMENTED ON FEATURE; exact-head Windows CI + local analyze/tests/debug/release builds PASS; true 20-cycle completion, interactive R4-D controls and GPU memory trend STILL PENDING. PR #4 remains Draft/unmerged.
+**Active implementation:** R4-A/B/C Windows user-verified; R4-D public 3D widget/controller Windows release functions USER-VERIFIED after static tick improvement; repeated 20× tests with CPU process memory measured. Exact 20/20 counter and GPU dedicated/shared memory trend not independently supplied; PR #4 Draft/unmerged pending final lifecycle risk assessment.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R4-D — 46/46 ROOT TESTS + ALL CODE-HEAD CI SUCCESS ON f3ad33c / USER REPORTS REPEATED 20× RELEASE STRESS, 5 MEMORY SAMPLES 315.4→445.8→741.2→657.2→664.2 MB PRIVATE; WORKING SET 130–137 MB / REDUNDANT SCENE TICK DISABLED IN dda15f8, NEW CI + GPU MEMORY RECHECK PENDING / PR #4 DRAFT / NOT MERGED.
+**Current checkpoint:** R4-D — USER CONFIRMS ALL R4-D FUNCTIONS ON RELEASE AFTER dda15f8 / 20× BUTTON RUN 3 TIMES (REPORTED), 6 MEMORY SAMPLES PRIVATE 317→376.4→745.2→538→768.6→515.3 MB; WORKING SET 127.7–132.1 MB / SIXTH SAMPLE 'WALK'; SEVENTH 60-SECOND IDLE NUMERIC VALUE NOT PROVIDED / GPU MEMORY TREND STILL UNKNOWN / PR #4 DRAFT, UNMERGED.
+
+## 2026-10-22 — R4-D static-tick retest: user functional acceptance and six process samples
+
+- User explicitly says **all functions work** after updating to the static-tick R4-D build. In the same Windows release session they measured in this order: **app opening 317.0/127.7 MB** (Private/Working Set), **public 3D open 376.4/129.4**, **20× create pass #1 745.2/128.9**, **20× create pass #2 538.0/132.1**, **Walk + 20× create pass #3 768.6/131.6**, **Walk 515.3/128.0**. They describe a seventh stage **60 seconds Idle**, but the message contains **only six numerical readings**; do not assign the sixth value to Idle. Actual `Completed: 20/20` label and GPU memory readings are not included.
+- **Interpretation, no overclaim:** Repeated workload pushes Private Memory high but it drops between stress readings (745.2→538.0 MB, then 768.6→515.3 MB), so no monotonic accumulation over the supplied run. Working Set stays narrowly between 127.7 and 132.1 MB. At the last supplied point, Private is still 138.9 MB above the first public 3D open value (515.3 vs 376.4); this does not demonstrate full reclamation or absence of GPU leaks. Compared to prior-run peak 741.2 and last 664.2, release-series baselines and timings differ; **do not attribute differences causally to autoTick:false**.
+- **R4-D acceptance:** public widget controls and test harness functionally user-confirmed in release; **true repeated stress invoked 3 times**, but no independently captured completion counter, GPU dedicated/shared usage, or idle plateau reading. Keep lifecycle/memory acceptance as *cautiously reassuring but INCOMPLETE*, preserve Draft PR #4 and do not merge solely on CPU Working Set stability. Last known exact current-doc HEAD 570ca3e Windows R1/R2/R4 CI successful; R3 was in progress at inspection. Re-check HEAD CI at closure.
+- PowerShell helper `Get-MtnMemory` failed for user; use the exact working `Get-Process mtn_minecraft_skin_viewer_example | Select-Object ...` command, avoid imposing a new function.
 
 ## 2026-10-22 — R4-D repeated 20× release stress memory series and static scene ticking
 

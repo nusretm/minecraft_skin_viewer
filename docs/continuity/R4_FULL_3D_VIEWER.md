@@ -1,7 +1,7 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: R4-A/B/C WINDOWS VERIFIED; R4-D 46/46+CI PASS on f3ad33c, repeated release stress memory series reported; new static-tick fix dda15f8 pending CI/Windows/GPU memory retest
+Status: R4-A/B/C WINDOWS VERIFIED; R4-D static-tick code release FUNCTIONALLY USER-VERIFIED, three reported 20× stress invocations and 6 CPU process memory samples; GPU trend and 60-second Idle final number unknown; Draft PR #4 remains unmerged
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
@@ -288,3 +288,28 @@ merge authority requires scope completion, full tests and user live acceptance.
 - Current head CI, Windows Idle/Walk/camera repaint behavior, and a new
   controlled Private/WorkingSet/GPU memory comparison required.
   PR #4 stays Draft and not merged.
+
+## R4-D post-static-tick Windows release test (2026-10-22)
+
+- User confirms all R4-D functions operate properly, after static
+  SceneView autoTick:false change. In a single release EXE session:
+  app open 317.0/127.7 MB Private/Working Set;
+  public 3D open 376.4/129.4;
+  first 20× button 745.2/128.9;
+  second 20× button 538.0/132.1;
+  Walk plus third 20× button 768.6/131.6;
+  Walk 515.3/128.0.
+- User also identifies 60 seconds Idle as a stage, but provided only
+  six numeric outputs; there is no seventh Idle measurement to cite.
+- Stress measurements move down significantly between high peaks:
+  745.2→538.0 and 768.6→515.3 Private MB; Working Set 127.7–132.1.
+  This is inconsistent with an obvious unbounded monotonic increase,
+  but does not prove all resources are reclaimed: 515.3 Private is
+  still 138.9 MB above initial public 3D open (376.4 MB).
+- No direct GPU dedicated/shared memory data or post-idle memory number.
+  No 20/20 counter screenshot/log, though user reports pressing the
+  20× button three times. External GC effects and allocator reuse
+  cannot be inferred from CPU working-set values alone.
+- Release functionality ACCEPTED by user; memory trend remains cautiously
+  reassuring but NOT fully verified as leak-free. Keep PR #4 Draft
+  until final risk disposition; do not quietly merge.
