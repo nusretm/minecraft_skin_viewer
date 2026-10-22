@@ -1,7 +1,7 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: R4-A/B/C WINDOWS VERIFIED; R4-D IMPLEMENTED ON FEATURE, CI+WINDOWS/20-CYCLE MEMORY ACCEPTANCE PENDING
+Status: R4-A/B/C WINDOWS VERIFIED; R4-D CODE+46/46 TESTS+WINDOWS CI AND DEBUG/RELEASE BUILD PASS; GPU 20× LIFECYCLE/MEMORY TREND STILL PENDING
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
@@ -243,6 +243,27 @@ merge authority requires scope completion, full tests and user live acceptance.
   GPU frame-present stress loop; run it on Windows release, observe memory
   before/after and capture any exceptions/diagnostics. The button by
   itself cannot certify zero memory leaks without external measurements.
-- **Not yet verified on Windows.** Current source CI, real debug+release
-  viewer controls, rapid texture changes and 20-cycle memory readings
-  must pass before R4-D closure and before any conditional merge.
+- **Updated Windows evidence:** exact-head f3ad33c root 46/46 tests PASS,
+  root/example analyzers PASS, example regression 1/1 PASS, Windows debug
+  GPU app and release executable successfully built/launched. All matching
+  CI workflows SUCCESS. Interactive R4-D viewer controls, hot swaps and
+  20x completed cycle with memory trend are not yet confirmed; these remain
+  R4-D acceptance gates before any conditional merge.
+
+## R4-D Windows evidence and single memory snapshot (2026-10-22)
+
+- User feature f3ad33c: local Windows root tests 46/46 PASS, root/example
+  analyzers clean, example widget test 1/1 PASS, Windows debug GPU built
+  and launched, release build PASS and EXE launched.
+- GitHub feature-head CI R1/R2/R3/R4 all SUCCESS (39750542501,
+  39750542507, 39750542493, 39750542477; PR run 39750535419).
+- Repeated 24-bit depth messages were informational, NOT a
+  'surface overlap will flicker' warning. User-confirmed window-close
+  disconnect is expected, not a crash.
+- One process measurement: Private Memory 606.1 MB, Working Set 337.7 MB.
+  No baseline, time-series, repeat-cycle completion, post-GC or GPU
+  memory comparison supplied. This is neither evidence of a leak nor
+  proof of bounded memory.
+- Explicit R4-D interactive smoke (20/20, public viewer texture/model
+  replacement, layer/cape separation, pose, camera, resize) and memory
+  plateau still required. Keep Draft PR #4 unmerged.
