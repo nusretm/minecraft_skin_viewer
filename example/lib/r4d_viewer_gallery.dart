@@ -6,7 +6,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:mtn_minecraft_skin_viewer/mtn_minecraft_skin_viewer.dart';
 
-/// R4-D production-widget acceptance and manual GPU lifecycle harness.
+/// R5 public 2D/3D widget acceptance and manual GPU lifecycle harness.
 /// The local PNG paths are developer conveniences, never published assets.
 class MtnMinecraftR4DViewerGallery extends StatefulWidget {
   const MtnMinecraftR4DViewerGallery({super.key});
@@ -169,7 +169,8 @@ class _MtnMinecraftR4DViewerGalleryState
       _stressCompleted = 0;
       _error = null;
     });
-    _camera.setPose(MtnMinecraftSkinPose.idle);
+    // Preserve controller state: the 20x lifecycle stress must exercise
+    // the currently selected Idle or Walk pose, not silently force Idle.
     try {
       for (var i = 0; i < 20 && mounted; i++) {
         setState(() => _visible = false);
@@ -214,7 +215,7 @@ class _MtnMinecraftR4DViewerGalleryState
   Widget build(BuildContext context) {
     final skin = _skin;
     return Scaffold(
-      appBar: AppBar(title: const Text('R4-D — Public 3D Viewer & Lifecycle')),
+      appBar: AppBar(title: const Text('R5 — Public Skin Widgets & Controller')),
       body: Column(
         children: [
           Padding(
