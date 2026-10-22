@@ -225,6 +225,14 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
           final cpu = MtnMinecraftSkinBoxMesh.forBodyPart(
             part, skin.modelType, layer: layer);
           final center = MtnMinecraftSkinBoxMesh.centerFor(part, skin.modelType);
+          final joint = MtnMinecraftSkinPivot.forPart(part, skin.modelType);
+          var pivot = pivotNodes[part];
+          if (pivot == null) {
+            pivot = Node(name: part.name)
+              ..position = vm.Vector3(joint.x, joint.y, joint.z);
+            created.add(pivot);
+            pivotNodes[part] = pivot;
+          }
           final outer = layer == MtnMinecraftSkinLayer.outer;
           final material = UnlitMaterial(colorTexture: atlas)
             ..baseColorFactor = vm.Vector4(1, 1, 1, 1)
@@ -254,7 +262,8 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
               ),
               material,
             ),
-          )..position = vm.Vector3(center.x, center.y, center.z);
+          )..position = vm.Vector3(
+            center.x - joint.x, center.y - joint.y, center.z - joint.z);
           if (outer) {
             node.visible = _showOuterLayers;
             // The alpha-blended pass draws after the opaque base mesh.
@@ -263,14 +272,50 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
             node.renderOrder = 1;
             outerNodes[part] = node;
           }
-          created.add(node);
+          pivot.add(node);
         }
       }
+
+      final capeAtlas = Texture2D.fromPixels(
+        capeTexture.rgba,
+        MtnMinecraftCapeTexture.width,
+        MtnMinecraftCapeTexture.height,
+        sampling: const TextureSampling(
+          mipmaps: false,
+          minFilter: gpu.MinMagFilter.nearest,
+          magFilter: gpu.MinMagFilter.nearest,
+          maxAnisotropy: 1,
+        ),
+      );
+      final cape = MtnMinecraftCapeBoxMesh.build();
+      final capeMaterial = UnlitMaterial(colorTexture: capeAtlas)
+        ..baseColorFactor = vm.Vector4(1, 1, 1, 1)
+        ..alphaMode = AlphaMode.blend;
+      final capePivot = Node(name: 'cape/hinge')
+        ..position = vm.Vector3(
+          MtnMinecraftSkinPivot.cape.x,
+          MtnMinecraftSkinPivot.cape.y,
+          MtnMinecraftSkinPivot.cape.z,
+        )
+        ..visible = _showCape;
+      capePivot.add(Node(
+        name: 'cape/fabric',
+        mesh: Mesh(MeshGeometry.fromArrays(
+          positions: cape.positions,
+          normals: cape.normals,
+          texCoords: cape.texCoords,
+          indices: cape.indices,
+        ), capeMaterial),
+      )..position = vm.Vector3(0, -0.5, -0.03125));
+      created.add(capePivot);
 
       if (!mounted || generation != _generation) return;
       _scene = created;
       _outerNodes = outerNodes;
+      _pivotNodes = pivotNodes;
+      _capePivot = capePivot;
       created = null; // widget now owns this scene
+      _applyPose(MtnMinecraftSkinPoseFrame.at(_pose));
       setState(() => _ready = true);
     } catch (error) {
       if (mounted && generation == _generation) {
