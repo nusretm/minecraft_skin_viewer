@@ -5,7 +5,14 @@
 **Active implementation:** R4-A verified; R4-B depth correction Windows DEBUG accepted but post-patch release smoke pending; R4-C implemented on feature and awaiting CI/Windows live checks. R4-D not started.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R4-C — WINDOWS 40/40 ROOT TESTS / DEPTH WARNING GONE IN 36b054d DEBUG / CAPE EXTERIOR UV + DEFAULT LOCAL CAPE FIX ON FEATURE, CURRENT CI AND WINDOWS CAPE ORIENTATION RECHECK PENDING / DRAFT PR #4 / NOT MERGED. R4-D not started.
+**Current checkpoint:** R4-C — USER WINDOWS 41/41 ROOT TESTS, DEBUG+RELEASE EXECUTED ON 7ba661e; CAPE HORIZONTAL MIRROR + ALPHA COMPOSITING FIX IMPLEMENTED, CURRENT CI AND WINDOWS LIVE RECHECK PENDING / DRAFT PR #4 / NOT MERGED. R4-D not started.
+
+## 2026-10-22 — R4-C cape horizontal mirror and independent outer-layer draw order
+
+- **User Windows verification for 7ba661e:** root `flutter analyze --no-pub` PASS (13.3s); root `flutter test --no-pub test/` **41/41 PASS**; example analyzer PASS (5.8s); GPU debug Windows built (8.6s) and visually inspected; release Windows built (36.5s) and executable launched. No `surface overlap ... will flicker` warning in this session; informational 24-bit depth messages and normal window-close `Lost connection to device` remain.
+- **Two new issues found in user screenshots:** Local decorated cape external UV shows white `1` **horizontally mirrored** despite the prior front/back atlas-face swap. Separately, enabling `Outer layers` alters cape's visible composition. The visibility toggle in source only touches six skin outer nodes; separate cape pivot and texture are not directly modified. Rendering order was cape at 0 vs translucent skin shells at 1, so skin shells can blend *over* cape.
+- **New targeted code changes, awaiting Windows live verification:** `MtnMinecraftCapeBoxMesh.build` keeps external atlas source `front` mapped to physical rear (-Z) but swaps U corners 0↔1 and 2↔3 for that outward face only; V, physical mesh, inward face, thin edge UVs, hinge and pose remain unchanged. Added UV tests ensuring rear is horizontally mirrored in the intended direction and all other face UVs remain untouched. In the example-only GPU adapter, set cape fabric `Node.renderOrder=2` after translucent skin shells `renderOrder=1`, while the opaque body remains depth-tested; cape now composites independently of `Outer layers` alpha shells. This visual priority can change shoulder overlap and must be inspected in GPU screenshots.
+- **Acceptance gate:** Current HEAD CI, root+example analyzers/tests, Windows debug and release launches; compare same orbit/camera view with `Outer layers` off/on while cape stays enabled, check the white `1` orientation against uploaded reference and confirm no limb/shoulder clipping or z-fighting. Keep PR #4 Draft, do not merge and do not start R4-D.
 
 ## 2026-10-22 — Intermediate CI failure after cape UV code change
 

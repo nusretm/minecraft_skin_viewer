@@ -9,7 +9,7 @@ UV layouts and (in later checkpoints) reusable 2D and 3D player widgets.
 - R1: GPU-backed 3D feasibility prototype in example/ (closed, Windows-verified).
 - R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs (closed, merged).
 - R3: 2D head/body/cape Flutter widgets (closed, Windows-verified and merged).
-- R4: R4-A verified, R4-B debug depth fix verified, R4-C cape/poses implemented on feature awaiting Windows checks; R4-D not implemented.
+- R4: R4-A/B verified, R4-C cape/poses Windows tested, cape mirroring + independent layer compositing fixes pending live recheck; R4-D not implemented.
 
 ## R2 usage: atlas data only
 

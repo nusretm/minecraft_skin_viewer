@@ -1,7 +1,7 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: R4-A/B WINDOWS VERIFIED / R4-C DEPTH OVERLAP CLEARED IN 36b054d DEBUG, CAPE EXTERIOR UV FIX NEEDS WINDOWS LIVE CHECK / R4-D NOT STARTED
+Status: R4-A/B WINDOWS VERIFIED / R4-C 41/41 + RELEASE ON 7ba661e, CAPE HORIZONTAL UV + DRAW ORDER FIX NOT YET LIVE RECHECKED / R4-D NOT STARTED
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
@@ -199,3 +199,24 @@ merge authority requires scope completion, full tests and user live acceptance.
 - Current source CI and real Windows cape rear/front/side orientation,
   Idle/Walk and post-fix release visual acceptance still pending.
   Keep feature PR #4 Draft and R4-D unstarted.
+
+## R4-C horizontal mirror and outer-layer independence (2026-10-22)
+
+- After Windows live smoke 7ba661e (41/41, analyzers clean, debug and
+  release EXE launched), user screenshots showed the decorated cape '1'
+  flipped horizontally and different cape appearance when toggling skin
+  outer layers. No coplanar warning in this session.
+- Prior front/back UV source swap remains correct for outward -Z facing
+  cape, but the external face's horizontal UV corners must be flipped.
+  New mapping swaps corners 0<->1 and 2<->3 ONLY for geometry back(-Z).
+  Inner (+Z), top/bottom/edge faces, V, geometry and pivots untouched.
+  Test coverage ensures decorated face + correct U mirroring.
+- `Outer layers` never directly toggled the cape (separate node/pivot).
+  Its skin alpha pass used renderOrder=1, while cape fabric defaulted
+  to 0 and could therefore be composited underneath translucent shells.
+  Example-only cape fabric now draws at renderOrder=2, keeping its
+  independent visual presentation after shell overlays and retaining
+  opaque depth occlusion. Check shoulder/arm realism and overlap in
+  Windows before accepting this ordering tradeoff.
+- Changes are R4-C-scoped and have not been live GPU-validated; current
+  HEAD CI and Windows debug/release must complete before R4-D can begin.
