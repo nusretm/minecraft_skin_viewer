@@ -9,7 +9,7 @@ UV layouts and (in later checkpoints) reusable 2D and 3D player widgets.
 - R1: GPU-backed 3D feasibility prototype in example/ (closed, Windows-verified).
 - R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs (closed, merged).
 - R3: 2D head/body/cape Flutter widgets (closed, Windows-verified and merged).
-- R4: 3D viewer approved; R4-A mesh UV prototype on feature branch, R4-B/C/D not yet implemented.
+- R4: R4-A Windows atlas verified; R4-B expanded outer meshes and optional local PNG demo on feature, CI/live acceptance pending. R4-C/D not implemented.
 
 ## R2 usage: atlas data only
 
@@ -70,3 +70,13 @@ Orbit around the character and inspect synthetic corner markers on each
 face, then switch Classic/Slim. This screen deliberately does NOT include
 cape, outer layers, poses or the production 3D viewer. Windows debug/release
 visual acceptance is pending; see `docs/continuity/R4_FULL_3D_VIEWER.md`.
+
+## R4-B alpha-layer smoke (feature branch; Windows verification pending)
+
+The example's R4 3D gallery now includes an **Outer layers** toggle,
+synthetic semitransparent orange shell markers, and optional local Java
+Minecraft skin PNG loading. The local file is not uploaded or cached.
+Use Classic/Slim model selection; camera orientation/zoom is retained
+while the GPU mesh scene is rebuilt. Outer geometry follows the shared
+R2 UV layout and is independently expanded. Real cape, animation and
+public 3D viewer remain R4-C/D.

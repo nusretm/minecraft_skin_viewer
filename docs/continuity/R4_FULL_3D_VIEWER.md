@@ -1,17 +1,16 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: USER APPROVED R4-A/B/C/D / ONLY R4-A IMPLEMENTED ON FEATURE /
-        CI + REAL WINDOWS GPU UV SMOKE PENDING
+Status: R4-A USER WINDOWS-VALIDATED / R4-B IMPLEMENTED ON FEATURE, CI + LIVE SKIN/LAYERS PENDING / R4-C/D NOT STARTED
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
 ## Approved plan and sequencing
 
-- R4-A **CURRENT**: Backend-neutral 24-vertex/36-index cuboid mesh data,
+- R4-A **WINDOWS-VALIDATED**: Backend-neutral 24-vertex/36-index cuboid mesh data,
   source-of-truth R2 six-face UV mapping, Classic/Slim sizes, standing pose
   part centers, synthetic Windows GPU atlas-face smoke and automated tests.
-- R4-B **NOT STARTED**: Independently offset outer-layer geometries, their
+- R4-B **IMPLEMENTED ON FEATURE; AWAITING CI AND WINDOWS LIVE SMOKE**: Independently offset outer-layer geometries, their
   face UVs and alpha handling, Classic/Slim real full skin appearance.
 - R4-C **NOT STARTED**: 64x32 cape geometry+UV with back hinge, simple
   shoulder/hip pivots and idle/walk basic poses; no cloth physics.
@@ -76,3 +75,42 @@ merge authority requires scope completion, full tests and user live acceptance.
 - Actual GPU atlas UV orientation, Classic/Slim appearance, release EXE
   interaction, resize, repeated scene disposal and GPU memory remain NOT
   LIVE-VALIDATED. No merge until agreed gates are complete.
+
+## R4-A Windows closure evidence (2026-10-22)
+
+- User root analysis PASS, 30/30 root tests PASS, example analysis PASS,
+  example widget regression 1/1 PASS.
+- Debug Windows GPU scene built/launched, 3D atlas works; Classic/Slim switch
+  preserves camera orientation. Release build PASS, EXE launched.
+- Functional acceptance is user-confirmed but screenshots/pixel captures of
+  all six orientations and a repeated memory soak were not supplied.
+- GitHub full R4-A CI for commit 981ef194: run 39700425421 SUCCESS.
+- The earlier debug line "Lost connection to device" has no proven cause;
+  do not label it a confirmed application crash or clean debug shutdown.
+
+## R4-B overlay geometry and gallery (2026-10-22)
+
+- MtnMinecraftSkinBoxMesh.forBodyPart now accepts named layer=base/outer
+  (base is default, preserves existing R4-A callers). A dedicated R2 UV face
+  is used for each outer layer; head inflated +0.5 model pixel per side,
+  jacket/sleeves/trousers +0.25 per side. Position and normals remain
+  renderer-neutral.
+- New outer-mesh tests check all R2 UV face corners, 24-vertex/36-index
+  geometry, outward triangle winding, and shell expansion on all 6 parts
+  and Classic/Slim. All R1-R4A tests remain regression gates.
+- Windows example R4-A/B 3D gallery keeps synthetic UV face markers and
+  adds partial-alpha orange outer-stripe sentinels. Six base/outer meshes
+  read the SAME validated R2 skin atlas. Base pass opaque; outer
+  UnlitMaterial alphaMode=blend; outer nodes render after base and have
+  a visibility toggle without a texture reload.
+- Users can paste a Windows file path to an existing local Java skin PNG
+  and select "Load PNG"; invalid PNG is rejected by R2. "Use UV test atlas"
+  restores generated fixtures. Files are read only locally; no plugin,
+  network or copyrighted skin file is shipped. ModelType remains explicit.
+- Classic/Slim geometry scene recreation keeps yaw/pitch/distance values,
+  outer visibility, and selected PNG bytes. GPU blend/render-order behavior
+  must still be visually validated; no shader alpha mask guarantee.
+- **No R4-B Windows live smoke or current-source CI success yet.** In
+  particular, orbit from the back/sides with a real transparent sleeve
+  should be checked for translucency sorting/bleed; adjust if required.
+- Cape/poses and production viewer remain R4-C/D (not started).

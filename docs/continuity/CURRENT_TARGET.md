@@ -2,10 +2,18 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** R4 user-approved (A/B/C/D); **R4-A active on `feature/r4-full-3d-skin-viewer`**; R4-B/C/D approved but not started.
+**Active implementation:** R4 user-approved (A/B/C/D), R4-A Windows-verified and R4-B implemented on `feature/r4-full-3d-skin-viewer` awaiting Windows verification; R4-C/D not started.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R4-A — `IMPLEMENTED ON FEATURE / ROOT+MESH TESTS AND EXAMPLE ANALYSIS CI PASS / RELEASE AND LIVE UV SMOKE PENDING / DRAFT PR #4 / NOT MERGED`; R1/R2/R3 CLOSED.
+**Current checkpoint:** R4-B — `IMPLEMENTED ON FEATURE / CURRENT CODE CI + WINDOWS LIVE SKIN/LAYER CHECK PENDING / DRAFT PR #4 / NOT MERGED`. R4-A Windows live-validated; R1/R2/R3 closed.
+
+## 2026-10-22 — R4-A Windows acceptance; R4-B transparent outer skins implemented
+
+- **R4-A user verification:** On Windows, root `flutter analyze --no-pub` PASS (10.8s); `flutter test --no-pub test/` **30/30 PASS**; example analysis clean (10.8s) and `flutter test --no-pub test/widget_test.dart` **1/1 PASS**. Debug `flutter run -d windows --enable-flutter-gpu` built in 11.5s, user confirmed the 3D atlas viewer worked. Switching Classic/Slim preserved view/orbit orientation (important UX property); Windows release built in 35.0s and EXE was launched. Exact feature-head [CI 39700425421](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39700425421) **SUCCESS** and prior feature CI `39700110173` successful. User did not separately enumerate screenshots of every top/bottom corner; consider R4-A functionally Windows-verified, not GPU face-by-face pixel-captured.
+- **Debug terminal caveat:** `Lost connection to device` appeared after the session and repeated flutter_scene depth-information messages; user reported no running-gallery fault. No unsupported crash or memory-leak-free claim.
+- **R4-B implemented after A acceptance (same approved PR #4):** Extend `MtnMinecraftSkinBoxMesh.forBodyPart` with a base/outer layer, R2-provided outer UVs and expanded shells (head 0.5 model pixel per side; other parts 0.25). Synthetic alpha-pattern atlas overlays plus optional **local Java 64×64/legacy 64×32 PNG path** added to the GPU gallery. Six base and six outer mesh nodes share the normalized R2 straight-RGBA texture; outer alpha blended and independently shown/hidden. Classic/Slim changes preserve orbit and layer settings. No skin downloads or third-party assets.
+- **R4-B tests:** New `test/mtn_minecraft_skin_outer_mesh_test.dart` checks both models, all six parts, all face outer UVs, outward winding and shell inflation. Current R4-B CI, actual alpha sorting from all camera angles, local real-skin file smoke and Windows release **PENDING**; do not infer visual validity from math-only tests.
+- **R4-C/D:** approved but **NOT STARTED**; no cape, poses, production 3D widget or GPU memory soak. Draft PR #4 remains unmerged. Next: verify full Windows CI and real debug/release R4-B skin/layer visibility, transparency, Classic/Slim and camera behavior.
 
 ## 2026-10-22 — R4-A Draft PR #4 and first CI evidence
 

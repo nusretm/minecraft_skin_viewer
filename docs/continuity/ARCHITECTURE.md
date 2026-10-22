@@ -63,3 +63,13 @@ The example-only adapter uploads R2 normalized straight RGBA with
 flutter_scene Texture2D.fromPixels, creates MeshGeometry.fromArrays and
 attaches six nodes to a Scene. Production GPU dependency/viewport decision
 is deferred to R4-D after observed Windows behavior. See R4_FULL_3D_VIEWER.md.
+
+## R4-B expanded outer mesh geometry (2026-10-22)
+
+The R4-A cuboid mesh API now supports MtnMinecraftSkinLayer.base and .outer
+with the SAME R2 UV face authority. Only the extents inflate for the outer
+shell, independently of the atlas dimensions. The example-only GPU adapter
+draws six opaque base meshes and six transparent alpha-blended outer meshes
+from the same uploaded straight-RGBA texture. Outer layer visibility is a
+presentation control that does not mutate source texture data. Real Windows
+blend sorting remains an explicit visual-acceptance gate, not proven by CI.
