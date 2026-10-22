@@ -1,7 +1,7 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: R4-A USER WINDOWS-VALIDATED / R4-B IMPLEMENTED ON FEATURE, CI + LIVE SKIN/LAYERS PENDING / R4-C/D NOT STARTED
+Status: R4-A WINDOWS-VALIDATED / R4-B REAL PNG WINDOWS-VALIDATED ON 6caca7d BUT COPLANAR DEPTH-LAYER PATCH PENDING RECHECK / R4-C/D NOT STARTED
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
@@ -114,3 +114,27 @@ merge authority requires scope completion, full tests and user live acceptance.
   particular, orbit from the back/sides with a real transparent sleeve
   should be checked for translucency sorting/bleed; adjust if required.
 - Cape/poses and production viewer remain R4-C/D (not started).
+
+## R4-B Windows live review and surface-conflict correction (2026-10-22)
+
+- User tested real locally loaded 3D Java skin on Slim, synthetic UV atlas
+  on Classic, and all R4-B controls. Screenshots supplied and user reports
+  correct output. Root analyze clean, 36/36 tests, example analyze clean,
+  1/1 example regression, debug/release Windows build/launch successful.
+- Functional code commit 6caca7de passed R1/R2/R3/R4 CI; specifically
+  R4 run 39701856967 and 39701863413 succeeded.
+- Debug logging nevertheless reported repeated pairs of coplanar inflated
+  outer shell faces at jacket/sleeve and left/right trouser edges. These
+  may be invisible in a static pose but flicker during orbit/animation.
+- Patch fbdcbbf applies intentional per-material flutter_scene
+  depthLayer priorities: base=0; outer head/body/rightLeg=1;
+  outer rightArm/leftArm/leftLeg=2. This keeps UV coordinates, shell
+  geometry and alpha intact. flutter_scene's supported depthLayer is a
+  distance-independent subpixel depth offset for coplanar surfaces.
+- **CI and real Windows GPU feedback for the fix are still required.**
+  Check log for previous six coplanar-overlap warnings, validate seams
+  from front/back/sides, nearest/alpha, model switch and release run.
+- `Lost connection to device` from debug is recorded as observed with
+  unknown origin, not as a proven renderer crash.
+- R4-C cape and poses (already approved) must not start until this
+  R4-B visual/memory-risk checkpoint is accepted.
