@@ -54,7 +54,7 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
   @override
   void initState() {
     super.initState();
-    _animationTicker = createTicker(_onAnimationTick)..start();
+    _animationTicker = createTicker(_onAnimationTick);
     _skinPathController.text = _defaultSkinPath;
     _initializeDefaultSkin();
   }
@@ -82,7 +82,14 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
   }
 
   void _changePose(MtnMinecraftSkinPose pose) {
+    if (_pose == pose) return;
     _pose = pose;
+    if (pose == MtnMinecraftSkinPose.walk) {
+      // Idle preview should not consume a continuous 60fps ticker.
+      _animationTicker.start();
+    } else {
+      _animationTicker.stop();
+    }
     _applyPose(MtnMinecraftSkinPoseFrame.at(pose));
     setState(() {});
   }
