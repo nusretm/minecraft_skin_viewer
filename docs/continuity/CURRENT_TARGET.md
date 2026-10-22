@@ -2,11 +2,19 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** None. R1/R2/R3/R4 CLOSED and squash-merged into `main`; R5 PROPOSED, not approved. GPU memory direct measurement remains a documented deferred R4 limitation.
+**Active implementation:** R5 approved and implemented on `feature/r5-public-api-polish`; validation pending. R1/R2/R3/R4 CLOSED and merged. GPU memory direct measurement remains a documented deferred R4 limitation.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
-**Current checkpoint:** R4 CLOSED / USER Windows functionally verified / PR #4 squash-merged to `main` at `6b4bc20` / Direct GPU-memory telemetry unverified and deferred / R5 proposed, not approved.
+**Current checkpoint:** R5 IMPLEMENTED / Windows tests and live acceptance NOT RUN / branch `feature/r5-public-api-polish` / R4 CLOSED on main. Direct GPU-memory telemetry remains deferred.
+
+## 2026-10-22 — R5 public API polish (IMPLEMENTED; validation pending)
+
+- **Approved scope:** existing public API review, README correction, combined example of 3D viewer + flat body + head, Windows verification, continuity. No launcher integration, new dependency, perspective 2D renderer or controller ownership redesign.
+- **Branch:** `feature/r5-public-api-polish`. The R4-D example gallery now presents the existing `MtnMinecraftSkinViewer`, `MtnMinecraftSkinPreview` and `MtnMinecraftSkinHead` simultaneously using one shared decoded skin; Classic/Slim changes flow through the shared texture, outer-layer toggle affects all three, front/back selection affects both 2D views. Idle/Walk and cape visibility remain widget state; camera remains caller-owned controller state.
+- **README:** removed stale R4 not-yet-completed claims, documented public API, decoding, state/lifecycle ownership and Windows GPU requirements.
+- **Validation:** code changes written to GitHub; root/example `flutter analyze`, widget tests, Windows debug/release build and interactive smoke **NOT RUN** in this remote environment. Do not claim R5 is LIVE_VALIDATED or merge until agreed validation gates pass.
+- **Next:** inspect feature diff; run root + example analyze/tests and Windows debug/release combined gallery smoke (3D interaction, Idle/Walk, front/back, Classic/Slim, cape/outer toggle, reload). Verify no regressions, then close via approved conditional merge only if gates pass.
 
 ## 2026-10-22 — R4 CLOSED: PR #4 squash-merged into main
 
