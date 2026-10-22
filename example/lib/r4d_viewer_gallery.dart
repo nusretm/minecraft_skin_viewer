@@ -29,19 +29,21 @@ class _MtnMinecraftR4DViewerGalleryState
   Uint8List? _skinPng;
   Uint8List? _capePng;
 
-  bool _showOuter = true;
-  bool _showCape = true;
   bool _visible = true;
   bool _stressRunning = false;
   int _stressCompleted = 0;
-  MtnMinecraftSkinPose _pose = MtnMinecraftSkinPose.idle;
   Object? _error;
   Completer<void>? _sceneReady;
 
   @override
   void initState() {
     super.initState();
+    _camera.addListener(_refreshControls);
     _loadFixtures();
+  }
+
+  void _refreshControls() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadFixtures() async {
@@ -166,8 +168,8 @@ class _MtnMinecraftR4DViewerGalleryState
       _stressRunning = true;
       _stressCompleted = 0;
       _error = null;
-      _pose = MtnMinecraftSkinPose.idle;
     });
+    _camera.setPose(MtnMinecraftSkinPose.idle);
     try {
       for (var i = 0; i < 20 && mounted; i++) {
         setState(() => _visible = false);
@@ -203,6 +205,7 @@ class _MtnMinecraftR4DViewerGalleryState
 
   @override
   void dispose() {
+    _camera.removeListener(_refreshControls);
     _camera.dispose();
     super.dispose();
   }
@@ -238,13 +241,13 @@ class _MtnMinecraftR4DViewerGalleryState
                   ),
                 FilterChip(
                   label: const Text('Outer layers'),
-                  selected: _showOuter,
-                  onSelected: (v) => setState(() => _showOuter = v),
+                  selected: _camera.showOuterLayer,
+                  onSelected: _camera.setShowOuterLayer,
                 ),
                 FilterChip(
                   label: const Text('Cape'),
-                  selected: _showCape,
-                  onSelected: (v) => setState(() => _showCape = v),
+                  selected: _camera.showCape,
+                  onSelected: _camera.setShowCape,
                 ),
                 SegmentedButton<MtnMinecraftSkinPose>(
                   segments: const [
@@ -253,9 +256,8 @@ class _MtnMinecraftR4DViewerGalleryState
                     ButtonSegment(value: MtnMinecraftSkinPose.walk,
                         label: Text('Walk')),
                   ],
-                  selected: {_pose},
-                  onSelectionChanged: (v) =>
-                      setState(() => _pose = v.first),
+                  selected: {_camera.pose},
+                  onSelectionChanged: (v) => _camera.setPose(v.first),
                 ),
                 OutlinedButton(
                   onPressed: _stressRunning ? null : _reloadTextures,
@@ -285,9 +287,6 @@ class _MtnMinecraftR4DViewerGalleryState
                               texture: skin,
                               cape: _cape,
                               controller: _camera,
-                              showOuterLayer: _showOuter,
-                              showCape: _showCape,
-                              pose: _pose,
                               onReady: _onViewerReady,
                               onError: (e) {
                                 if (_sceneReady != null &&

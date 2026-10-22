@@ -2,10 +2,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 
-/// Camera state for [MtnMinecraftSkinViewer].
+import 'mtn_minecraft_skin_pose_cape.dart';
+
+/// Interactive 3D viewer state: camera, pose and layer visibility.
 ///
-/// The controller owns only the orbit and zoom. Skin, cape, layers and pose
-/// remain widget inputs, so no independent copies of those states can drift.
+/// The attached viewer listens to this controller directly. The controller
+/// is the *only* owner of pose and presentation state; decoded skin/cape
+/// textures and the optional input-gesture toggle remain widget inputs.
 /// If passed to a viewer, the caller retains ownership and must dispose it.
 /// When omitted, the viewer creates and disposes its own controller.
 class MtnMinecraftSkinViewerController extends ChangeNotifier {
@@ -13,7 +16,13 @@ class MtnMinecraftSkinViewerController extends ChangeNotifier {
     double yaw = -math.pi / 3,
     double pitch = 0.15,
     double distance = 3.7,
-  }) : _yaw = _finite(yaw, 'yaw'),
+    MtnMinecraftSkinPose pose = MtnMinecraftSkinPose.idle,
+    bool showOuterLayer = true,
+    bool showCape = true,
+  }) : _pose = pose,
+       _showOuterLayer = showOuterLayer,
+       _showCape = showCape,
+       _yaw = _finite(yaw, 'yaw'),
        _pitch = _finite(pitch, 'pitch').clamp(minPitch, maxPitch),
        _distance = _finite(distance, 'distance').clamp(minDistance, maxDistance);
 
@@ -25,6 +34,31 @@ class MtnMinecraftSkinViewerController extends ChangeNotifier {
   double _yaw;
   double _pitch;
   double _distance;
+  MtnMinecraftSkinPose _pose;
+  bool _showOuterLayer;
+  bool _showCape;
+
+  MtnMinecraftSkinPose get pose => _pose;
+  bool get showOuterLayer => _showOuterLayer;
+  bool get showCape => _showCape;
+
+  void setPose(MtnMinecraftSkinPose value) {
+    if (_pose == value) return;
+    _pose = value;
+    notifyListeners();
+  }
+
+  void setShowOuterLayer(bool value) {
+    if (_showOuterLayer == value) return;
+    _showOuterLayer = value;
+    notifyListeners();
+  }
+
+  void setShowCape(bool value) {
+    if (_showCape == value) return;
+    _showCape = value;
+    notifyListeners();
+  }
 
   double get yaw => _yaw;
   double get pitch => _pitch;
