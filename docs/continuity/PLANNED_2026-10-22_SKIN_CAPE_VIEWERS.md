@@ -2,8 +2,8 @@
 
 **Date:** 2026-10-22
 **Repository:** `nusretm/minecraft_skin_viewer`
-**Status:** R1/R2 CLOSED; R3 APPROVED / IMPLEMENTED ON FEATURE / NOT MERGED; R4/R5 PROPOSED.
-**Dependencies:** R1 and R2 squash-merged; R3 approved for implementation; R4/R5 need separate approval.
+**Status:** R1/R2/R3 CLOSED / MERGED; R4–R5 PROPOSED / NOT APPROVED.
+**Dependencies:** R1, R2 and R3 squash-merged. R4/R5 need separate feature approval.
 
 ## Goal
 
@@ -23,7 +23,7 @@ Build an independent Flutter package for modern and legacy Minecraft Java skins,
 | Stage | Proposed deliverable | Gate |
 | --- | --- | --- |
 | R2 | Decode/validate skin/cape PNG; actual atlas/UV mapping for modern/legacy, Classic/Slim and overlays; targeted fixture checks | R2 completed and merged in PR #2 |
-| R3 | Flutter `CustomPainter` head, 2D body and cape widgets; front/back views, layer visibility, nearest sampling | Approved R3; Windows CI and live gallery visual tests pending |
+| R3 | Flutter `CustomPainter` head, 2D body and cape widgets; front/back views, layer visibility, nearest sampling | R3 accepted on Windows and merged in PR #3 |
 | R4 | Actual textured 3D character and cape, orbit/zoom controller, reasonable idle/walk/pose motions | Requires documented GPU backend decision and real release smoke |
 | R5 | Windows launcher embedding example, performance and lifecycle/rebuild review, package API/publication readiness | Requires integration boundary review and separate acceptance |
 

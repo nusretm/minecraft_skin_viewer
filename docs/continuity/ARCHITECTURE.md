@@ -1,6 +1,6 @@
 # Architecture — Minecraft Skin Viewer
 
-Status: R1/R2 CLOSED; R3 approved and implemented on feature pending Windows visual acceptance.
+Status: R1/R2/R3 CLOSED and merged; R3 user Windows gallery verified. R4+ proposed.
 
 ## Scope
 
@@ -12,7 +12,7 @@ One Flutter package: `mtn_minecraft_skin_viewer` in repository `nusretm/minecraf
 2. **Minecraft mapping**: Classic vs Slim geometry dimensions; 64x64 and legacy 64x32 UV/overlay layout; cape layout. Explicit model type input.
 3. **2D renderer**: head and body previews rendered with Flutter primitives from the common atlas model.
 4. **3D geometry and render adapter**: character parts, local transforms, camera/gesture interaction; texture/UV data is not owned by Flutter Scene-specific public classes.
-5. **Public widget layer**: later `MtnMinecraftSkinHead`, `MtnMinecraftSkinPreview`, `MtnMinecraftSkinViewer`, and `MtnMinecraftCapePreview`. These names are targets, not currently implemented contracts.
+5. **Public widget layer**: `MtnMinecraftSkinHead`, `MtnMinecraftSkinPreview`, and `MtnMinecraftCapePreview` are implemented in R3. `MtnMinecraftSkinViewer` (3D) remains a planned, unimplemented contract.
 
 Package does not log in to accounts, download user profile skins, manage credentials or call Mojang/Microsoft APIs.
 

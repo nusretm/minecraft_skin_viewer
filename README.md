@@ -7,9 +7,8 @@ UV layouts and (in later checkpoints) reusable 2D and 3D player widgets.
 - Package: mtn_minecraft_skin_viewer
 - First target: Windows desktop
 - R1: GPU-backed 3D feasibility prototype in example/ (closed, Windows-verified).
-- R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs
-  (implemented on feature branch, validation/review pending).
-- R3: 2D head/body/cape widgets (on feature, acceptance pending).
+- R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs (closed, merged).
+- R3: 2D head/body/cape Flutter widgets (closed, Windows-verified and merged).
 - R4: complete textured 3D player (not implemented).
 
 ## R2 usage: atlas data only
@@ -47,10 +46,11 @@ yet display a real Minecraft skin on the R1 block character.
 ## Repository workflow
 
 See docs/WORKING_RULES.md and docs/continuity/CURRENT_TARGET.md.
-All feature work stays on a feature branch and Draft PR until separately
-accepted and merge-approved.
+New implementation needs explicit scope approval and is developed in a feature
+branch/Draft PR. After passing agreed validation, conditional merge authority
+may be exercised under docs/WORKING_RULES.md.
 
-## R3 2D widget example (on feature, not yet accepted)
+## R3 2D widget example
 
 ```dart
 MtnMinecraftSkinHead(texture: skin, size: 64, showOuterLayer: true);

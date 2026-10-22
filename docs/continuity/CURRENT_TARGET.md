@@ -2,10 +2,20 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** R3 user-approved on feature/r3-2d-skin-cape-preview; R1/R2 CLOSED.
-**Merged PRs:** [#1 — R1 Renderer Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2 Texture & UV Foundation](https://github.com/nusretm/minecraft_skin_viewer/pull/2)
+**Active implementation:** None; R1/R2/R3 CLOSED and merged. R4 PROPOSED / NOT APPROVED.
+**Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R3 IMPLEMENTED ON FEATURE / WINDOWS CI + LIVE GALLERY PENDING / NOT MERGED. R1/R2 CLOSED.
+**Current checkpoint:** R3 — `CLOSED / PR #3 SQUASH MERGED / WINDOWS DEBUG+RELEASE USER-VERIFIED / ROOT TESTS 22/22 PASS / CURRENT-HEAD CI SUCCESS`; next R4 PROPOSED.
+
+## 2026-10-22 — R3 CLOSED: Windows 2D gallery accepted, PR #3 merged
+
+- **User Windows live acceptance:** clean `main` at checkout, then tracked `feature/r3-2d-skin-cape-preview`; root `flutter pub get` PASS, `flutter analyze --no-pub` NO ISSUES (12.4s), `flutter test --no-pub test/` **22/22 PASS**; example `flutter analyze --no-pub` NO ISSUES (6.5s), `flutter test --no-pub test/widget_test.dart` **1/1 PASS**.
+- **Windows application:** debug `flutter run -d windows --enable-flutter-gpu` built (14.2s), user confirmed the 2D gallery and all controls worked; Windows release build PASS (27.9s) and user launched the release EXE, confirming all functionality. Debug log ended with `Lost connection to device` after session output; cause not established and no continuing defect reported. Do not misrepresent the line as a proven crash or an entirely clean Flutter debug shutdown.
+- **Exact feature HEAD CI:** commit `dfb02af07acd36a5f96c7f8bd301c5584cc4e8bb`; R1 [39696653097](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39696653097), R2 [39696653047](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39696653047), and R3 [39696653054](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39696653054) + [39696646453](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39696646453) all completed **SUCCESS**, including R3 root pixel tests, example regression and Windows release builds.
+- **Review:** PR #3 diff scoped to 11 files, no added-line trailing whitespace in patch scan; original gallery lint failure corrected earlier on feature. No force push or extra repository changes.
+- **Merge:** user had delegated conditional merge authority for already-approved, validated scopes. Marked PR [#3](https://github.com/nusretm/minecraft_skin_viewer/pull/3) ready and squash merged as `3c4a56f4ca126ecbeb857e8e58f6dbf8755b0d56`; GitHub verified PR closed/merged and `main` matched squash SHA immediately afterward.
+- **Delivered:** 2D head/body/cape Flutter widgets, Classic/Slim and legacy layout, front/back, outer layer toggles, nearest sampling, deterministic generated gallery, image lifecycle guards. Fully textured 3D Minecraft character is **NOT** part of R3.
+- **Remaining:** R1-controlled GPU memory soak still unmeasured; full-texture 3D UV/animations R4 planned but **not approved**. No local post-build `git status -sb` was provided; preserve local user changes. Next: user sync `main` and independently approve R4 scope before coding.
 
 ## 2026-10-22 — R3 Draft PR #3 and initial Windows CI findings
 

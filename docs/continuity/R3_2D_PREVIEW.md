@@ -1,7 +1,7 @@
 # R3 — 2D Minecraft Skin and Cape Preview
 
 Date: 2026-10-22
-Status: APPROVED / IMPLEMENTED ON FEATURE / CI AND WINDOWS LIVE GALLERY PENDING
+Status: CLOSED / PR #3 SQUASH MERGED / WINDOWS DEBUG+RELEASE FUNCTIONALLY VALIDATED
 Branch: feature/r3-2d-skin-cape-preview
 Base main: 649327353b004add6c31167842555841dbc30283
 
@@ -52,3 +52,20 @@ Base main: 649327353b004add6c31167842555841dbc30283
 - R1 GPU memory soak remains a separately tracked deferred risk.
 
 CI or code creation without observed results is NOT a passing test.
+
+## Closure — 2026-10-22
+
+- User reported the 2D gallery and all interactive controls work on Windows,
+  after debug run and successful release build/executable launch. Head/body/cape
+  visual confirmation was functional, but no long GPU memory soak was measured.
+- Root `flutter analyze --no-pub` clean and `flutter test --no-pub test/`
+  **22/22 PASS**. Example analyzer clean, GPU-independent controls test
+  **1/1 PASS**, Windows release build **PASS**.
+- R1, R2 and R3 Actions workflows for final feature source SHA `dfb02af0`
+  all green; notably R3 runs `39696653054`, `39696646453`, including
+  pixel-level rendering checks, R1 regression and release compilation.
+- User's debug log also contained `Lost connection to device`; it is unclear
+  whether this was ordinary session termination or an unexpected disconnect.
+  No further debug-session stability claim is made from the log alone.
+- PR #3 squash merged as `3c4a56f4ca126ecbeb857e8e58f6dbf8755b0d56`.
+  Full textured 3D character and resource soak remain deferred to future work.
