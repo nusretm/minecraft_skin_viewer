@@ -147,10 +147,12 @@ class _MtnMinecraftR4DViewerGalleryState
       final skin = await MtnMinecraftSkinTexture.fromPng(
         _skinPng!, modelType: model);
       final cape = await MtnMinecraftCapeTexture.fromPng(_capePng!);
-      if (mounted) setState(() {
-        _skin = skin;
-        _cape = cape;
-      });
+      if (mounted) {
+        setState(() {
+          _skin = skin;
+          _cape = cape;
+        });
+      }
     } catch (error) {
       if (mounted) setState(() => _error = error);
     }
@@ -185,10 +187,12 @@ class _MtnMinecraftR4DViewerGalleryState
       if (mounted) setState(() => _error = error);
     } finally {
       _sceneReady = null;
-      if (mounted) setState(() {
-        _visible = true;
-        _stressRunning = false;
-      });
+      if (mounted) {
+        setState(() {
+          _visible = true;
+          _stressRunning = false;
+        });
+      }
     }
   }
 
