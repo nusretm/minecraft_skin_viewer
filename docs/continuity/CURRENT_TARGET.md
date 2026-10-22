@@ -5,7 +5,16 @@
 **Active implementation:** R4-A verified; R4-B depth correction Windows DEBUG accepted but post-patch release smoke pending; R4-C implemented on feature and awaiting CI/Windows live checks. R4-D not started.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R4-C — IMPLEMENTED ON FEATURE / CURRENT CI AND WINDOWS LIVE CAPE+POSE VALIDATION PENDING / DRAFT PR #4 / NOT MERGED. R4-D not started.
+**Current checkpoint:** R4-C — WINDOWS DEBUG/RELEASE FUNCTIONALLY VERIFIED ON 1537f5d (40/40 ROOT TESTS) / ONE COPLANAR OVERLAP PATCHED IN 44d219d / CURRENT CI AND WINDOWS LOG RECHECK PENDING / DRAFT PR #4 / NOT MERGED. R4-D not started.
+
+## 2026-10-22 — R4-C Windows test and remaining torso/right-leg overlap
+
+- User fast-forwarded local feature to 1537f5d. Root analyze no issues (11.8s), root tests 40/40 PASS, example analyze no issues (5.9s), example widget test 1/1 PASS, Windows debug GPU scene launched (9.1s), release build PASS (24.8s) and release EXE launched.
+- Screenshot demonstrates default Slim skin automatically loaded, cape visually present and Walk selected; outer/cape enabled. The still image does not separately prove dynamic motion, correct every cape UV side or continuous animation behavior.
+- Debug showed one real coplanar warning (root/body/body/outer vs root/rightLeg/rightLeg/outer, largest 0.01 m2). This was introduced/exposed by R4-C pivots despite 40 passing tests. Do not claim all visual checks passed while warning persists.
+- Targeted source patch 44d219d: material priority becomes base=0, head/body outer=1, both arms and left leg outer=2, right leg outer=3. This separates the remaining overlapping right-leg/torso materials without changing UVs, geometry, textures, pose calculations, cape hinge or lifecycle.
+- Patch CI and user Windows GPU warning/log review NOT yet complete. Until verified, keep R4-C open, PR #4 Draft and R4-D unstarted. User has explained Lost connection to device is their normal window-close behavior, not a crash.
+- Next: Windows CI results for latest feature HEAD; user debug/release recheck for absence of surface-overlap warning, and orbit/Idle-Walk/Classic-Slim/cape controls.
 
 ## 2026-10-22 — R4-B depth fix accepted in debug; R4-C code and local test skin default
 

@@ -1,7 +1,7 @@
 # R4 — Full 3D Minecraft Java Viewer
 
 Date: 2026-10-22
-Status: R4-A WINDOWS VERIFIED / R4-B DEPTH FIX WINDOWS DEBUG VERIFIED, RELEASE RECHECK PENDING / R4-C IMPLEMENTED ON FEATURE, CI AND LIVE SMOKE PENDING / R4-D NOT STARTED
+Status: R4-A/B WINDOWS VERIFIED / R4-C FUNCTIONALLY DEBUG+RELEASE TESTED, ONE DEPTH WARNING PATCHED, WINDOWS RECHECK PENDING / R4-D NOT STARTED
 Feature branch: feature/r4-full-3d-skin-viewer
 Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
 
@@ -12,7 +12,7 @@ Base main: bb32bcb86c14fca60aa62f03279ca1c2041284f0
   part centers, synthetic Windows GPU atlas-face smoke and automated tests.
 - R4-B **DEBUG GPU VERIFIED, PATCH RELEASE CHECK PENDING**: Independently offset outer-layer geometries, their
   face UVs and alpha handling, Classic/Slim real full skin appearance.
-- R4-C **IMPLEMENTED ON FEATURE, CI AND WINDOWS LIVE CHECK PENDING**: 64x32 cape geometry+UV with back hinge, simple
+- R4-C **WINDOWS FUNCTIONALLY TESTED, DEPTH WARNING FIX RECHECK PENDING**: 64x32 cape geometry+UV with back hinge, simple
   shoulder/hip pivots and idle/walk basic poses; no cloth physics.
 - R4-D **NOT STARTED**: Public MtnMinecraftSkinViewer (3D), working
   controller/interaction/lifecycle, true skin+cape hot swapping,
@@ -168,3 +168,12 @@ merge authority requires scope completion, full tests and user live acceptance.
   Check correct cape orientation and pivot direction from all viewpoints,
   Classic/Slim switching while walking, outer layers, zoom/resize,
   quick scene replacement, and both debug/release GPU runs.
+
+## R4-C Windows validation and final material overlap (2026-10-22)
+
+- Source 1537f5d: root analyzer clean, 40/40 tests pass, example analyzer clean, example regression 1/1 pass, Windows debug scene built and release EXE compiled/launched.
+- Screenshot shows Slim skin, blue cape, Walk selected. A still screenshot does not independently prove the animation or every cape atlas face.
+- One z-fighting overlap warning remains at body/outer vs rightLeg/outer while both materials use depthLayer=1.
+- Patch 44d219d gives rightLeg.outer depthLayer=3 (vs body 1 and other limb shells 2). Base meshes remain at 0. No physical size, texture, UV, cape hinge or motion changes.
+- Fix not yet Windows GPU verified. Must re-run debug with front/back orbit and verify overlap diagnostic disappears; Windows release and current CI must pass. Do not merge or proceed to R4-D before evidence.
+- The observed Lost connection to device after closing the window is normal user behavior, not an application crash.
