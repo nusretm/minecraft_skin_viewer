@@ -9,6 +9,7 @@ import 'package:flutter_scene/gpu.dart' as gpu;
 import 'package:vector_math/vector_math.dart' as vm;
 
 import 'r3_gallery.dart';
+import 'r4a_mesh_gallery.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -263,6 +264,15 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const MtnMinecraftR3Gallery(),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.view_in_ar),
+            tooltip: 'R4-A 3D UV gallery',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const MtnMinecraftR4AMeshGallery(),
               ),
             ),
           ),
