@@ -1,3 +1,4 @@
+import 'dart:io' as io;
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -9,8 +10,8 @@ import 'package:flutter_scene/scene.dart';
 import 'package:mtn_minecraft_skin_viewer/mtn_minecraft_skin_viewer.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
-/// R4-A synthetic six-face atlas UV smoke only. No outer mesh, cape, pivots,
-/// animations or production widget contract is implied by this example.
+/// R4-A/B Windows skin mesh UV smoke. Synthetic atlas and optional local PNG.
+/// No cape, joint pivots, animation or production viewer is provided here.
 class MtnMinecraftR4AMeshGallery extends StatefulWidget {
   const MtnMinecraftR4AMeshGallery({super.key});
 
@@ -23,6 +24,12 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
   Object? _error;
   bool _ready = false;
   int _generation = 0;
+  int _fileRequest = 0;
+  bool _loadingFile = false;
+  bool _showOuterLayers = true;
+  Uint8List? _localPng;
+  final TextEditingController _skinPathController = TextEditingController();
+  Map<MtnMinecraftSkinBodyPart, Node> _outerNodes = {};
 
   MtnMinecraftSkinModelType _model = MtnMinecraftSkinModelType.classic;
   double _yaw = -math.pi / 3;
@@ -37,26 +44,72 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
 
   void _changeModel(MtnMinecraftSkinModelType model) {
     if (_model == model) return;
+    _model = model;
+    _rebuild();
+  }
+
+  /// Retains the user's orbit, zoom and overlay choice across model changes.
+  /// Geometry and GPU atlas are recreated, but camera state is not reset.
+  void _rebuild() {
     _generation++;
     _scene?.dispose();
     _scene = null;
+    _outerNodes = {};
     setState(() {
-      _model = model;
       _ready = false;
       _error = null;
     });
     _initialize();
   }
 
+  void _toggleOuterLayers(bool enabled) {
+    for (final node in _outerNodes.values) {
+      node.visible = enabled;
+    }
+    setState(() => _showOuterLayers = enabled);
+  }
+
+  Future<void> _loadLocalSkin() async {
+    final request = ++_fileRequest;
+    final path = _skinPathController.text.trim();
+    if (path.isEmpty) return;
+    setState(() => _loadingFile = true);
+    try {
+      final bytes = await io.File(path).readAsBytes();
+      if (!mounted || request != _fileRequest) return;
+      // The existing R2 decoder rejects invalid PNG dimensions/signatures.
+      // Do not assume Classic/Slim from PNG dimensions: UI selection owns it.
+      _localPng = bytes;
+      _rebuild();
+    } catch (error) {
+      if (!mounted || request != _fileRequest) return;
+      setState(() => _error = error);
+    } finally {
+      if (mounted && request == _fileRequest) {
+        setState(() => _loadingFile = false);
+      }
+    }
+  }
+
+  void _useSynthetic() {
+    _fileRequest++;
+    _localPng = null;
+    _rebuild();
+    setState(() => _loadingFile = false);
+  }
+
   Future<void> _initialize() async {
     final generation = ++_generation;
+    final selectedModel = _model;
+    final sourceBytes = _localPng;
     Scene? created;
     try {
       await Scene.initializeStaticResources();
       if (!mounted || generation != _generation) return;
 
-      final png = await _syntheticFacePng(_model);
-      final skin = await MtnMinecraftSkinTexture.fromPng(png, modelType: _model);
+      final png = sourceBytes ?? await _syntheticFacePng(selectedModel);
+      final skin = await MtnMinecraftSkinTexture.fromPng(
+        png, modelType: selectedModel);
       if (!mounted || generation != _generation) return;
 
       created = Scene();
@@ -72,28 +125,43 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
         ),
       );
 
-      for (final part in MtnMinecraftSkinBodyPart.values) {
-        final cpu = MtnMinecraftSkinBoxMesh.forBodyPart(part, skin.modelType);
-        final center = MtnMinecraftSkinBoxMesh.centerFor(part, skin.modelType);
-        final material = UnlitMaterial(colorTexture: atlas)
-          ..baseColorFactor = vm.Vector4(1, 1, 1, 1);
-        final node = Node(
-          name: part.name,
-          mesh: Mesh(
-            MeshGeometry.fromArrays(
-              positions: cpu.positions,
-              normals: cpu.normals,
-              texCoords: cpu.texCoords,
-              indices: cpu.indices,
+      final outerNodes = <MtnMinecraftSkinBodyPart, Node>{};
+      for (final layer in MtnMinecraftSkinLayer.values) {
+        for (final part in MtnMinecraftSkinBodyPart.values) {
+          final cpu = MtnMinecraftSkinBoxMesh.forBodyPart(
+            part, skin.modelType, layer: layer);
+          final center = MtnMinecraftSkinBoxMesh.centerFor(part, skin.modelType);
+          final outer = layer == MtnMinecraftSkinLayer.outer;
+          final material = UnlitMaterial(colorTexture: atlas)
+            ..baseColorFactor = vm.Vector4(1, 1, 1, 1)
+            ..alphaMode = outer ? AlphaMode.blend : AlphaMode.opaque;
+          final node = Node(
+            name: part.name + '/' + layer.name,
+            mesh: Mesh(
+              MeshGeometry.fromArrays(
+                positions: cpu.positions,
+                normals: cpu.normals,
+                texCoords: cpu.texCoords,
+                indices: cpu.indices,
+              ),
+              material,
             ),
-            material,
-          ),
-        )..position = vm.Vector3(center.x, center.y, center.z);
-        created.add(node);
+          )..position = vm.Vector3(center.x, center.y, center.z);
+          if (outer) {
+            node.visible = _showOuterLayers;
+            // The alpha-blended pass draws after the opaque base mesh.
+            // Blend ordering between multiple transparent outer shells still
+            // requires Windows GPU inspection from several camera angles.
+            node.renderOrder = 1;
+            outerNodes[part] = node;
+          }
+          created.add(node);
+        }
       }
 
       if (!mounted || generation != _generation) return;
       _scene = created;
+      _outerNodes = outerNodes;
       created = null; // widget now owns this scene
       setState(() => _ready = true);
     } catch (error) {
@@ -146,6 +214,24 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
       }
     }
 
+    // Distinct, partially translucent shell patches prove that outer mesh
+    // UVs do not sample the base skin and that transparent cells reveal it.
+    for (final part in MtnMinecraftSkinBodyPart.values) {
+      for (final face in MtnMinecraftSkinFace.values) {
+        final rect = layout.face(part, face, layer: MtnMinecraftSkinLayer.outer);
+        canvas.drawRect(
+          ui.Rect.fromLTWH(rect.x.toDouble(), rect.y.toDouble(),
+            1, rect.height.toDouble()),
+          ui.Paint()..color = const ui.Color(0xBFFFCE33),
+        );
+        canvas.drawRect(
+          ui.Rect.fromLTWH((rect.x + rect.width - 1).toDouble(),
+            rect.y.toDouble(), 1, 1),
+          ui.Paint()..color = const ui.Color(0xFF22FF88),
+        );
+      }
+    }
+
     final picture = recorder.endRecording();
     final image = await picture.toImage(64, 64);
     picture.dispose();
@@ -173,15 +259,18 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
   @override
   void dispose() {
     _generation++;
+    _fileRequest++;
     _scene?.dispose();
     _scene = null;
+    _outerNodes = {};
+    _skinPathController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('R4-A — 3D Atlas UV Check')),
+      appBar: AppBar(title: const Text('R4-A/B — 3D Skin & Outer Layers')),
       body: Column(
         children: [
           Padding(
@@ -200,7 +289,44 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
                   selected: {_model},
                   onSelectionChanged: (selected) => _changeModel(selected.first),
                 ),
-                const Text('Drag: orbit · Mouse wheel: zoom · Colored corners: UV direction'),
+                FilterChip(
+                  label: const Text('Outer layers'),
+                  selected: _showOuterLayers,
+                  onSelected: _toggleOuterLayers,
+                ),
+                Text(_localPng == null ? 'Synthetic UV atlas' : 'Local skin PNG'),
+                const Text('Drag: orbit · Mouse wheel: zoom'),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                SizedBox(
+                  width: 380,
+                  child: TextField(
+                    controller: _skinPathController,
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      border: OutlineInputBorder(),
+                      labelText: 'Local Minecraft skin PNG path',
+                      hintText: r'C:\path\to\skin.png',
+                    ),
+                    onSubmitted: (_) => _loadLocalSkin(),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: _loadingFile ? null : _loadLocalSkin,
+                  child: const Text('Load PNG'),
+                ),
+                OutlinedButton(
+                  onPressed: _useSynthetic,
+                  child: const Text('Use UV test atlas'),
+                ),
               ],
             ),
           ),
@@ -238,8 +364,8 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
           ),
           const Padding(
             padding: EdgeInsets.all(12),
-            child: Text('R4-A only: BASE skin faces and neutral pose. '
-                'Outer layers, cape, joints, animation and public 3D widget come in R4-B/C/D.'),
+            child: Text('R4-A/B: all base + expanded outer faces; optional local PNG, no networking. '
+                'Cape, pivots, poses and public 3D widget remain R4-C/D.'),
           ),
         ],
       ),
