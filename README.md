@@ -9,7 +9,7 @@ UV layouts and (in later checkpoints) reusable 2D and 3D player widgets.
 - R1: GPU-backed 3D feasibility prototype in example/ (closed, Windows-verified).
 - R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs (closed, merged).
 - R3: 2D head/body/cape Flutter widgets (closed, Windows-verified and merged).
-- R4: complete textured 3D player (not implemented).
+- R4: R4-A/B/C Windows verified; R4-D public 3D widget and lifecycle harness implemented on feature, validation pending.
 
 ## R2 usage: atlas data only
 
@@ -60,3 +60,63 @@ MtnMinecraftCapePreview(texture: cape, height: 160);
 
 Here `skin` and `cape` are R2 validated textures. In the Windows example,
 use the app bar's R3 2D gallery button for a generated-atlas demonstration.
+
+## R4-A six-face 3D UV smoke (feature branch)
+
+The public `MtnMinecraftSkinBoxMesh.forBodyPart(part, modelType)` builds
+renderer-neutral face-local vertices, normals and R2 atlas UVs.
+From the example's R1 screen click `R4-A 3D UV gallery` (cube icon).
+Orbit around the character and inspect synthetic corner markers on each
+face, then switch Classic/Slim. This screen deliberately does NOT include
+cape, outer layers, poses or the production 3D viewer. Windows debug/release
+visual acceptance is pending; see `docs/continuity/R4_FULL_3D_VIEWER.md`.
+
+## R4-B alpha-layer smoke (feature branch; Windows verification pending)
+
+The example's R4 3D gallery now includes an **Outer layers** toggle,
+synthetic semitransparent orange shell markers, and optional local Java
+Minecraft skin PNG loading. The local file is not uploaded or cached.
+Use Classic/Slim model selection; camera orientation/zoom is retained
+while the GPU mesh scene is rebuilt. Outer geometry follows the shared
+R2 UV layout and is independently expanded. Real cape, animation and
+public 3D viewer remain R4-C/D.
+
+## R4-C Windows example (feature, not live validated)
+
+The 3D gallery uses D:\development\cross-platform\9fede215f7cb6884.png
+as its local default skin when present/valid, selecting Slim; no fixture
+binary is distributed, and CI uses synthetic PNG instead. The gallery
+now supports a separate local Java 64x32 cape PNG, a generated fallback
+cape, Cape toggle and Idle/Walk animation. R4-D public 3D viewer and GPU
+resource benchmark remain separate.
+
+### Local Windows cape test fixture (R4-C pending acceptance)
+
+The example's 3D gallery tries `D:\development\cross-platform\cape.png`
+alongside the optional local skin. Both PNG files are user-local and
+are **not** checked into the repository. If unavailable, the example
+generates a synthetic cape. The decorated atlas surface should render
+on the cape's outward-facing rear (-Z); confirm visually in Windows
+debug and release before R4-C closure.
+
+## R4-D public 3D widget (feature; Windows live review pending)
+
+```dart
+MtnMinecraftSkinViewer(
+  texture: decodedSkin,
+  cape: decodedCape, // optional
+  showOuterLayer: true,
+  showCape: true,
+  pose: MtnMinecraftSkinPose.idle,
+  enableInteraction: true,
+)
+```
+
+Use pre-decoded R2 skin/cape objects; no file paths or network in public
+widget. Optional `MtnMinecraftSkinViewerController` owns orbit/zoom and
+can be retained through skin/model changes. The caller owns and disposes
+a supplied controller, otherwise the widget manages one internally.
+The example's R4-D button triggers 20 distinct GPU viewer mount/unmount
+cycles, waiting for readiness and a rendered frame on each. Check
+Task Manager/Process Explorer GPU/dedicated-memory trends externally
+before claiming lifecycle stability. GPU opt-in required on Windows.
