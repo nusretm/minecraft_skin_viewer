@@ -23,3 +23,6 @@ export 'src/mtn_minecraft_skin_2d.dart'
         MtnMinecraftSkinPreview,
         MtnMinecraftCapePreview;
 export 'src/mtn_minecraft_skin_mesh.dart' show MtnMinecraftSkinBoxMesh;
+export 'src/mtn_minecraft_skin_pose_cape.dart'
+    show MtnMinecraftCapeBoxMesh, MtnMinecraftSkinPose,
+         MtnMinecraftSkinPoseFrame, MtnMinecraftSkinPivot;
