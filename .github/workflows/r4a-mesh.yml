@@ -1,0 +1,57 @@
+name: R4-A 3D mesh UV foundation
+
+on:
+  push:
+    branches:
+      - feature/r4-full-3d-skin-viewer
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Flutter toolchain
+        shell: pwsh
+        run: flutter --version
+
+      - name: Resolve root
+        shell: pwsh
+        run: flutter pub get
+
+      - name: Analyze root
+        shell: pwsh
+        run: flutter analyze --no-pub
+
+      - name: Test root R1-R4A
+        shell: pwsh
+        run: flutter test --no-pub test/
+
+      - name: Resolve example
+        working-directory: example
+        shell: pwsh
+        run: flutter pub get
+
+      - name: Analyze example
+        working-directory: example
+        shell: pwsh
+        run: flutter analyze --no-pub
+
+      - name: Regression test R1 controls
+        working-directory: example
+        shell: pwsh
+        run: flutter test --no-pub test/widget_test.dart
+
+      - name: Build Windows release example
+        working-directory: example
+        shell: pwsh
+        run: flutter build windows --release
+
+# GPU UV orientation is not live-validated by Actions build alone.
