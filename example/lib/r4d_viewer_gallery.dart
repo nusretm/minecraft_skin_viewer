@@ -276,27 +276,63 @@ class _MtnMinecraftR4DViewerGalleryState
             ),
           ),
           Expanded(
-            child: ColoredBox(
-              color: const Color(0xFF252B39),
-              child: _error != null
-                  ? Center(child: SelectableText(_error.toString()))
-                  : skin == null
-                      ? const Center(child: CircularProgressIndicator())
-                      : _visible
-                          ? MtnMinecraftSkinViewer(
-                              texture: skin,
-                              cape: _cape,
-                              controller: _camera,
-                              onReady: _onViewerReady,
-                              onError: (e) {
-                                if (_sceneReady != null &&
-                                    !_sceneReady!.isCompleted) {
-                                  _sceneReady!.completeError(e);
-                                }
-                                if (mounted) setState(() => _error = e);
-                              },
-                            )
-                          : const SizedBox.expand(),
+            child: Row(
+              children: [
+                // R5-B: the exact same decoded skin drives the public
+                // 2D head/full-body widgets and the GPU 3D viewer.
+                // These 2D widgets are declarative; they do not need
+                // their own controller or a duplicate copy of pose state.
+                if (skin != null)
+                  SizedBox(
+                    width: 160,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          const Text('2D Head'),
+                          const SizedBox(height: 8),
+                          MtnMinecraftSkinHead(
+                            texture: skin,
+                            size: 64,
+                            showOuterLayer: _camera.showOuterLayer,
+                          ),
+                          const SizedBox(height: 24),
+                          const Text('2D Skin Preview'),
+                          const SizedBox(height: 8),
+                          MtnMinecraftSkinPreview(
+                            texture: skin,
+                            height: 192,
+                            showOuterLayer: _camera.showOuterLayer,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                Expanded(
+                  child: ColoredBox(
+                    color: const Color(0xFF252B39),
+                    child: _error != null
+                        ? Center(child: SelectableText(_error.toString()))
+                        : skin == null
+                            ? const Center(child: CircularProgressIndicator())
+                            : _visible
+                                ? MtnMinecraftSkinViewer(
+                                    texture: skin,
+                                    cape: _cape,
+                                    controller: _camera,
+                                    onReady: _onViewerReady,
+                                    onError: (e) {
+                                      if (_sceneReady != null &&
+                                          !_sceneReady!.isCompleted) {
+                                        _sceneReady!.completeError(e);
+                                      }
+                                      if (mounted) setState(() => _error = e);
+                                    },
+                                  )
+                                : const SizedBox.expand(),
+                  ),
+                ),
+              ],
             ),
           ),
           const Padding(
