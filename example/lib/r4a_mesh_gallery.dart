@@ -20,6 +20,10 @@ class MtnMinecraftR4AMeshGallery extends StatefulWidget {
 }
 
 class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery> {
+  // Local-only test convenience. This file is NOT committed or distributed.
+  static const _defaultSkinPath =
+      r'D:\development\cross-platform\9fede215f7cb6884.png';
+
   Scene? _scene;
   Object? _error;
   bool _ready = false;
@@ -39,6 +43,27 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
   @override
   void initState() {
     super.initState();
+    _skinPathController.text = _defaultSkinPath;
+    _initializeDefaultSkin();
+  }
+
+  Future<void> _initializeDefaultSkin() async {
+    // CI and other computers do not have this personal path. Use the
+    // generated UV atlas there without requiring an external test asset.
+    try {
+      final file = io.File(_defaultSkinPath);
+      if (await file.exists()) {
+        final bytes = await file.readAsBytes();
+        await MtnMinecraftSkinTexture.fromPng(
+          bytes, modelType: MtnMinecraftSkinModelType.slim);
+        if (!mounted) return;
+        _model = MtnMinecraftSkinModelType.slim;
+        _localPng = bytes;
+      }
+    } catch (_) {
+      // Missing/unreadable/invalid local fixture -> generated synthetic atlas.
+    }
+    if (!mounted) return;
     _initialize();
   }
 
