@@ -22,3 +22,4 @@ export 'src/mtn_minecraft_skin_2d.dart'
         MtnMinecraftSkinHead,
         MtnMinecraftSkinPreview,
         MtnMinecraftCapePreview;
+export 'src/mtn_minecraft_skin_mesh.dart' show MtnMinecraftSkinBoxMesh;
