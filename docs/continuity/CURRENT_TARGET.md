@@ -2,11 +2,19 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** R5-A/B/C approved package-only scope IMPLEMENTED on feature `feature/r5-public-widget-controller-api`, Draft PR #5. Current source Windows CI and user live debug/release GPU + 2D visual acceptance PENDING. R1–R4 CLOSED in `main`; no launcher integration.
-**Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4)
+**Active implementation:** None. R1–R5 merged into `main`; launcher integration not started. R5 direct GPU-memory telemetry remains unverified.
+**Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4), [#5 — R5 Public API](https://github.com/nusretm/minecraft_skin_viewer/pull/5)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
-**Current checkpoint:** R5-A/B/C package candidate `0.1.0-dev.2` (Git only); user screenshot visually confirms all THREE widgets together; four R1–R4 CI runs green on `2e5578a`; Walk stress harness fix `c9f70e3` awaits new CI/Windows validation; PR #5 Draft, NOT MERGED.
+**Current checkpoint:** R5 CLOSED; PR #5 squash-merged at `6e2ae4c` after latest feature HEAD CI 4/4 success and user Windows Walk + recreate acceptance. Alternative PR #6 closed unmerged. Windows release launch and three memory samples reported for alternative PR #6 branch, not proof of PR #5 release smoke. Direct GPU memory unmeasured.
+
+## 2026-10-22 — R5 main integration CLOSED
+
+- User accepted working Walk state preservation through 20× recreate after switching to latest feature HEAD `dd51beb`; this confirms the behavior, although no independently captured 20/20 label was provided.
+- GitHub CI: R1/R2/R3/R4 workflow runs on `dd51beb` all completed successfully. Local analyze/test outputs supplied previously for alternate PR #6 branch and must not be misattributed to PR #5. The user confirmed R5 functionality.
+- PR #5 marked ready and squash-merged to `main` at `6e2ae4c3fb2761882b15601c862fd30b1ff02c86`. PR #6 closed without merge because its widget-owned pose/visibility contract conflicted with the chosen controller-owned model.
+- `0.1.0-dev.2` remains a Git-only package candidate. GPU-specific telemetry and independently confirmed PR #5 release smoke remain deferred; no zero-leak claim.
+- Next: local main synchronization without overwriting generated Windows changes; subsequent launcher integration requires separate approved scope.
 
 ## 2026-10-22 — R5 screenshot 2D/3D visual pass and Walk stress harness correction
 
