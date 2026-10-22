@@ -26,6 +26,8 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
   // Local-only test convenience. The skin PNG is not committed or distributed.
   static const _defaultSkinPath =
       r'D:\development\cross-platform\9fede215f7cb6884.png';
+  static const _defaultCapePath =
+      r'D:\development\cross-platform\cape.png';
 
   Scene? _scene;
   Object? _error;
@@ -56,7 +58,8 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
     super.initState();
     _animationTicker = createTicker(_onAnimationTick);
     _skinPathController.text = _defaultSkinPath;
-    _initializeDefaultSkin();
+    _capePathController.text = _defaultCapePath;
+    _initializeDefaultTextures();
   }
 
   void _onAnimationTick(Duration elapsed) {
@@ -116,9 +119,9 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
     }
   }
 
-  Future<void> _initializeDefaultSkin() async {
-    // CI and other computers do not have this personal path. Use the
-    // generated UV atlas there without requiring an external test asset.
+  Future<void> _initializeDefaultTextures() async {
+    // Only the developer's local files are read. Neither PNG is committed;
+    // CI and other computers retain independent synthetic atlas fallbacks.
     try {
       final file = io.File(_defaultSkinPath);
       if (await file.exists()) {
@@ -130,8 +133,21 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
         _localPng = bytes;
       }
     } catch (_) {
-      // Missing/unreadable/invalid local fixture -> generated synthetic atlas.
+      // Missing/unreadable/invalid local skin -> synthetic skin atlas.
     }
+
+    try {
+      final file = io.File(_defaultCapePath);
+      if (await file.exists()) {
+        final bytes = await file.readAsBytes();
+        await MtnMinecraftCapeTexture.fromPng(bytes);
+        if (!mounted) return;
+        _capePng = bytes;
+      }
+    } catch (_) {
+      // Missing/unreadable/invalid local cape -> synthetic cape atlas.
+    }
+
     if (!mounted) return;
     _initialize();
   }
