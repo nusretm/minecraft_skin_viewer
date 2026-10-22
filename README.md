@@ -9,7 +9,7 @@ UV layouts and (in later checkpoints) reusable 2D and 3D player widgets.
 - R1: GPU-backed 3D feasibility prototype in example/ (closed, Windows-verified).
 - R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs (closed, merged).
 - R3: 2D head/body/cape Flutter widgets (closed, Windows-verified and merged).
-- R4: complete textured 3D player (not implemented).
+- R4: 3D viewer approved; R4-A mesh UV prototype on feature branch, R4-B/C/D not yet implemented.
 
 ## R2 usage: atlas data only
 
@@ -60,3 +60,13 @@ MtnMinecraftCapePreview(texture: cape, height: 160);
 
 Here `skin` and `cape` are R2 validated textures. In the Windows example,
 use the app bar's R3 2D gallery button for a generated-atlas demonstration.
+
+## R4-A six-face 3D UV smoke (feature branch)
+
+The public `MtnMinecraftSkinBoxMesh.forBodyPart(part, modelType)` builds
+renderer-neutral face-local vertices, normals and R2 atlas UVs.
+From the example's R1 screen click `R4-A 3D UV gallery` (cube icon).
+Orbit around the character and inspect synthetic corner markers on each
+face, then switch Classic/Slim. This screen deliberately does NOT include
+cape, outer layers, poses or the production 3D viewer. Windows debug/release
+visual acceptance is pending; see `docs/continuity/R4_FULL_3D_VIEWER.md`.

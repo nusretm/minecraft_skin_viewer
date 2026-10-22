@@ -2,10 +2,19 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** None; R1/R2/R3 CLOSED and merged. R4 PROPOSED / NOT APPROVED.
+**Active implementation:** R4 user-approved (A/B/C/D); **R4-A active on `feature/r4-full-3d-skin-viewer`**; R4-B/C/D approved but not started.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
-**Current checkpoint:** R3 — `CLOSED / PR #3 SQUASH MERGED / WINDOWS DEBUG+RELEASE USER-VERIFIED / ROOT TESTS 22/22 PASS / CURRENT-HEAD CI SUCCESS`; next R4 PROPOSED.
+**Current checkpoint:** R4-A — `IMPLEMENTED ON FEATURE / AUTOMATED WINDOWS CI + LIVE UV SMOKE PENDING / DRAFT PR TO OPEN / NOT MERGED`; R1/R2/R3 CLOSED.
+
+## 2026-10-22 — R4 approved; R4-A Mesh & UV Foundation implementation
+
+- **User approval:** Explicit R4-A/B/C/D full 3D plan approval, with instruction to start **R4-A only**, feature branch `feature/r4-full-3d-skin-viewer`, Draft PR, Windows live acceptance gate. Conditional merge delegation remains subject to completing the approved scope and actual tests.
+- **Base/head:** Started from clean `main` `bb32bcb86c14fca60aa62f03279ca1c2041284f0`. No concurrent open PR at branch creation; user previously confirmed local `main` status clean. No changes to other repositories.
+- **R4-A implemented:** Renderer-neutral `MtnMinecraftSkinBoxMesh` generates 24 vertices/36 outward-facing triangle indices, flat normals and R2-sourced per-face UVs for Classic/Slim. Includes standing six-part center placements and defensive array snapshots. No duplicate Minecraft atlas-coordinate table.
+- **Windows visual harness:** New R4-A screen accessible from R1 example app bar renders six R2-atlas textured GPU meshes using `flutter_scene` 0.24.3, `MeshGeometry.fromArrays` and `Texture2D.fromPixels`. Synthetic atlas has distinct face color and TL/TR/BL corner sentinels. Preserves R1 and R3 screens. R4-B outer layer, R4-C cape/pose and R4-D production viewer are **not started**.
+- **Validation state:** Mesh unit tests and Windows R4-A workflow added; CI and Windows live smoke **NOT YET VERIFIED**. Existing R1-R3 acceptance remains intact; do not infer live GPU UV validity from analyzer/build success.
+- **Next:** inspect CI, resolve issues strictly within R4-A, review Draft PR, then user Windows debug+release face orientation/Classic-Slim/resize smoke. No merge. See `docs/continuity/R4_FULL_3D_VIEWER.md`.
 
 ## 2026-10-22 — R3 CLOSED: Windows 2D gallery accepted, PR #3 merged
 

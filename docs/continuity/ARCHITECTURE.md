@@ -1,6 +1,6 @@
 # Architecture — Minecraft Skin Viewer
 
-Status: R1/R2/R3 CLOSED and merged; R3 user Windows gallery verified. R4+ proposed.
+Status: R1/R2/R3 CLOSED; R4-A implemented on feature pending Windows tests; R4-B/C/D user-approved but not started.
 
 ## Scope
 
@@ -53,3 +53,13 @@ stateful raw-image holder and CustomPainter share painting/lifecycle logic;
 all UV crops come from R2 face mappings, never a second coordinate table.
 Front/back and overlays are widget presentation inputs. No flutter_scene
 dependency is introduced into the root package. See R3_2D_PREVIEW.md.
+
+## R4 renderer-neutral 3D mesh and flutter_scene prototype
+
+The pure Dart R4-A cuboid builder produces centered 24-vertex meshes with
+6 independent face normal/UV sets and 36 outward-wound indices, directly
+consuming R2 UV rects. Default part centers are in Minecraft units/16.
+The example-only adapter uploads R2 normalized straight RGBA with
+flutter_scene Texture2D.fromPixels, creates MeshGeometry.fromArrays and
+attaches six nodes to a Scene. Production GPU dependency/viewport decision
+is deferred to R4-D after observed Windows behavior. See R4_FULL_3D_VIEWER.md.
