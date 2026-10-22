@@ -398,6 +398,37 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
     }
   }
 
+  Future<Uint8List> _syntheticCapePng() async {
+    final recorder = ui.PictureRecorder();
+    final canvas = ui.Canvas(recorder);
+    const layout = MtnMinecraftCapeUvLayout();
+    for (final face in MtnMinecraftSkinFace.values) {
+      final rect = layout.face(face);
+      canvas.drawRect(
+        ui.Rect.fromLTWH(rect.x.toDouble(), rect.y.toDouble(),
+          rect.width.toDouble(), rect.height.toDouble()),
+        ui.Paint()..color = face == MtnMinecraftSkinFace.back
+          ? const ui.Color(0xFF386DCE)
+          : const ui.Color(0xFFCC493A),
+      );
+      canvas.drawRect(
+        ui.Rect.fromLTWH(rect.x.toDouble(), rect.y.toDouble(), 2, 2),
+        ui.Paint()..color = const ui.Color(0xFFFFFF88),
+      );
+    }
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(64, 32);
+    picture.dispose();
+    try {
+      final encoded = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (encoded == null) throw StateError('R4-C synthetic cape PNG failed');
+      return Uint8List.fromList(
+        encoded.buffer.asUint8List(encoded.offsetInBytes, encoded.lengthInBytes));
+    } finally {
+      image.dispose();
+    }
+  }
+
   PerspectiveCamera _camera(Duration elapsed) {
     return PerspectiveCamera(
       position: vm.Vector3(
@@ -413,17 +444,22 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
   void dispose() {
     _generation++;
     _fileRequest++;
+    _capeRequest++;
+    _animationTicker.dispose();
     _scene?.dispose();
     _scene = null;
     _outerNodes = {};
+    _pivotNodes = {};
+    _capePivot = null;
     _skinPathController.dispose();
+    _capePathController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('R4-A/B — 3D Skin & Outer Layers')),
+      appBar: AppBar(title: const Text('R4-C — Skin, Cape & Poses')),
       body: Column(
         children: [
           Padding(
@@ -446,6 +482,21 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
                   label: const Text('Outer layers'),
                   selected: _showOuterLayers,
                   onSelected: _toggleOuterLayers,
+                ),
+                FilterChip(
+                  label: const Text('Cape'),
+                  selected: _showCape,
+                  onSelected: _toggleCape,
+                ),
+                SegmentedButton<MtnMinecraftSkinPose>(
+                  segments: const [
+                    ButtonSegment(value: MtnMinecraftSkinPose.idle,
+                        label: Text('Idle')),
+                    ButtonSegment(value: MtnMinecraftSkinPose.walk,
+                        label: Text('Walk')),
+                  ],
+                  selected: {_pose},
+                  onSelectionChanged: (v) => _changePose(v.first),
                 ),
                 Text(_localPng == null ? 'Synthetic UV atlas' : 'Local skin PNG'),
                 const Text('Drag: orbit · Mouse wheel: zoom'),
@@ -479,6 +530,31 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
                 OutlinedButton(
                   onPressed: _useSynthetic,
                   child: const Text('Use UV test atlas'),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            child: Wrap(
+              spacing: 12, runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                SizedBox(
+                  width: 380,
+                  child: TextField(
+                    controller: _capePathController,
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      border: OutlineInputBorder(),
+                      labelText: 'Local cape 64×32 PNG path (optional)',
+                    ),
+                    onSubmitted: (_) => _loadLocalCape(),
+                  ),
+                ),
+                OutlinedButton(
+                  onPressed: _loadLocalCape,
+                  child: const Text('Load Cape'),
                 ),
               ],
             ),
@@ -517,8 +593,8 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
           ),
           const Padding(
             padding: EdgeInsets.all(12),
-            child: Text('R4-A/B: all base + expanded outer faces; optional local PNG, no networking. '
-                'Cape, pivots, poses and public 3D widget remain R4-C/D.'),
+            child: Text('R4-C: R2 skin+cape atlases, shoulder/hip pivots, idle/walk; '
+                'production 3D widget and lifecycle benchmarks remain R4-D.'),
           ),
         ],
       ),
