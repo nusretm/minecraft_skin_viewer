@@ -134,7 +134,21 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
           final outer = layer == MtnMinecraftSkinLayer.outer;
           final material = UnlitMaterial(colorTexture: atlas)
             ..baseColorFactor = vm.Vector4(1, 1, 1, 1)
-            ..alphaMode = outer ? AlphaMode.blend : AlphaMode.opaque;
+            ..alphaMode = outer ? AlphaMode.blend : AlphaMode.opaque
+            // Minecraft's independently inflated jacket, sleeves and pants
+            // overlap on coplanar front/back faces at touching joints.
+            // flutter_scene 0.24.3 explicitly supports depthLayer as a
+            // distance-independent deterministic tiebreak for these faces.
+            // Keep the base at 0 and outer shells at 1/2 so nearby shells
+            // do not fight while their UVs, shape and transparency stay intact.
+            ..depthLayer = outer
+                ? switch (part) {
+                    MtnMinecraftSkinBodyPart.rightArm ||
+                    MtnMinecraftSkinBodyPart.leftArm ||
+                    MtnMinecraftSkinBodyPart.leftLeg => 2,
+                    _ => 1,
+                  }
+                : 0;
           final node = Node(
             name: '${part.name}/${layer.name}',
             mesh: Mesh(
