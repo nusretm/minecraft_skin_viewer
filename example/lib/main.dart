@@ -10,6 +10,7 @@ import 'package:vector_math/vector_math.dart' as vm;
 
 import 'r3_gallery.dart';
 import 'r4a_mesh_gallery.dart';
+import 'r4d_viewer_gallery.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -273,6 +274,15 @@ class _MtnMinecraftRendererPrototypeState extends State<MtnMinecraftRendererProt
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const MtnMinecraftR4AMeshGallery(),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.ThreeDRotation),
+            tooltip: 'R4-D public 3D widget and 20-cycle stress',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const MtnMinecraftR4DViewerGallery(),
               ),
             ),
           ),
