@@ -7,6 +7,11 @@
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **Current checkpoint:** R4-C — USER WINDOWS 41/41 ROOT TESTS, DEBUG+RELEASE EXECUTED ON 7ba661e; CAPE HORIZONTAL MIRROR + ALPHA COMPOSITING FIX IMPLEMENTED, CURRENT CI AND WINDOWS LIVE RECHECK PENDING / DRAFT PR #4 / NOT MERGED. R4-D not started.
 
+## 2026-10-22 — Intermediate CI failure during horizontal cape UV change
+
+- In intermediate code-only commit `032e6c74`, the cape mesh's outward face U values were mirrored but its two existing UV tests still asserted the pre-mirror corner order. Windows R4 [39745878385](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39745878385) failed at root tests (**39 passed, 2 failed**); downstream example resolve/analyze/regression/release steps were SKIPPED. Corresponding R2/R3 workflows likewise saw those outdated tests.
+- Follow-up commit `4ab9c784` updated both expectations and added an explicit horizontal-U-only regression case. Windows R4 [39746006746](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39746006746) then showed root analyze and root test PASS, example analyze PASS, with later steps still in progress when reviewed. Do not misattribute any intermediate failure to a current-head passing run; final CI on `841337d7` or newer is still pending.
+
 ## 2026-10-22 — R4-C cape horizontal mirror and independent outer-layer draw order
 
 - **User Windows verification for 7ba661e:** root `flutter analyze --no-pub` PASS (13.3s); root `flutter test --no-pub test/` **41/41 PASS**; example analyzer PASS (5.8s); GPU debug Windows built (8.6s) and visually inspected; release Windows built (36.5s) and executable launched. No `surface overlap ... will flicker` warning in this session; informational 24-bit depth messages and normal window-close `Lost connection to device` remain.
