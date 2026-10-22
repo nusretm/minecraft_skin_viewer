@@ -136,7 +136,7 @@ class _MtnMinecraftR4AMeshGalleryState extends State<MtnMinecraftR4AMeshGallery>
             ..baseColorFactor = vm.Vector4(1, 1, 1, 1)
             ..alphaMode = outer ? AlphaMode.blend : AlphaMode.opaque;
           final node = Node(
-            name: part.name + '/' + layer.name,
+            name: '${part.name}/${layer.name}',
             mesh: Mesh(
               MeshGeometry.fromArrays(
                 positions: cpu.positions,
