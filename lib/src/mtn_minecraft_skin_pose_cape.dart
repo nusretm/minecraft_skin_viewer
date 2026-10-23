@@ -175,7 +175,8 @@ class MtnMinecraftSkinPoseFrame {
       );
     }
 
-    final phase = seconds * 2 * math.pi * 1.15;
+    // A relaxed walk cadence; limb swing amplitude remains unchanged.
+    final phase = seconds * 2 * math.pi * 0.90;
     final swing = math.sin(phase) * 0.48;
     return MtnMinecraftSkinPoseFrame(
       rightArmX: swing,
