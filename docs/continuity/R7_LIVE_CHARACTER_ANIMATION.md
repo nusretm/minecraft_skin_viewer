@@ -4,6 +4,7 @@
 **Date:** 2026-10-23
 **Base:** main `0e46ca48d0dde18893e9faa0bef78b1f7de68731`
 **Branch:** `feature/r7-live-character-animation`
+**PR:** [#8 — R7 Live Character Animation](https://github.com/nusretm/minecraft_skin_viewer/pull/8) (Draft; Windows CI running)
 
 ## Approved behavior
 
