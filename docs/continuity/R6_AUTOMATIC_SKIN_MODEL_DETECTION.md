@@ -1,6 +1,6 @@
 # R6 — Automatic Skin Model Detection
 
-Status: IMPLEMENTED on Draft PR #7; CI and Windows user smoke PENDING.
+Status: CLOSED / squash-merged PR #7 to main as 3b2c7b442681c086c9ef98b90e5d30b6b69922ca; Windows debug smoke accepted. Interactive release EXE smoke not separately reported.
 Date: 2026-10-23
 Repository: nusretm/minecraft_skin_viewer
 Feature branch: feature/r6-auto-skin-model-detection
@@ -27,9 +27,11 @@ Approval: User explicitly approved source-inspired minimal single-checkpoint ada
 - example/lib/r4d_viewer_gallery.dart: initial skin load uses auto detection; Classic/Slim selector stays manual.
 - README.md, CHANGELOG.md, ARCHITECTURE.md and CURRENT_TARGET.md: document behavior and provenance.
 
-## Gates remaining
+## Verification and merge closure (2026-10-23)
 
-- GitHub pull-request Windows CI: root flutter analyze/test, example analyze/test, release example build.
-- User local: flutter --version; flutter pub get; flutter analyze --no-pub; flutter test --no-pub test/; example analyze, Windows flutter run -d windows --enable-flutter-gpu; release EXE with actual locally owned Classic/Slim PNGs; verify inferred arm geometry and manual override.
-- git diff --check, git status and final PR diff review on a checkout with user files preserved.
-- Do not claim LIVE_VALIDATED or CLOSED until Windows validation and PR acceptance. No launcher integration, pub.dev release or changes to other repos.
+- Final R6 feature HEAD `be23568381dc20133fc5d00887b9681f8fd7cd2e`: GitHub Windows PR workflows all **SUCCESS**: R1 #39956090260, R2 #39956090183, R3 #39956090254, R4 #39956090299. These cover root/example analyzers, tests and Windows release build.
+- User Windows: `flutter pub get` PASS; root `flutter analyze --no-pub` PASS (20.0s); root `flutter test --no-pub test/` **56/56 PASS**; example dependency resolution and `flutter analyze --no-pub` PASS (2.0s); `flutter run -d windows --enable-flutter-gpu` built debug EXE in 15.2s and launched with Impeller. User reported **"süper çalıştı"** for real UI/model detection. The log ended with `Lost connection to device`; not independently demonstrated to be a crash.
+- Review: PR #7 contained exactly nine scoped files, no added-line trailing whitespace in reviewed GitHub patch; local `git diff --check` **NOT RUN** here. User worktree had four modified generated/dependency-lock files, preserved and excluded.
+- User explicitly authorized **merge and cleanup**. PR #7 was marked ready, then **squash-merged** into `main` as `3b2c7b442681c086c9ef98b90e5d30b6b69922ca`. R6 is **CLOSED** on user acceptance and Windows debug evidence.
+- **Deferred / unverified:** Windows release **build** passed in CI, but interactive release EXE **launch** and manual Classic/Slim override with separately documented cases were not supplied as independent evidence. No release live-validation claim and no zero-GPU-leak claim. These are not hidden regressions; check later if needed.
+- No new dependencies, account/network API, launcher integration, pub.dev release or SDK upgrade in R6.
