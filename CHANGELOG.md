@@ -2,6 +2,9 @@
 
 ## Unreleased — R7 Live character animation (Windows validation pending)
 
+- User-requested visual tuning: slow Walk cadence from 1.15 to 0.90 Hz (about 22% fewer cycles per second), leaving limb swing amplitude and Live breath/head movements unchanged. Fix floating-point-sensitive Live inhale-peak test with a 1e-12 tolerance.
+
+
 - Add `MtnMinecraftSkinPose.live` with subtle inhale/exhale shoulder Z motion
   and head turns chosen randomly among left/right/up/down, with easing and
   random 1–4-second glance holds.

@@ -8,6 +8,13 @@
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
 **Current checkpoint:** R6 CLOSED; PR #7 squash-merged as `3b2c7b442681c086c9ef98b90e5d30b6b69922ca` after 4/4 exact-head GitHub Windows CI SUCCESS, 56/56 user local root tests and accepted Windows GPU debug smoke. R6 release build succeeded in CI but release EXE interactive launch not independently verified. R5 CLOSED; direct GPU memory telemetry remains unmeasured.
 
+## 2026-10-23 — R7 Live accepted visually; Walk speed & regression fix pending final validation
+
+- User Windows debug build/launch succeeded after R7 Quaternion correction, with Impeller active. The user explicitly praised Live breathing and multi-direction head movements as visually successful; slow Walk cadence slightly.
+- Local root `flutter analyze --no-pub` **PASS**; example analyzer **PASS**. Root suite **62 PASS, 1 FAIL** at `test/mtn_minecraft_skin_pose_cape_test.dart:170` due only to IEEE-754 rounding (`0.12000000000000001` vs strict `0.12`) in the new inhale peak bound.
+- Feature updated: Walk cycles 1.15 → 0.90 Hz (~22% slower, swing amplitude untouched), inhale test now tolerates `1e-12`, deterministic Walk period check added. Live behavior unaffected. Documentation and new source on Draft [PR #8](https://github.com/nusretm/minecraft_skin_viewer/pull/8).
+- Final latest-HEAD CI and user's Walk pacing acceptance **PENDING**; no merge. Four locally modified generated/lock files remain protected. See `R7_LIVE_CHARACTER_ANIMATION.md`.
+
 ## 2026-10-23 — R7 compiler blocker / scoped fix (validation pending)
 
 - User R7 local validation initially **FAILED** at `flutter analyze --no-pub` and test compilation because `mtn_minecraft_skin_viewer_3d.dart:312,317` called absent `Quaternion.multiply` on `vector_math 2.4.3`. Windows debug build **FAILED** on the same error; example analyzer passed in isolation. All four old-head Windows CI workflows **FAILED** and are not acceptance evidence.
