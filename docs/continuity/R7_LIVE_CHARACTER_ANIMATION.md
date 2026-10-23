@@ -34,3 +34,11 @@
 - User Windows release build and direct EXE interactive visual smoke; debug success does not certify release.
 - `git diff --check`, `git status -sb`, source diff review and scoped PR; do not change the four existing user modified generated files or unrelated repos.
 - Only close/squash merge when agreed acceptance is verified. No pub.dev release or Flutter upgrade.
+
+## 2026-10-23 — Initial Windows compile blocker and corrective commit
+
+- User checked out `feature/r7-live-character-animation` and ran `flutter pub get`, root `flutter analyze --no-pub`, root `flutter test --no-pub test/`, example analyze and Windows GPU debug launch.
+- Root analysis **FAILED** with two `undefined_method` errors at `lib/src/mtn_minecraft_skin_viewer_3d.dart` around lines 312 and 317: `Quaternion.multiply` is unavailable in the pinned `vector_math 2.4.3`. Root tests and Windows debug build **BLOCKED** by the same compile errors; example analyzer alone **PASSED** and does not prove package compilation. No live GPU acceptance was possible at this revision.
+- Exact prior HEAD `4703b1d893edf322aebe62132fbfdab869c2b0da`: Windows R1 [#39961671476](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39961671476), R2 [#39961671367](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39961671367), R3 [#39961671720](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39961671720), R4 [#39961671763](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39961671763) all **FAILED**. These failures are not counted as acceptance evidence.
+- Scoped fix commit `4b40156cc06956c978ebb8b4954b8fa6dd7bde1e`: replace both unsupported cascaded `..multiply(q)` calls with the supported, typed `Quaternion * Quaternion` operator, preserving axis order X→Z for arms and Y→X for the head. API source: https://pub.dev/documentation/vector_math/latest/vector_math/Quaternion-class.html
+- New exact-head Windows CI and user re-test **PENDING**. No merge/closure or unverified compile success claim. User's four modified generated/lock files remain excluded from GitHub changes.
