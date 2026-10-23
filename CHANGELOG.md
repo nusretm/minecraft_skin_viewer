@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — R7 Live character animation (Windows validation pending)
+## Unreleased — R7 Live character animation (merged 2026-10-23)
 
 - User-requested visual tuning: slow Walk cadence from 1.15 to 0.90 Hz (about 22% fewer cycles per second), leaving limb swing amplitude and Live breath/head movements unchanged. Fix floating-point-sensitive Live inhale-peak test with a 1e-12 tolerance.
 
@@ -14,8 +14,11 @@
 - Reuse the single viewer ticker; use a clock-driven head scheduler rather than
   timers. Tests use injected fixed or seeded random values.
 - Extend the example mode selector and focused regression coverage.
-- Windows interactive debug/release verification and PR CI are pending. No
-  dependency, renderer mesh change, networking or launcher integration.
+- PR #8 squash-merged as `8979697` after exact-head 4/4 Windows CI success,
+  user 63/63 tests, root analyzer pass, and accepted Windows GPU debug visual.
+  Release EXE build/launch passed; interactive release visual smoke and direct
+  GPU-memory measurement were not independently reported. No new dependency,
+  renderer mesh change, networking or launcher integration.
 
 
 ## Unreleased — R6 automatic skin model detection (feature; validation pending)

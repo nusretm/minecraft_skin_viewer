@@ -121,11 +121,11 @@ Classic/Slim value is stored in the existing texture model and shared by
 2D/3D; no new public confidence API, second UV atlas, widget state or GPU work.
 Merged by squash PR #7 as `3b2c7b442681c086c9ef98b90e5d30b6b69922ca`. Final feature-head Windows CI 4/4 SUCCESS; user Windows debug accepted. Interactive release EXE smoke was not independently supplied. See R6_AUTOMATIC_SKIN_MODEL_DETECTION.md for evidence and caveats.
 
-## R7 Live character animation (APPROVED / verification pending 2026-10-23)
+## R7 Live character animation (CLOSED / squash merged 2026-10-23)
 
 `MtnMinecraftSkinViewerController` remains the sole authority for the selected
 pose and camera/layer state. Its default is now `live`; `idle` remains
-selectable and static, `walk` is unchanged. Pose frame angles add symmetric
+selectable and static, `walk` is tuned from 1.15 to 0.90 Hz. Pose frame angles add symmetric
 opposing Z rotations at existing shoulder pivots (open during inhale, close
 during exhale) and head yaw/pitch at the existing head/neck pivot.
 Four-direction stochastic glances are scheduled inside the GPU viewer state
@@ -134,4 +134,4 @@ The scheduler has no independent timer, observer, GPU allocation or authority
 over selected pose. Ticker runs only for Walk/Live, stops for Idle. Changing
 camera does not restart animation; switching poses resets neck/shoulder angles.
 2D widgets, texture decoding and GPU geometry are unchanged.
-See `R7_LIVE_CHARACTER_ANIMATION.md` for scope and acceptance.
+PR #8 squash merged as `89796975c8ec52bab256670545f0a4f75b3f477b` after 4/4 Windows CI SUCCESS, 63/63 user tests and accepted Windows GPU debug. Release EXE built/launched; independent interactive release visual check and dedicated GPU memory samples were not supplied. See `R7_LIVE_CHARACTER_ANIMATION.md`.

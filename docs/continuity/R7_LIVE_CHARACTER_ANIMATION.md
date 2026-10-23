@@ -1,10 +1,10 @@
 # R7 — Live Character Animation
 
-**State:** APPROVED / implementation on feature branch; GitHub CI and Windows user visual validation pending.
+**State:** CLOSED — squash merged into main 2026-10-23; release interactive visual smoke and direct GPU-memory telemetry remain unverified.
 **Date:** 2026-10-23
 **Base:** main `0e46ca48d0dde18893e9faa0bef78b1f7de68731`
 **Branch:** `feature/r7-live-character-animation`
-**PR:** [#8 — R7 Live Character Animation](https://github.com/nusretm/minecraft_skin_viewer/pull/8) (Draft; Windows CI running)
+**PR:** [#8 — R7 Live Character Animation](https://github.com/nusretm/minecraft_skin_viewer/pull/8) (merged as `89796975c8ec52bab256670545f0a4f75b3f477b`)
 
 ## Approved behavior
 
@@ -50,3 +50,11 @@
 - User requested a slightly slower Walk. The old 1.15 Hz cycle is now 0.90 Hz (about 21.7% slower); 0.48-radian limb swing amplitude, Live breathing and glance behavior remain unchanged. New deterministic Walk quarter/full-cycle assertions protect the tempo.
 - Test bound is now `closeTo(0.12, 1e-12)` to allow representational rounding while preserving the target amplitude.
 - Latest exact-head Windows CI, successful full suite and user visual Walk-speed acceptance are still **PENDING**. Previous CI passes/failures must not be treated as validation of the new head. No merge or release claim.
+
+## 2026-10-23 — Final R7 integration closure
+
+- Final feature HEAD `9b6e5b27fd1bed1bfeb9b1c3a63ff8a7b997afbe` passed **4/4 Windows CI** on PR #8 (R1/R2/R3/R4). Locally the user confirmed root Flutter analyze **PASS**, all **63 tests PASS**, Windows GPU debug build and launch with Impeller, and Live animation visually accepted.
+- After slowing Walk to 0.90 Hz and changing the floating-point-sensitive inhale-peak assertion, the user also built Windows release successfully and launched the compiled EXE. No claim of separately observed release interactive behavior or zero GPU leaks.
+- The user expressly asked to merge; PR #8 marked ready and **squash merged** into `main` as `89796975c8ec52bab256670545f0a4f75b3f477b`. Historical initial compile failures and test rounding failure remain documented as prior revision evidence.
+- The final PR patch passed an added-line trailing-whitespace review, but local `git diff --check` was not independently run. Four user-modified Windows plugin-generation/lock files were not included. No launcher code changes or dependency upgrades.
+- R7 CLOSED. Future consumers on `ref: main` may need `flutter pub upgrade mtn_minecraft_skin_viewer` to update their `pubspec.lock` resolved ref.

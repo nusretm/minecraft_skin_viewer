@@ -210,7 +210,7 @@ to Classic. PNG pixels cannot prove the original Minecraft account model;
 manual override remains available. No API, network or dependency is needed to
 detect the model, and the same decoded texture works in 2D and 3D.
 
-## R7 — Living character (feature under validation)
+## R7 — Living character (merged via PR #8)
 
 `MtnMinecraftSkinViewerController()` now defaults to `MtnMinecraftSkinPose.live`.
 Live gently opens the shoulders while inhaling and closes them when exhaling;

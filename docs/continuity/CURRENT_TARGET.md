@@ -2,11 +2,19 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** R7 Live character animation on `feature/r7-live-character-animation` (approved; source implemented, CI/Windows acceptance pending). R1–R6 are merged into `main`; launcher integration not started.
-**Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4), [#5 — R5 Public API](https://github.com/nusretm/minecraft_skin_viewer/pull/5), [#7 — R6 Auto Skin Model Detection](https://github.com/nusretm/minecraft_skin_viewer/pull/7)
+**Active implementation:** None. R1–R7 are merged into `main`; launcher integration continues separately in `mtn_launcher_app`. Direct GPU-memory telemetry and standalone interactive release visual smoke remain unverified.
+**Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4), [#5 — R5 Public API](https://github.com/nusretm/minecraft_skin_viewer/pull/5), [#7 — R6 Auto Skin Model Detection](https://github.com/nusretm/minecraft_skin_viewer/pull/7), [#8 — R7 Live Character Animation](https://github.com/nusretm/minecraft_skin_viewer/pull/8)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
-**Current checkpoint:** R6 CLOSED; PR #7 squash-merged as `3b2c7b442681c086c9ef98b90e5d30b6b69922ca` after 4/4 exact-head GitHub Windows CI SUCCESS, 56/56 user local root tests and accepted Windows GPU debug smoke. R6 release build succeeded in CI but release EXE interactive launch not independently verified. R5 CLOSED; direct GPU memory telemetry remains unmeasured.
+**Current checkpoint:** R7 CLOSED; PR #8 squash-merged into `main` as `89796975c8ec52bab256670545f0a4f75b3f477b` from approved final feature HEAD `9b6e5b27fd1bed1bfeb9b1c3a63ff8a7b997afbe`. Exact-head Windows CI 4/4 SUCCESS; user root analyzer PASS, 63/63 tests PASS, Windows GPU debug visual Live accepted, Windows release build and EXE start confirmed. Separate interactive release visual check and dedicated GPU-memory measurements not recorded.
+
+## 2026-10-23 — R7 squash merged into main (CLOSED)
+
+- User explicitly requested R7 merge after reviewing Live's breathing and head movement as visually excellent; Walk was tuned from 1.15 to 0.90 Hz and user requested merge after receiving updated build/test instructions. No change to Live timing or GPU textures.
+- Feature head `9b6e5b27fd1bed1bfeb9b1c3a63ff8a7b997afbe`: Windows CI R1 [#39965959510](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39965959510), R2 [#39965959406](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39965959406), R3 [#39965959334](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39965959334), R4 [#39965959499](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39965959499) all **SUCCESS**.
+- Local `flutter analyze --no-pub` **PASS**; `flutter test --no-pub test/` **63/63 PASS**; example `flutter analyze --no-pub` **PASS** on previous corrective head; user Windows GPU debug app built/started with Impeller; user Windows release build **PASS** and direct EXE launch confirmed. The user did not separately describe release EXE interactive visual quality; do not equate process launch with release visual acceptance. No direct GPU memory measurements.
+- PR [#8](https://github.com/nusretm/minecraft_skin_viewer/pull/8) was marked ready then **squash-merged** as `89796975c8ec52bab256670545f0a4f75b3f477b`. Final PR review: thirteen changed files, no added-line trailing whitespace; user's four locally modified generated/lock files excluded. Root `git diff --check` not independently executed.
+- R7 **CLOSED** by explicit merge authorization and verified CI/debug. Existing historical R7 pending/failure entries below remain snapshots from earlier HEADs, not current status. Future package consumers using `ref: main` must update the Git lock resolution via targeted `flutter pub upgrade mtn_minecraft_skin_viewer` when moving to the new HEAD.
 
 ## 2026-10-23 — R7 Live accepted visually; Walk speed & regression fix pending final validation
 
