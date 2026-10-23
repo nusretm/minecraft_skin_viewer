@@ -2,11 +2,20 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** R6 auto skin model detection on `feature/r6-auto-skin-model-detection`; code implemented on [Draft PR #7](https://github.com/nusretm/minecraft_skin_viewer/pull/7), CI and Windows validation pending. R1–R5 remain merged into `main`; launcher integration not started. R5 direct GPU-memory telemetry remains unverified.
-**Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4), [#5 — R5 Public API](https://github.com/nusretm/minecraft_skin_viewer/pull/5)
+**Active implementation:** None. R1–R6 merged into `main`; launcher integration not started. R5 direct GPU-memory telemetry and R6 interactive release EXE smoke remain unverified.
+**Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4), [#5 — R5 Public API](https://github.com/nusretm/minecraft_skin_viewer/pull/5), [#7 — R6 Auto Skin Model Detection](https://github.com/nusretm/minecraft_skin_viewer/pull/7)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
-**Current checkpoint:** R6 IMPLEMENTED / verification PENDING; R5 CLOSED; PR #5 squash-merged at `6e2ae4c` after latest feature HEAD CI 4/4 success and user Windows Walk + recreate acceptance. Alternative PR #6 closed unmerged. Windows release launch and three memory samples reported for alternative PR #6 branch, not proof of PR #5 release smoke. Direct GPU memory unmeasured.
+**Current checkpoint:** R6 CLOSED; PR #7 squash-merged as `3b2c7b442681c086c9ef98b90e5d30b6b69922ca` after 4/4 exact-head GitHub Windows CI SUCCESS, 56/56 user local root tests and accepted Windows GPU debug smoke. R6 release build succeeded in CI but release EXE interactive launch not independently verified. R5 CLOSED; direct GPU memory telemetry remains unmeasured.
+
+## 2026-10-23 — R6 main integration CLOSED
+
+- User approved streamlined adaptation of the MIT-licensed skinview-utils `inferModelType` source (single checkpoint, no heavy fixture suite) and subsequently reported R6 Windows example **"süper çalıştı"**, explicitly authorizing squash merge and cleanup.
+- PR [#7](https://github.com/nusretm/minecraft_skin_viewer/pull/7) from feature `be23568381dc20133fc5d00887b9681f8fd7cd2e` was marked ready and squash-merged into `main` as `3b2c7b442681c086c9ef98b90e5d30b6b69922ca`.
+- Final feature HEAD GitHub Windows R1 [#39956090260](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39956090260), R2 [#39956090183](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39956090183), R3 [#39956090254](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39956090254), R4 [#39956090299](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/39956090299) all **SUCCESS**. User root analyzer PASS, root tests **56/56 PASS**, example analyzer PASS, Windows GPU debug app build/launch and user acceptance confirmed.
+- PR diff nine files and no added-line trailing whitespace; `git diff --check` not run in the user's worktree. User's four existing `example/pubspec.lock` and generated plugin registrant modifications are preserved, not included in the PR.
+- Deferred visibility: CI Windows release EXE **build** succeeded, but release EXE interactive **launch** was not separately reported for R6. No claim of release live validation, guaranteed classifier accuracy or zero GPU memory leaks. Package remains `0.1.0-dev.2`; launcher integration, new dependency and pub.dev publication remain out of scope.
+- R6 is **CLOSED** by explicit user acceptance and verified Windows debug/CI; no implementation task active. See `R6_AUTOMATIC_SKIN_MODEL_DETECTION.md`.
 
 ## 2026-10-23 — R6 minimal automatic model detection (APPROVED; implementation under verification)
 
