@@ -9,7 +9,8 @@ UV layouts, and reusable 2D and 3D player widgets.
 - R1: GPU-backed 3D feasibility prototype in example/ (closed, Windows-verified).
 - R2: PNG normalization and renderer-independent Classic/Slim/cape face UVs (closed, merged).
 - R3: 2D head/body/cape Flutter widgets (closed, Windows-verified and merged).
-- R4: 3D viewer Windows validated and merged in PR #4; R5 public-controller finalization is in Draft feature review.
+- R4–R6: 3D viewer, public widget controller and Classic/Slim auto-detection merged.
+- R7: Live breathing and four-way head glances under Windows review.
 
 ## R2 usage: atlas data only
 
@@ -208,3 +209,23 @@ adapted from [skinview-utils](https://github.com/bs-community/skinview-utils/blo
 to Classic. PNG pixels cannot prove the original Minecraft account model;
 manual override remains available. No API, network or dependency is needed to
 detect the model, and the same decoded texture works in 2D and 3D.
+
+## R7 — Living character (feature under validation)
+
+`MtnMinecraftSkinViewerController()` now defaults to `MtnMinecraftSkinPose.live`.
+Live gently opens the shoulders while inhaling and closes them when exhaling;
+the head periodically looks left/right/up/down and returns to center after a
+random 1–4-second hold. The camera is independent.
+
+```dart
+final controller = MtnMinecraftSkinViewerController(); // Live by default
+MtnMinecraftSkinViewer(texture: skin, controller: controller);
+
+controller.setPose(MtnMinecraftSkinPose.idle); // static pose
+controller.setPose(MtnMinecraftSkinPose.walk); // limb animation
+controller.setPose(MtnMinecraftSkinPose.live); // breathing + glances
+```
+
+Live and Walk reuse the viewer's existing ticker. Skin/cape textures are not
+re-uploaded when changing pose; 2D previews remain still. Dispose a controller
+you create yourself. See `docs/continuity/R7_LIVE_CHARACTER_ANIMATION.md`.
