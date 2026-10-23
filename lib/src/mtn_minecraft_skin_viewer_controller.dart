@@ -16,7 +16,7 @@ class MtnMinecraftSkinViewerController extends ChangeNotifier {
     double yaw = -math.pi / 3,
     double pitch = 0.15,
     double distance = 3.7,
-    MtnMinecraftSkinPose pose = MtnMinecraftSkinPose.idle,
+    MtnMinecraftSkinPose pose = MtnMinecraftSkinPose.live,
     bool showOuterLayer = true,
     bool showCape = true,
   }) : _pose = pose,
