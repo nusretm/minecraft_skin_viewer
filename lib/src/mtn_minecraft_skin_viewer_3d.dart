@@ -307,14 +307,14 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
         MtnMinecraftSkinBodyPart.leftArm => frame.leftArmZ,
         _ => 0.0,
       };
-      _joints[entry.key]?.rotation = vm.Quaternion.axisAngle(
-        vm.Vector3(1, 0, 0), entry.value,
-      )..multiply(vm.Quaternion.axisAngle(vm.Vector3(0, 0, 1), z));
+      _joints[entry.key]?.rotation =
+          vm.Quaternion.axisAngle(vm.Vector3(1, 0, 0), entry.value) *
+          vm.Quaternion.axisAngle(vm.Vector3(0, 0, 1), z);
     }
     // The head pivots at the neck and has two independent glance axes.
-    _joints[MtnMinecraftSkinBodyPart.head]?.rotation = vm.Quaternion.axisAngle(
-      vm.Vector3(0, 1, 0), frame.headYaw,
-    )..multiply(vm.Quaternion.axisAngle(vm.Vector3(1, 0, 0), frame.headPitch));
+    _joints[MtnMinecraftSkinBodyPart.head]?.rotation =
+        vm.Quaternion.axisAngle(vm.Vector3(0, 1, 0), frame.headYaw) *
+        vm.Quaternion.axisAngle(vm.Vector3(1, 0, 0), frame.headPitch);
     _capeHinge?.rotation = vm.Quaternion.axisAngle(
       vm.Vector3(1, 0, 0), frame.capeX);
   }
