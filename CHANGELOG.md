@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — R6 automatic skin model detection (feature; validation pending)
+
+- Infer Classic/Slim in `MtnMinecraftSkinTexture.fromPng(bytes)` for 64×64 Java
+  skins using the MIT-licensed skinview-utils unused-arm-area heuristic.
+  Default legacy 64×32 skins to Classic. Explicit `modelType` overrides both.
+- Detect on original RGBA in the existing single PNG decode before alpha
+  normalization. No additional dependency, renderer/controller change, or API.
+- Cover standard Classic/Slim, transparent arm gaps, all-black/all-white gaps,
+  legacy and explicit override with focused synthetic tests.
+- Windows real-PNG, CI and release smoke still need confirmation; no new
+  published version or GPU memory claims.
+
 This package is pre-stable and intentionally uses Git dependencies during
 Windows-first development. No pub.dev publication has been authorized.
 
