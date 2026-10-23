@@ -107,3 +107,16 @@ R4 public 3D renderer/controller, Java cape, transparent layers and pose logic w
 - Controller changes update active joint/cape nodes and camera without reconstructing GPU meshes; changing decoded skin/cape identity rebuilds GPU resources but retains a supplied controller. Host-created controller remains host-owned; default controller is widget-owned.
 - `reset()` maintains backward-compatible camera-only semantics; pose/visibility stay unchanged.
 - Breaking API change is allowed before the first stable release, but documented in README and accompanied by updated example/test coverage. All acceptance gates remain subject to CI and actual Windows GPU debug/release smoke; no package publication or launcher code changes in R5.
+
+## R6 model inference (feature under validation, 2026-10-23)
+
+The texture decoder remains the only PNG decode authority. When the caller omits
+`modelType`, modern Java 64×64 input is classified from decoded unmodified
+RGBA before the model-specific base-layer alpha fixup. It adapts the MIT
+skinview-utils `inferModelType` heuristic: unused Slim arm atlas areas with
+nonopaque alpha, or all-black/all-white fills, indicate Slim; otherwise
+Classic. Legacy 64×32 defaults to Classic. Explicit `modelType` bypasses
+inference. The inference is fallible; callers can override. The resolved
+Classic/Slim value is stored in the existing texture model and shared by
+2D/3D; no new public confidence API, second UV atlas, widget state or GPU work.
+See R6_AUTOMATIC_SKIN_MODEL_DETECTION.md for validation status.
