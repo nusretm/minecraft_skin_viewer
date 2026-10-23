@@ -6,6 +6,8 @@ import 'mtn_minecraft_skin_uv.dart';
 /// Normalized Java Edition skin atlas. Accessors never expose mutable storage.
 ///
 /// PNG bytes are decoded only after a strict 64x64 / 64x32 IHDR preflight.
+/// Modern skins use heuristic Classic/Slim inference unless [modelType] is
+/// explicitly supplied to [fromPng]. Legacy 64x32 defaults to Classic.
 /// Legacy right-side limb artwork is mirrored per face into a 64x64 atlas.
 class MtnMinecraftSkinTexture {
   MtnMinecraftSkinTexture._(
@@ -28,7 +30,7 @@ class MtnMinecraftSkinTexture {
 
   static Future<MtnMinecraftSkinTexture> fromPng(
     Uint8List png, {
-    required MtnMinecraftSkinModelType modelType,
+    MtnMinecraftSkinModelType? modelType,
   }) async {
     final header = _MtnMinecraftPng.decodeHeader(png);
     if (header.width != 64 || (header.height != 64 && header.height != 32)) {
@@ -36,10 +38,14 @@ class MtnMinecraftSkinTexture {
     }
 
     final source = await _MtnMinecraftPng.decodePixels(png, header);
+    final legacy = header.height == 32;
+    // Inspect the original decoded RGBA before base-face alpha normalization.
+    // Legacy 64x32 skins use Classic geometry; explicit selection always wins.
+    final resolvedModelType = modelType ?? (legacy
+        ? MtnMinecraftSkinModelType.classic
+        : _inferSkinModelType(source));
     final output = Uint8List(width * height * 4);
     output.setRange(0, source.length, source);
-
-    final legacy = header.height == 32;
     if (legacy) {
       // Left leg and left arm do not exist in old atlases; they are mirrored
       // from the right limb, with left/right SIDE faces interchanged.
@@ -91,8 +97,8 @@ class MtnMinecraftSkinTexture {
     }
 
     // Minecraft base faces are opaque, but overlays retain alpha. Do not
-    // affect unused atlas cells, nor infer a slim model from pixel content.
-    final uv = MtnMinecraftSkinUvLayout(modelType);
+    // affect unused atlas cells. Detection already used the original pixels.
+    final uv = MtnMinecraftSkinUvLayout(resolvedModelType);
     for (final part in MtnMinecraftSkinBodyPart.values) {
       for (final face in MtnMinecraftSkinFace.values) {
         final rect = uv.face(part, face);
@@ -103,8 +109,56 @@ class MtnMinecraftSkinTexture {
         }
       }
     }
-    return MtnMinecraftSkinTexture._(modelType, legacy, output);
+    return MtnMinecraftSkinTexture._(resolvedModelType, legacy, output);
   }
+}
+
+// Adapted from bs-community/skinview-utils inferModelType() (MIT license).
+// https://github.com/bs-community/skinview-utils/blob/master/src/process.ts
+// See docs/third_party/SKINVIEW_UTILS_LICENSE.md for its copyright notice.
+// Slim arm UVs leave four regions unused by the 3-pixel-wide arm geometry.
+const _slimUnusedRegions = <(int, int, int, int)>[
+  (50, 16, 2, 4), (54, 20, 2, 12),
+  (42, 48, 2, 4), (46, 52, 2, 12),
+];
+
+MtnMinecraftSkinModelType _inferSkinModelType(Uint8List pixels) {
+  for (final region in _slimUnusedRegions) {
+    if (_regionHasTransparency(pixels, region)) {
+      return MtnMinecraftSkinModelType.slim;
+    }
+  }
+
+  // Some exporters fill every unused Slim arm cell with opaque black/white.
+  for (final color in const [0, 255]) {
+    if (_slimUnusedRegions.every((region) => _regionIsOpaqueColor(pixels, region, color))) {
+      return MtnMinecraftSkinModelType.slim;
+    }
+  }
+
+  return MtnMinecraftSkinModelType.classic;
+}
+
+bool _regionHasTransparency(Uint8List pixels, (int, int, int, int) region) {
+  final (x, y, width, height) = region;
+  for (var row = y; row < y + height; row++) {
+    for (var col = x; col < x + width; col++) {
+      if (pixels[(row * 64 + col) * 4 + 3] != 255) return true;
+    }
+  }
+  return false;
+}
+
+bool _regionIsOpaqueColor(Uint8List pixels, (int, int, int, int) region, int color) {
+  final (x, y, width, height) = region;
+  for (var row = y; row < y + height; row++) {
+    for (var col = x; col < x + width; col++) {
+      final offset = (row * 64 + col) * 4;
+      if (pixels[offset] != color || pixels[offset + 1] != color ||
+          pixels[offset + 2] != color || pixels[offset + 3] != 255) return false;
+    }
+  }
+  return true;
 }
 
 /// Strict Java 64x32 cape texture. Renderer-specific cape mesh is later work.
