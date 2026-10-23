@@ -115,11 +115,11 @@ class MtnMinecraftCapeBoxMesh {
 }
 
 /// Basic pose modes, deliberately without skeletal skinning or cloth physics.
-enum MtnMinecraftSkinPose { idle, walk }
+enum MtnMinecraftSkinPose { idle, walk, live }
 
-/// A frame of local-axis rotations to apply at neck, shoulder, hip and cape
-/// pivots. Radians, positive X rotation swings limbs toward the character's
-/// back (-Z). No mutable animation state or GPU dependency.
+/// Local-axis pose rotations in radians for neck, shoulders, hips and cape.
+/// Live adds shoulder outward/inward motion and head yaw/pitch without
+/// changing the skeleton, skin atlas, or the existing Idle/Walk behavior.
 class MtnMinecraftSkinPoseFrame {
   const MtnMinecraftSkinPoseFrame({
     required this.rightArmX,
@@ -127,26 +127,54 @@ class MtnMinecraftSkinPoseFrame {
     required this.rightLegX,
     required this.leftLegX,
     required this.capeX,
+    this.rightArmZ = 0,
+    this.leftArmZ = 0,
+    this.headYaw = 0,
+    this.headPitch = 0,
   });
 
   final double rightArmX;
   final double leftArmX;
+  final double rightArmZ;
+  final double leftArmZ;
   final double rightLegX;
   final double leftLegX;
   final double capeX;
+  final double headYaw;
+  final double headPitch;
 
   factory MtnMinecraftSkinPoseFrame.at(
     MtnMinecraftSkinPose pose, {
     double seconds = 0,
+    double liveHeadYaw = 0,
+    double liveHeadPitch = 0,
   }) {
-    if (!seconds.isFinite) {
-      throw ArgumentError.value(seconds, 'seconds', 'Must be finite');
+    if (!seconds.isFinite || !liveHeadYaw.isFinite || !liveHeadPitch.isFinite) {
+      throw ArgumentError.value(seconds, 'seconds / liveHeadYaw / liveHeadPitch',
+          'Pose inputs must be finite');
     }
+
     if (pose == MtnMinecraftSkinPose.idle) {
       return const MtnMinecraftSkinPoseFrame(
         rightArmX: 0, leftArmX: 0, rightLegX: 0, leftLegX: 0,
         capeX: 0.18);
     }
+
+    if (pose == MtnMinecraftSkinPose.live) {
+      // Half the cycle opens the shoulders (inhale), the second closes them
+      // (exhale). The hands never cross into the torso.
+      final breathPhase = seconds * 2 * math.pi / 3.8;
+      final breath = (1 - math.cos(breathPhase)) / 2;
+      final spread = 0.035 + breath * 0.085; // approximately 2–7 degrees.
+      return MtnMinecraftSkinPoseFrame(
+        rightArmX: 0, leftArmX: 0,
+        rightArmZ: -spread, leftArmZ: spread,
+        rightLegX: 0, leftLegX: 0,
+        capeX: 0.18,
+        headYaw: liveHeadYaw, headPitch: liveHeadPitch,
+      );
+    }
+
     final phase = seconds * 2 * math.pi * 1.15;
     final swing = math.sin(phase) * 0.48;
     return MtnMinecraftSkinPoseFrame(
