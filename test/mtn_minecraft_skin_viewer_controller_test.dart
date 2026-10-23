@@ -8,6 +8,7 @@ void main() {
     test('defaults and continuous orbit/zoom without model resets', () {
       final camera = MtnMinecraftSkinViewerController();
       addTearDown(camera.dispose);
+      expect(camera.pose, MtnMinecraftSkinPose.live);
       expect(camera.yaw, closeTo(-math.pi / 3, 1e-12));
       expect(camera.pitch, 0.15);
       expect(camera.distance, 3.7);
@@ -101,6 +102,23 @@ void main() {
       viewer.removeListener(listener);
       viewer.setPose(MtnMinecraftSkinPose.walk);
       expect(changes, 3);
+    });
+
+    test('default Live can switch to Idle and Walk and back', () {
+      final controller = MtnMinecraftSkinViewerController();
+      addTearDown(controller.dispose);
+      var updates = 0;
+      controller.addListener(() => updates++);
+      expect(controller.pose, MtnMinecraftSkinPose.live);
+      controller.setPose(MtnMinecraftSkinPose.idle);
+      controller.setPose(MtnMinecraftSkinPose.walk);
+      controller.setPose(MtnMinecraftSkinPose.live);
+      controller.setPose(MtnMinecraftSkinPose.live);
+      expect(controller.pose, MtnMinecraftSkinPose.live);
+      expect(updates, 3);
+      controller.reset();
+      expect(controller.pose, MtnMinecraftSkinPose.live,
+          reason: 'reset remains camera-only');
     });
 
     test('camera changes do not mutate pose or visibility', () {
