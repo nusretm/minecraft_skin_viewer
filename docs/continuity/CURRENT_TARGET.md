@@ -2,11 +2,20 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** None. R1–R5 merged into `main`; launcher integration not started. R5 direct GPU-memory telemetry remains unverified.
+**Active implementation:** R6 auto skin model detection on `feature/r6-auto-skin-model-detection`; code implemented on [Draft PR #7](https://github.com/nusretm/minecraft_skin_viewer/pull/7), CI and Windows validation pending. R1–R5 remain merged into `main`; launcher integration not started. R5 direct GPU-memory telemetry remains unverified.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4), [#5 — R5 Public API](https://github.com/nusretm/minecraft_skin_viewer/pull/5)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
-**Current checkpoint:** R5 CLOSED; PR #5 squash-merged at `6e2ae4c` after latest feature HEAD CI 4/4 success and user Windows Walk + recreate acceptance. Alternative PR #6 closed unmerged. Windows release launch and three memory samples reported for alternative PR #6 branch, not proof of PR #5 release smoke. Direct GPU memory unmeasured.
+**Current checkpoint:** R6 IMPLEMENTED / verification PENDING; R5 CLOSED; PR #5 squash-merged at `6e2ae4c` after latest feature HEAD CI 4/4 success and user Windows Walk + recreate acceptance. Alternative PR #6 closed unmerged. Windows release launch and three memory samples reported for alternative PR #6 branch, not proof of PR #5 release smoke. Direct GPU memory unmeasured.
+
+## 2026-10-23 — R6 minimal automatic model detection (APPROVED; implementation under verification)
+
+- User explicitly approved adapting the established MIT skinview-utils `inferModelType` logic rather than building a broad statistical classifier or fixture corpus.
+- Branch `feature/r6-auto-skin-model-detection` from main `23bef1b`, package remains `0.1.0-dev.2`; no launcher changes or dependency additions.
+- Modern 64×64: alpha + all-black/all-white arm-gap heuristic before normalization; legacy 64×32: default Classic; explicit model overrides. Existing widget/controller/UV contracts remain unchanged.
+- Source+focused tests+Windows example startup+MIT notice and R6 continuity document committed in feature; exact branch CI and real Windows smoke are not yet established at this documentation update.
+- [Draft PR #7](https://github.com/nusretm/minecraft_skin_viewer/pull/7) opened with 9 changed files; initial exact-head Windows R1/R2/R3/R4 PR checks started and were IN PROGRESS when inspected. Patch review found no added-line trailing whitespace; local `git diff --check` and Windows Flutter execution NOT RUN here.
+- Next: exact final-head Windows CI, user local real-PNG Classic/Slim verification, diff review and conditional merge only when accepted. No unverified `CLOSED` claim.
 
 ## 2026-10-22 — R5 main integration CLOSED
 

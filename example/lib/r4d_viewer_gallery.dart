@@ -52,8 +52,8 @@ class _MtnMinecraftR4DViewerGalleryState
         skinPath, width: 64, height: 64, cape: false);
       final capeBytes = await _loadOrSynthetic(
         capePath, width: 64, height: 32, cape: true);
-      final skin = await MtnMinecraftSkinTexture.fromPng(
-        skinBytes, modelType: MtnMinecraftSkinModelType.slim);
+      // Exercise auto detection on startup; the Classic/Slim control still overrides it.
+      final skin = await MtnMinecraftSkinTexture.fromPng(skinBytes);
       final cape = await MtnMinecraftCapeTexture.fromPng(capeBytes);
       if (!mounted) return;
       setState(() {

@@ -34,8 +34,11 @@ Future<void> inspectSkin(Uint8List png) async {
 }
 ~~~
 
-The application provides its own PNG bytes and selects Classic or Slim
-explicitly. The package does not fetch Minecraft profiles or manage accounts.
+The application provides its own PNG bytes. Since R6, the model may be inferred
+from PNG pixels when `modelType` is omitted. Explicit Classic/Slim is still
+supported for manual override. Detection is heuristic, not account metadata;
+64×32 legacy skins default to Classic. The package does not fetch Minecraft
+profiles or manage accounts.
 A 64x32 cape is decoded via MtnMinecraftCapeTexture.fromPng, with pixel-space
 rectangles from MtnMinecraftCapeUvLayout.
 
@@ -145,8 +148,9 @@ MtnMinecraftSkinHead(
 );
 ```
 
-Use `MtnMinecraftSkinTexture.fromPng(bytes, modelType: ...)` to decode and
-normalize an input skin; Classic/Slim must be selected explicitly. Optional
+Use `MtnMinecraftSkinTexture.fromPng(bytes)` to decode, auto-select
+Classic/Slim and normalize an input skin. Pass `modelType:` to override a
+heuristic misclassification. Optional
 `MtnMinecraftCapeTexture.fromPng(bytes)` requires 64×32 Java cape pixels.
 
 Unlike the R4 public API, the R5 3D widget no longer accepts `pose`,
@@ -189,3 +193,18 @@ input raises a `FormatException` during `fromPng`. No network, accounts,
 cache, launcher integration, pub.dev upload or release binaries are owned
 by this package. See `CHANGELOG.md` and
 `docs/continuity/R5_PUBLIC_WIDGET_API.md`.
+
+## R6 — Automatic model inference
+
+```dart
+final skin = await MtnMinecraftSkinTexture.fromPng(pngBytes); // auto
+final forced = await MtnMinecraftSkinTexture.fromPng(
+  pngBytes, modelType: MtnMinecraftSkinModelType.slim); // override
+```
+
+Modern 64×64 skins use the alpha and black/white unused-arm-region heuristic
+adapted from [skinview-utils](https://github.com/bs-community/skinview-utils/blob/master/src/process.ts)
+(MIT; see `docs/third_party/SKINVIEW_UTILS_LICENSE.md`). Legacy 64×32 defaults
+to Classic. PNG pixels cannot prove the original Minecraft account model;
+manual override remains available. No API, network or dependency is needed to
+detect the model, and the same decoded texture works in 2D and 3D.
