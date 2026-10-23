@@ -7,6 +7,7 @@ import 'package:flutter_scene/gpu.dart' as gpu;
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
+import 'mtn_minecraft_skin_live_head_motion.dart';
 import 'mtn_minecraft_skin_mesh.dart';
 import 'mtn_minecraft_skin_pose_cape.dart';
 import 'mtn_minecraft_skin_texture.dart';
@@ -56,7 +57,11 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
   late MtnMinecraftSkinViewerController _camera;
   late bool _ownsCamera;
   late MtnMinecraftSkinPose _lastPose;
+  late MtnMinecraftSkinPoseFrame _lastFrame;
   late final Ticker _ticker;
+  final MtnMinecraftSkinLiveHeadMotion _liveHead = MtnMinecraftSkinLiveHeadMotion();
+  Duration _lastTickElapsed = Duration.zero;
+  Duration _poseStartElapsed = Duration.zero;
   final Map<MtnMinecraftSkinBodyPart, Node> _joints = {};
   final Map<MtnMinecraftSkinBodyPart, Node> _outers = {};
   Node? _capeHinge;
@@ -67,6 +72,7 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
     _ownsCamera = widget.controller == null;
     _camera = widget.controller ?? MtnMinecraftSkinViewerController();
     _lastPose = _camera.pose;
+    _lastFrame = MtnMinecraftSkinPoseFrame.at(_lastPose);
     _camera.addListener(_refreshController);
     _ticker = createTicker(_tick);
     _syncTicker();
@@ -75,10 +81,12 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
 
   void _refreshController() {
     if (!mounted) return;
-    // Render presentation updates in place; no GPU mesh/texture re-upload.
-    // Camera-only updates must not reset an ongoing Walk animation.
+    // Pose transitions reset Live's head schedule and both arm axes.
+    // Camera/layer updates never restart an active Live/Walk animation.
     if (_camera.pose != _lastPose) {
       _lastPose = _camera.pose;
+      _poseStartElapsed = _lastTickElapsed;
+      _liveHead.reset();
       _syncTicker();
       _applyPose(MtnMinecraftSkinPoseFrame.at(_camera.pose));
     }
@@ -92,18 +100,33 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
   }
 
   void _syncTicker() {
-    if (_camera.pose == MtnMinecraftSkinPose.walk) {
-      if (!_ticker.isActive) _ticker.start();
+    if (_camera.pose != MtnMinecraftSkinPose.idle) {
+      if (!_ticker.isActive) {
+        _lastTickElapsed = Duration.zero;
+        _poseStartElapsed = Duration.zero;
+        _ticker.start();
+      }
     } else if (_ticker.isActive) {
       _ticker.stop();
     }
   }
 
   void _tick(Duration elapsed) {
-    if (!mounted || !_ready || _camera.pose != MtnMinecraftSkinPose.walk) return;
-    _applyPose(MtnMinecraftSkinPoseFrame.at(
-      _camera.pose, seconds: elapsed.inMicroseconds / 1000000,
-    ));
+    if (!mounted) return;
+    _lastTickElapsed = elapsed;
+    if (!_ready || _camera.pose == MtnMinecraftSkinPose.idle) return;
+
+    final seconds = math.max(0.0,
+        (elapsed - _poseStartElapsed).inMicroseconds / 1000000);
+    if (_camera.pose == MtnMinecraftSkinPose.live) {
+      final look = _liveHead.anglesAt(seconds);
+      _applyPose(MtnMinecraftSkinPoseFrame.at(
+        _camera.pose, seconds: seconds,
+        liveHeadYaw: look.yaw, liveHeadPitch: look.pitch,
+      ));
+    } else {
+      _applyPose(MtnMinecraftSkinPoseFrame.at(_camera.pose, seconds: seconds));
+    }
     setState(() {});
   }
 
@@ -116,6 +139,8 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
       _ownsCamera = widget.controller == null;
       _camera = widget.controller ?? MtnMinecraftSkinViewerController();
       _lastPose = _camera.pose;
+      _poseStartElapsed = _lastTickElapsed;
+      _liveHead.reset();
       _camera.addListener(_refreshController);
       _syncTicker();
       _applyPose(MtnMinecraftSkinPoseFrame.at(_camera.pose));
@@ -252,7 +277,7 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
       _joints.addAll(joints);
       _outers.addAll(outers);
       _capeHinge = hinge;
-      _applyPose(MtnMinecraftSkinPoseFrame.at(_camera.pose));
+      _applyPose(_lastFrame);
       _ready = true;
       setState(() {});
       widget.onReady?.call();
@@ -269,16 +294,27 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
   }
 
   void _applyPose(MtnMinecraftSkinPoseFrame frame) {
-    final angles = <MtnMinecraftSkinBodyPart, double>{
+    _lastFrame = frame;
+    final xAngles = <MtnMinecraftSkinBodyPart, double>{
       MtnMinecraftSkinBodyPart.rightArm: frame.rightArmX,
       MtnMinecraftSkinBodyPart.leftArm: frame.leftArmX,
       MtnMinecraftSkinBodyPart.rightLeg: frame.rightLegX,
       MtnMinecraftSkinBodyPart.leftLeg: frame.leftLegX,
     };
-    for (final entry in angles.entries) {
-      _joints[entry.key]?.rotation = vm.Quaternion.axisAngle(
-        vm.Vector3(1, 0, 0), entry.value);
+    for (final entry in xAngles.entries) {
+      final z = switch (entry.key) {
+        MtnMinecraftSkinBodyPart.rightArm => frame.rightArmZ,
+        MtnMinecraftSkinBodyPart.leftArm => frame.leftArmZ,
+        _ => 0.0,
+      };
+      _joints[entry.key]?.rotation =
+          vm.Quaternion.axisAngle(vm.Vector3(1, 0, 0), entry.value) *
+          vm.Quaternion.axisAngle(vm.Vector3(0, 0, 1), z);
     }
+    // The head pivots at the neck and has two independent glance axes.
+    _joints[MtnMinecraftSkinBodyPart.head]?.rotation =
+        vm.Quaternion.axisAngle(vm.Vector3(0, 1, 0), frame.headYaw) *
+        vm.Quaternion.axisAngle(vm.Vector3(1, 0, 0), frame.headPitch);
     _capeHinge?.rotation = vm.Quaternion.axisAngle(
       vm.Vector3(1, 0, 0), frame.capeX);
   }

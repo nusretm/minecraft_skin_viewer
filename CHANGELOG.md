@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased — R7 Live character animation (Windows validation pending)
+
+- User-requested visual tuning: slow Walk cadence from 1.15 to 0.90 Hz (about 22% fewer cycles per second), leaving limb swing amplitude and Live breath/head movements unchanged. Fix floating-point-sensitive Live inhale-peak test with a 1e-12 tolerance.
+
+
+- Add `MtnMinecraftSkinPose.live` with subtle inhale/exhale shoulder Z motion
+  and head turns chosen randomly among left/right/up/down, with easing and
+  random 1–4-second glance holds.
+- Default the public controller and widget-owned viewer controller to Live;
+  keep Idle and Walk explicitly selectable. Pose switch resets neck and
+  shoulder axes to neutral and does not rebuild 3D meshes.
+- Reuse the single viewer ticker; use a clock-driven head scheduler rather than
+  timers. Tests use injected fixed or seeded random values.
+- Extend the example mode selector and focused regression coverage.
+- Windows interactive debug/release verification and PR CI are pending. No
+  dependency, renderer mesh change, networking or launcher integration.
+
+
 ## Unreleased — R6 automatic skin model detection (feature; validation pending)
 
 - Infer Classic/Slim in `MtnMinecraftSkinTexture.fromPng(bytes)` for 64×64 Java

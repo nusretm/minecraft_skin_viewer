@@ -152,8 +152,57 @@ void main() {
       expect(walk.rightArmX.abs(), lessThanOrEqualTo(0.48));
       expect(walk.capeX, inInclusiveRange(0.18, 0.30));
     }
+    // The relaxed Walk pace is 0.90 cycles/sec (one full step in ~1.11s).
+    const walkHz = 0.90;
+    final swingPeak = MtnMinecraftSkinPoseFrame.at(
+      MtnMinecraftSkinPose.walk, seconds: 1 / (4 * walkHz));
+    final swingReset = MtnMinecraftSkinPoseFrame.at(
+      MtnMinecraftSkinPose.walk, seconds: 1 / walkHz);
+    expect(swingPeak.rightArmX, closeTo(0.48, 1e-10));
+    expect(swingReset.rightArmX, closeTo(0, 1e-10));
+
     expect(() => MtnMinecraftSkinPoseFrame.at(
       MtnMinecraftSkinPose.walk, seconds: double.nan), throwsArgumentError);
+  });
+
+  test('Live inhales outward, exhales inward and preserves Idle/Walk axes', () {
+    final inhaleStart = MtnMinecraftSkinPoseFrame.at(
+        MtnMinecraftSkinPose.live, seconds: 0);
+    final inhalePeak = MtnMinecraftSkinPoseFrame.at(
+        MtnMinecraftSkinPose.live, seconds: 1.9);
+    final exhaleEnd = MtnMinecraftSkinPoseFrame.at(
+        MtnMinecraftSkinPose.live, seconds: 3.8);
+    expect(inhaleStart.rightArmZ, lessThan(0));
+    expect(inhaleStart.leftArmZ, -inhaleStart.rightArmZ);
+    expect(inhalePeak.rightArmZ, lessThan(inhaleStart.rightArmZ));
+    expect(inhalePeak.leftArmZ, greaterThan(inhaleStart.leftArmZ));
+    // 0.035 + 0.085 rounds to 0.12000000000000001 on some VMs.
+    // Keep the intended motion limit while tolerating floating point error.
+    expect(inhalePeak.rightArmZ.abs(), closeTo(0.12, 1e-12));
+    expect(exhaleEnd.rightArmZ, closeTo(inhaleStart.rightArmZ, 1e-12));
+    expect(exhaleEnd.leftArmZ, closeTo(inhaleStart.leftArmZ, 1e-12));
+    expect(inhalePeak.rightArmX, 0);
+    expect(inhalePeak.leftArmX, 0);
+    expect(inhalePeak.rightLegX, 0);
+    expect(inhalePeak.leftLegX, 0);
+
+    final lookingUp = MtnMinecraftSkinPoseFrame.at(
+        MtnMinecraftSkinPose.live, seconds: 1,
+        liveHeadYaw: 0, liveHeadPitch: -0.2);
+    expect(lookingUp.headYaw, 0);
+    expect(lookingUp.headPitch, -0.2);
+    for (final mode in [MtnMinecraftSkinPose.idle, MtnMinecraftSkinPose.walk]) {
+      final frame = MtnMinecraftSkinPoseFrame.at(mode, seconds: 1,
+          liveHeadYaw: 0.3, liveHeadPitch: 0.2);
+      expect(frame.rightArmZ, 0);
+      expect(frame.leftArmZ, 0);
+      expect(frame.headYaw, 0);
+      expect(frame.headPitch, 0);
+    }
+    expect(() => MtnMinecraftSkinPoseFrame.at(
+        MtnMinecraftSkinPose.live, seconds: double.nan), throwsArgumentError);
+    expect(() => MtnMinecraftSkinPoseFrame.at(
+        MtnMinecraftSkinPose.live, liveHeadYaw: double.infinity), throwsArgumentError);
   });
 
   test('Classic/Slim shoulder pivots keep the correct part centers', () {
