@@ -8,6 +8,12 @@
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
 **Current checkpoint:** R6 CLOSED; PR #7 squash-merged as `3b2c7b442681c086c9ef98b90e5d30b6b69922ca` after 4/4 exact-head GitHub Windows CI SUCCESS, 56/56 user local root tests and accepted Windows GPU debug smoke. R6 release build succeeded in CI but release EXE interactive launch not independently verified. R5 CLOSED; direct GPU memory telemetry remains unmeasured.
 
+## 2026-10-23 — R7 compiler blocker / scoped fix (validation pending)
+
+- User R7 local validation initially **FAILED** at `flutter analyze --no-pub` and test compilation because `mtn_minecraft_skin_viewer_3d.dart:312,317` called absent `Quaternion.multiply` on `vector_math 2.4.3`. Windows debug build **FAILED** on the same error; example analyzer passed in isolation. All four old-head Windows CI workflows **FAILED** and are not acceptance evidence.
+- Corrective feature commit `4b40156cc06956c978ebb8b4954b8fa6dd7bde1e` uses the supported quaternion multiplication `*` operator to compose shoulder/head rotations. No change to API, pose contract or package dependencies.
+- Exact corrected-head CI/root tests and live Windows GPU visual confirmation are **PENDING**; PR [#8](https://github.com/nusretm/minecraft_skin_viewer/pull/8) remains Draft. Existing user modified lock/generated Windows files preserved; no merge. Detailed evidence in `R7_LIVE_CHARACTER_ANIMATION.md`.
+
 ## 2026-10-23 — R7 Live character animation (APPROVED; verification pending)
 
 - User explicitly requested implementation of a third `live` pose, four random head directions (right, left, up, down), inhale shoulders from inner to outer and exhale outer to inner, with Live becoming the default controller pose. Existing Idle and Walk remain supported.
