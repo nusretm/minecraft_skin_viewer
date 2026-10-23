@@ -34,6 +34,31 @@ Future<Uint8List> pngFromRgba(Uint8List rgba, int width, int height) async {
   }
 }
 
+Uint8List opaqueSkinFixture({int height = 64}) {
+  final rgba = Uint8List(64 * height * 4);
+  for (var offset = 0; offset < rgba.length; offset += 4) {
+    rgba[offset] = 24;
+    rgba[offset + 1] = 88;
+    rgba[offset + 2] = 142;
+    rgba[offset + 3] = 255;
+  }
+  return rgba;
+}
+
+void paintRegion(Uint8List rgba, int x, int y, int width, int height,
+    int red, int green, int blue, int alpha) {
+  for (var row = y; row < y + height; row++) {
+    for (var col = x; col < x + width; col++) {
+      pixel(rgba, col, row, red, green, blue, alpha);
+    }
+  }
+}
+
+const slimUnusedRegions = <(int, int, int, int)>[
+  (50, 16, 2, 4), (54, 20, 2, 12),
+  (42, 48, 2, 4), (46, 52, 2, 12),
+];
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -165,6 +190,74 @@ void main() {
         modelType: MtnMinecraftSkinModelType.classic);
       expect(() => skin.rgbaAt(64, 0), throwsRangeError);
       expect(() => skin.rgbaAt(0, -1), throwsRangeError);
+    });
+  });
+
+  group('R6 Java skin model auto detection (skinview-utils behavior)', () {
+    test('modern opaque colored Classic skin defaults to classic', () async {
+      final skin = await MtnMinecraftSkinTexture.fromPng(
+        await pngFromRgba(opaqueSkinFixture(), 64, 64),
+      );
+      expect(skin.modelType, MtnMinecraftSkinModelType.classic);
+      expect(skin.isLegacy, isFalse);
+    });
+
+    test('a transparent unused Slim arm pixel is detected before alpha fixup', () async {
+      final raw = opaqueSkinFixture();
+      pixel(raw, 50, 16, 5, 6, 7, 0);
+      final skin = await MtnMinecraftSkinTexture.fromPng(
+        await pngFromRgba(raw, 64, 64),
+      );
+      expect(skin.modelType, MtnMinecraftSkinModelType.slim);
+      expect(skin.rgbaAt(50, 16) & 0xff, 0);
+    });
+
+    test('left arm unused transparent cell also indicates Slim', () async {
+      final raw = opaqueSkinFixture();
+      pixel(raw, 46, 52, 5, 6, 7, 0);
+      final skin = await MtnMinecraftSkinTexture.fromPng(
+        await pngFromRgba(raw, 64, 64),
+      );
+      expect(skin.modelType, MtnMinecraftSkinModelType.slim);
+    });
+
+    for (final color in <int>[0, 255]) {
+      test('all four unused regions filled opaque $color indicate Slim', () async {
+        final raw = opaqueSkinFixture();
+        for (final region in slimUnusedRegions) {
+          paintRegion(raw, region.$1, region.$2, region.$3, region.$4,
+              color, color, color, 255);
+        }
+        final skin = await MtnMinecraftSkinTexture.fromPng(
+          await pngFromRgba(raw, 64, 64),
+        );
+        expect(skin.modelType, MtnMinecraftSkinModelType.slim);
+      });
+    }
+
+    test('legacy 64x32 defaults to Classic', () async {
+      final skin = await MtnMinecraftSkinTexture.fromPng(
+        await pngFromRgba(opaqueSkinFixture(height: 32), 64, 32),
+      );
+      expect(skin.modelType, MtnMinecraftSkinModelType.classic);
+      expect(skin.isLegacy, isTrue);
+    });
+
+    test('explicit model overrides inferred model without changing normalization contract', () async {
+      final raw = opaqueSkinFixture();
+      pixel(raw, 50, 16, 5, 6, 7, 0);
+      final png = await pngFromRgba(raw, 64, 64);
+      final skin = await MtnMinecraftSkinTexture.fromPng(
+        png, modelType: MtnMinecraftSkinModelType.classic,
+      );
+      expect(skin.modelType, MtnMinecraftSkinModelType.classic);
+      // The Classic bottom-arm face uses this pixel, so it must be opaque.
+      expect(skin.rgbaAt(50, 16) & 0xff, 255);
+      final explicitSlim = await MtnMinecraftSkinTexture.fromPng(
+        await pngFromRgba(opaqueSkinFixture(), 64, 64),
+        modelType: MtnMinecraftSkinModelType.slim,
+      );
+      expect(explicitSlim.modelType, MtnMinecraftSkinModelType.slim);
     });
   });
 
