@@ -1,10 +1,11 @@
 # R6 — Automatic Skin Model Detection
 
-Status: IMPLEMENTED on feature branch; CI and Windows user smoke PENDING.
+Status: IMPLEMENTED on Draft PR #7; CI and Windows user smoke PENDING.
 Date: 2026-10-23
 Repository: nusretm/minecraft_skin_viewer
 Feature branch: feature/r6-auto-skin-model-detection
 Base: main at 23bef1b44d9f62c4d2792ac7ed0f728d742e9efc
+PR: https://github.com/nusretm/minecraft_skin_viewer/pull/7
 Approval: User explicitly approved source-inspired minimal single-checkpoint adaptation.
 
 ## Contract
