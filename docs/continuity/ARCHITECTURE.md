@@ -135,3 +135,17 @@ over selected pose. Ticker runs only for Walk/Live, stops for Idle. Changing
 camera does not restart animation; switching poses resets neck/shoulder angles.
 2D widgets, texture decoding and GPU geometry are unchanged.
 PR #8 squash merged as `89796975c8ec52bab256670545f0a4f75b3f477b` after 4/4 Windows CI SUCCESS, 63/63 user tests and accepted Windows GPU debug. Release EXE built/launched; independent interactive release visual check and dedicated GPU memory samples were not supplied. See `R7_LIVE_CHARACTER_ANIMATION.md`.
+
+## R7-F1 3D atlas hairline mitigation (feature, visual trial accepted 2026-10-25)
+
+The renderer-neutral R2 UV atlas remains the canonical map. The GPU scene
+reads a separate 3D-only 0.02-texel inward face UV buffer to reduce adjacent
+texel leakage; base and inflated outer shell positions remain unchanged.
+The Windows A/B tests isolated zoom-dependent head/outer hairlines to the
+anti-aliasing path: disabling AA removed them, nearest final compositing did
+not, and the user visually accepted SMAA. Only the 3D skin viewer's Scene
+chooses `AntiAliasingMode.smaa` by default; no global scene setting or public
+controller parameter is introduced. Temporary compile-time diagnostic toggles
+were removed. SMAA's additional GPU cost has not been profiled; final-head
+tests and Windows no-define/release verification remain pending. Details:
+`R7_F1_RENDER_SEAM_FIX.md`.
