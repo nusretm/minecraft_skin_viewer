@@ -1,6 +1,6 @@
 # R7-F1 — 3D Skin UV Seam / Hairline Artifact
 
-**State:** APPROVED / implementation in feature branch; Windows visual verification pending.
+**State:** CLOSED — PR #9 squash-merged 2026-10-25; Windows debug/release visually accepted. GPU performance profiling remains unmeasured.
 **Date:** 2026-10-25
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base HEAD:** `ca4e97b62c909a0ac4e1984e68799953c6ad6b3f` (`main`)
@@ -76,3 +76,10 @@ No `mtn_launcher_app` changes, R7 animation changes, new dependencies, SDK upgra
 - Existing user local verification on earlier UV branch: root Flutter analyzer PASS, 67/67 tests PASS, example analyzer PASS. These precede final default SMAA selection; exact functional-head CI covers source compilation and regressions.
 - Remaining gate: final no-define Windows **release build and interactive EXE visual** smoke. PR #9 remains Draft, unmerged until required validation/authorization. User local `example/.metadata` and `example/pubspec.lock` are outside the feature. A documentation-only follow-up commit may trigger separate CI and must not be confused with the successful functional-head CI.
 
+
+## 2026-10-25 — R7-F1 merge and closure
+
+- A/B isolated zoom-dependent head hairlines to the AA path; final viewer-local default `AntiAliasingMode.smaa` and small 3D-only UV inset were selected. User confirmed default debug Windows Impeller output `tertemiz 🥳`, then released EXE build and launch with `çok iyi görünüyor`. No diagnostic build flags required.
+- Local root Flutter analyze PASS, root tests 67/67 PASS, example analyzer PASS from first UV checkpoint. Exact functional commit `fcfcda202a5de1443e50588beb18fe1a612b390f` Windows CI R1/R2/R3/R4 4/4 SUCCESS. Final feature HEAD `e2c9b5d9f5344dc96c21347d3d2338e7feefcc73` changed only continuity docs and its own CI was still in progress at merge. Code diff added-line trailing whitespace review PASS; local `git diff --check` not independently supplied.
+- User explicitly approved merge+cleanup. PR [#9](https://github.com/nusretm/minecraft_skin_viewer/pull/9) was readied and squash-merged as `101d577564fa0bd4da252dc59cfe999e3d958aea`. Release UI visually accepted; R7-F1 **CLOSED**. Previous open gates preserved above as historical snapshots, not active blockers.
+- Developer-side local `example/.metadata` and `example/pubspec.lock` changes were not written to by GitHub operations. Deleting local/remote feature branches remains separate from repository source completion. No direct SMAA GPU time/VRAM measurements; optional later profiling only.
