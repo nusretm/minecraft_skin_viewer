@@ -2,11 +2,18 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** R7-F1 GPU skin atlas seam correction in `feature/r7-f1-render-seam-fix`, Draft PR #9; source/tests implemented, Windows CI and user GPU visual acceptance PENDING. R1–R7 remain merged into `main`.
+**Active implementation:** R7-F1 3D render hairline fix in `feature/r7-f1-render-seam-fix`, Draft PR #9. SMAA accepted visually through the opt-in Windows diagnostic; now set as the default only within the 3D skin viewer. Exact final-head CI and default Windows debug/release verification PENDING; R1–R7 remain merged into `main`.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4), [#5 — R5 Public API](https://github.com/nusretm/minecraft_skin_viewer/pull/5), [#7 — R6 Auto Skin Model Detection](https://github.com/nusretm/minecraft_skin_viewer/pull/7), [#8 — R7 Live Character Animation](https://github.com/nusretm/minecraft_skin_viewer/pull/8)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
 **Current checkpoint:** R7 CLOSED; PR #8 squash-merged into `main` as `89796975c8ec52bab256670545f0a4f75b3f477b` from approved final feature HEAD `9b6e5b27fd1bed1bfeb9b1c3a63ff8a7b997afbe`. Exact-head Windows CI 4/4 SUCCESS; user root analyzer PASS, 63/63 tests PASS, Windows GPU debug visual Live accepted, Windows release build and EXE start confirmed. Separate interactive release visual check and dedicated GPU-memory measurements not recorded.
+
+## 2026-10-25 — R7-F1 SMAA accepted visually; default selected (verification pending)
+
+- User reported `🥳 şahane görünüyor` after the `--dart-define=MTN_SKIN_SEAM_SMAA=true` Windows GPU experiment. This is explicit **visual acceptance of the SMAA trial**, not proof that release builds have been exercised with the final default code.
+- Make the 3D viewer's new `Scene()` use `AntiAliasingMode.smaa` unconditionally. Remove `MTN_SKIN_SEAM_DISABLE_AA`, `MTN_SKIN_SEAM_SMAA` and `MTN_SKIN_SEAM_NEAREST_COMPOSITE` temporary diagnostic flags. Keep the 0.02 texel UV inset that helped right-arm boundaries, nearest atlas sampling, existing depth priorities and R7 animations untouched. No new dependencies or controller API changes.
+- SMAA offers preferred clean hairline-free appearance but uses additional postprocess passes; GPU performance/VRAM impact has not been measured. Keep PR [#9](https://github.com/nusretm/minecraft_skin_viewer/pull/9) Draft until latest-head Windows CI, user's default **without define** Windows visual comparison and release interactive smoke (or explicit acceptance of residual gate) are available. Do not claim merge/closure prematurely.
+- User's locally modified `example/.metadata` and `example/pubspec.lock` remain out of GitHub feature edits. This entry supersedes the earlier A/B-plan snapshot below.
 
 ## 2026-10-25 — A/B root-cause isolation: AA-related hairlines
 
