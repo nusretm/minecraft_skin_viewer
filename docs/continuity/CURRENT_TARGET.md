@@ -2,11 +2,18 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** R7-F1 3D render hairline fix in `feature/r7-f1-render-seam-fix`, Draft PR #9. SMAA accepted visually through the opt-in Windows diagnostic; now set as the default only within the 3D skin viewer. Exact final-head CI and default Windows debug/release verification PENDING; R1–R7 remain merged into `main`.
+**Active implementation:** R7-F1 3D render hairline fix in `feature/r7-f1-render-seam-fix`, Draft PR #9. SMAA is the viewer default; user verified hairline-free Windows Impeller debug without dart-defines and exact functional-head Windows CI 4/4 SUCCESS. Windows release EXE interactive visual smoke remains PENDING; R1–R7 merged into `main`.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4), [#5 — R5 Public API](https://github.com/nusretm/minecraft_skin_viewer/pull/5), [#7 — R6 Auto Skin Model Detection](https://github.com/nusretm/minecraft_skin_viewer/pull/7), [#8 — R7 Live Character Animation](https://github.com/nusretm/minecraft_skin_viewer/pull/8)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
 **Current checkpoint:** R7 CLOSED; PR #8 squash-merged into `main` as `89796975c8ec52bab256670545f0a4f75b3f477b` from approved final feature HEAD `9b6e5b27fd1bed1bfeb9b1c3a63ff8a7b997afbe`. Exact-head Windows CI 4/4 SUCCESS; user root analyzer PASS, 63/63 tests PASS, Windows GPU debug visual Live accepted, Windows release build and EXE start confirmed. Separate interactive release visual check and dedicated GPU-memory measurements not recorded.
+
+## 2026-10-25 — R7-F1 final default Windows GPU smoke PASS (release pending)
+
+- User pulled final source `fcfcda202a5de1443e50588beb18fe1a612b390f` and executed `flutter run -d windows --enable-flutter-gpu` **without any diagnostic dart-defines**. Windows debug executable built, Impeller OpenGLES backend active, and user reported `tertemiz 🥳`: head/outer hairlines no longer visible. `Lost connection to device` at closure is not proof of crash.
+- On the exact functional source SHA `fcfcda202a5de1443e50588beb18fe1a612b390f`, Windows CI R1 [#40227272802](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/40227272802), R2 [#40227272669](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/40227272669), R3 [#40227272645](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/40227272645), R4 [#40227272677](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/40227272677) all **SUCCESS**.
+- Existing user local verification on earlier UV branch: root Flutter analyzer PASS, 67/67 tests PASS, example analyzer PASS. These precede final default SMAA selection; exact functional-head CI covers source compilation and regressions.
+- Remaining gate: final no-define Windows **release build and interactive EXE visual** smoke. PR #9 remains Draft, unmerged until required validation/authorization. User local `example/.metadata` and `example/pubspec.lock` are outside the feature. A documentation-only follow-up commit may trigger separate CI and must not be confused with the successful functional-head CI.
 
 ## 2026-10-25 — R7-F1 SMAA accepted visually; default selected (verification pending)
 
