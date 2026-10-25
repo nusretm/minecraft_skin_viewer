@@ -98,6 +98,65 @@ void main() {
       });
     }
 
+    test('GPU face inset samples only the intended atlas texels', () {
+      // The GPU upload may nudge UVs inward without changing the R2 layout.
+      // Pixel-art nearest sampling must still resolve to the first/last
+      // pixel of each face, including the vertically flipped bottom face.
+      for (final model in MtnMinecraftSkinModelType.values) {
+        final layout = MtnMinecraftSkinUvLayout(model);
+        for (final layer in MtnMinecraftSkinLayer.values) {
+          for (final part in MtnMinecraftSkinBodyPart.values) {
+            final mesh = MtnMinecraftSkinBoxMesh.forBodyPart(
+              part, model, layer: layer,
+            );
+            final original = mesh.texCoords;
+            final adjusted = mesh.texCoordsWithInset();
+            expect(mesh.texCoords, orderedEquals(original));
+            expect(mesh.texCoordsWithInset(insetTexels: 0),
+                orderedEquals(original));
+            for (var faceIndex = 0; faceIndex < faces.length; faceIndex++) {
+              final face = faces[faceIndex];
+              final rect = layout.face(part, face, layer: layer);
+              final corners = [
+                rect.pixelAt(0, 0),
+                rect.pixelAt(rect.width - 1, 0),
+                rect.pixelAt(rect.width - 1, rect.height - 1),
+                rect.pixelAt(0, rect.height - 1),
+              ];
+              for (var corner = 0; corner < 4; corner++) {
+                final at = (faceIndex * 4 + corner) * 2;
+                final u = adjusted[at];
+                final v = adjusted[at + 1];
+                expect(u, greaterThan(rect.x / 64),
+                    reason: '$model/$part/$layer/$face U min');
+                expect(u, lessThan((rect.x + rect.width) / 64));
+                expect(v, greaterThan(rect.y / 64),
+                    reason: '$model/$part/$layer/$face V min');
+                expect(v, lessThan((rect.y + rect.height) / 64));
+                expect((u * 64).floor(), corners[corner].x,
+                    reason: '$model/$part/$layer/$face U pixel $corner');
+                expect((v * 64).floor(), corners[corner].y,
+                    reason: '$model/$part/$layer/$face V pixel $corner');
+                expect((u - original[at]).abs(), closeTo(0.02 / 64, 1e-7));
+                expect((v - original[at + 1]).abs(), closeTo(0.02 / 64, 1e-7));
+              }
+            }
+            adjusted[0] = 99;
+            expect(mesh.texCoords, orderedEquals(original));
+          }
+        }
+      }
+    });
+
+    test('invalid GPU UV inset values are rejected', () {
+      final mesh = MtnMinecraftSkinBoxMesh.forBodyPart(
+        MtnMinecraftSkinBodyPart.head, MtnMinecraftSkinModelType.slim);
+      for (final amount in [-0.01, 0.5, double.nan, double.infinity]) {
+        expect(() => mesh.texCoordsWithInset(insetTexels: amount),
+            throwsArgumentError);
+      }
+    });
+
     test('Classic/Slim arm is exactly 1 model pixel narrower', () {
       final c = MtnMinecraftSkinBoxMesh.forBodyPart(
         MtnMinecraftSkinBodyPart.rightArm, MtnMinecraftSkinModelType.classic);
