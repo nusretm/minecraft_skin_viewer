@@ -176,19 +176,11 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
     try {
       await Scene.initializeStaticResources();
       if (!mounted || generation != _generation) return;
-      pending = Scene();
-      // R7-F1 temporary GPU seam diagnostics (opt-in via --dart-define).
-      // User A/B: disabling AA removes head seams, but nearest compositing
-      // alone does not. SMAA is a final comparison against the jagged-edge
-      // tradeoff of no AA; a no-AA flag takes precedence if both are set.
-      if (const bool.fromEnvironment('MTN_SKIN_SEAM_DISABLE_AA')) {
-        pending.antiAliasingMode = AntiAliasingMode.none;
-      } else if (const bool.fromEnvironment('MTN_SKIN_SEAM_SMAA')) {
-        pending.antiAliasingMode = AntiAliasingMode.smaa;
-      }
-      if (const bool.fromEnvironment('MTN_SKIN_SEAM_NEAREST_COMPOSITE')) {
-        pending.filterQuality = FilterQuality.none;
-      }
+      pending = Scene()
+        // SMAA avoids the zoom-dependent head/outer-layer hairlines
+        // observed under automatic AA while keeping character edges smooth.
+        // This is local to the skin viewer; no global scene policy changes.
+        ..antiAliasingMode = AntiAliasingMode.smaa;
       final skinAtlas = Texture2D.fromPixels(
         skin.rgba, MtnMinecraftSkinTexture.width, MtnMinecraftSkinTexture.height,
         sampling: const TextureSampling(
