@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased — R7-F1 3D skin seam fix (feature under final verification)
+
+- Derive a 0.02-texel inset only for the 3D GPU face UV buffer. Preserve
+  authoritative R2 atlas UVs, model geometry, UV direction and 2D previews.
+- Set the 3D viewer Scene anti-aliasing mode to SMAA by default after the user
+  visually accepted the SMAA Windows A/B result; remove the temporary
+  diagnostic dart-define switches.
+- Outer depth priorities, texture nearest sampling, animations, and public
+  controller contract unchanged. Existing 67 tests passed before default SMAA
+  selection; exact-head CI and no-define Windows debug/release visual smoke
+  pending. SMAA GPU overhead has not been measured.
+
+
 ## Unreleased — R7 Live character animation (merged 2026-10-23)
 
 - User-requested visual tuning: slow Walk cadence from 1.15 to 0.90 Hz (about 22% fewer cycles per second), leaving limb swing amplitude and Live breath/head movements unchanged. Fix floating-point-sensitive Live inhale-peak test with a 1e-12 tolerance.
