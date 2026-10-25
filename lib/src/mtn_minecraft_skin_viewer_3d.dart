@@ -220,7 +220,9 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
             mesh: Mesh(MeshGeometry.fromArrays(
               positions: box.positions,
               normals: box.normals,
-              texCoords: box.texCoords,
+              // Sample *inside* each atlas face to avoid hairline seams at
+              // shared UV borders. Canonical face UVs remain unchanged.
+              texCoords: box.texCoordsWithInset(),
               indices: box.indices,
             ), material),
           )..position = vm.Vector3(
