@@ -42,6 +42,43 @@ class MtnMinecraftSkinBoxMesh {
 
   static const double modelPixel = 1 / 16;
 
+  /// UVs for 3D atlas sampling, nudged into each face by a tiny fraction
+  /// of a texel. The authoritative R2 face mapping and [texCoords] are
+  /// untouched. This prevents a rasterized boundary sample from selecting
+  /// an adjacent atlas face while retaining nearest-neighbor pixel art.
+  ///
+  /// With a 64x64 atlas, an inset of 0.02 texels moves each edge only
+  /// 0.0003125 in normalized UV space (far less than half a texel).
+  /// A zero inset returns the original face-edge UVs.
+  Float32List texCoordsWithInset({double insetTexels = 0.02}) {
+    if (!insetTexels.isFinite || insetTexels < 0 || insetTexels >= 0.5) {
+      throw ArgumentError.value(
+        insetTexels, 'insetTexels', 'Must be finite and in [0, 0.5)',
+      );
+    }
+    final result = Float32List.fromList(_texCoords);
+    if (insetTexels == 0) return result;
+
+    final insetU = insetTexels / MtnMinecraftSkinUvLayout.atlasWidth;
+    final insetV = insetTexels / MtnMinecraftSkinUvLayout.atlasHeight;
+    // Six quads, each in TL/TR/BR/BL face-local order. On the bottom face
+    // V is intentionally flipped by R2, so follow the existing orientation.
+    for (var face = 0; face < 6; face++) {
+      final first = face * 8;
+      final vDirection = _texCoords[first + 1] < _texCoords[first + 5]
+          ? 1.0 : -1.0;
+      for (var corner = 0; corner < 4; corner++) {
+        final at = first + corner * 2;
+        result[at] = _texCoords[at] +
+            (corner == 0 || corner == 3 ? insetU : -insetU);
+        result[at + 1] = _texCoords[at + 1] +
+            (corner < 2 ? vDirection * insetV : -vDirection * insetV);
+      }
+    }
+    return result;
+  }
+
+
   /// Builds a cuboid for either R2 skin layer, including all six atlas faces.
   ///
   /// Outer mesh faces are independently inflated by half a model pixel for
