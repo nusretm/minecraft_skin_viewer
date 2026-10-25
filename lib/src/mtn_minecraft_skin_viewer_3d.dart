@@ -177,6 +177,16 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
       await Scene.initializeStaticResources();
       if (!mounted || generation != _generation) return;
       pending = Scene();
+      // R7-F1 temporary GPU seam diagnostics. Both flags are opt-in via
+      // --dart-define and do not change the default production appearance.
+      // Comparing at identical camera angles distinguishes geometry/UV seams
+      // from anti-aliasing and final scene-to-Flutter texture scaling.
+      if (const bool.fromEnvironment('MTN_SKIN_SEAM_DISABLE_AA')) {
+        pending.antiAliasingMode = AntiAliasingMode.none;
+      }
+      if (const bool.fromEnvironment('MTN_SKIN_SEAM_NEAREST_COMPOSITE')) {
+        pending.filterQuality = FilterQuality.none;
+      }
       final skinAtlas = Texture2D.fromPixels(
         skin.rgba, MtnMinecraftSkinTexture.width, MtnMinecraftSkinTexture.height,
         sampling: const TextureSampling(
