@@ -51,6 +51,25 @@ void main() {
         }
       });
 
+      test('safe outer-face UVs do not alter shell geometry: ' + model.name, () {
+        for (final part in MtnMinecraftSkinBodyPart.values) {
+          final outer = MtnMinecraftSkinBoxMesh.forBodyPart(
+            part, model, layer: MtnMinecraftSkinLayer.outer);
+          final beforePositions = outer.positions;
+          final beforeNormals = outer.normals;
+          final beforeIndices = outer.indices;
+          final beforeUvs = outer.texCoords;
+          final safeUvs = outer.texCoordsWithInset();
+          expect(safeUvs.length, beforeUvs.length);
+          expect(outer.positions, orderedEquals(beforePositions));
+          expect(outer.normals, orderedEquals(beforeNormals));
+          expect(outer.indices, orderedEquals(beforeIndices));
+          expect(outer.texCoords, orderedEquals(beforeUvs));
+          expect(safeUvs, isNot(orderedEquals(beforeUvs)),
+              reason: '3D upload should opt into the inset UVs');
+        }
+      });
+
       test('all outer surfaces sit outside base mesh: ' + model.name, () {
         for (final part in MtnMinecraftSkinBodyPart.values) {
           final base = MtnMinecraftSkinBoxMesh.forBodyPart(part, model);
