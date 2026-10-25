@@ -8,6 +8,21 @@
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
 **Current checkpoint:** R7 CLOSED; PR #8 squash-merged into `main` as `89796975c8ec52bab256670545f0a4f75b3f477b` from approved final feature HEAD `9b6e5b27fd1bed1bfeb9b1c3a63ff8a7b997afbe`. Exact-head Windows CI 4/4 SUCCESS; user root analyzer PASS, 63/63 tests PASS, Windows GPU debug visual Live accepted, Windows release build and EXE start confirmed. Separate interactive release visual check and dedicated GPU-memory measurements not recorded.
 
+## 2026-10-25 — Real Windows GPU feedback: sampling improvement, distant head artifact remains
+
+- User checked out the feature branch and ran root `flutter analyze --no-pub` **PASS**, `flutter test --no-pub test/` **67/67 PASS**, example analyzer **PASS**, Windows debug `flutter run -d windows --enable-flutter-gpu` build/launch **PASS**, Impeller (OpenGLES) confirmed. The normal `flutter_scene` 24-bit reversed-depth note appeared; `Lost connection to device` after closing is not evidence of an application crash.
+- PR #9 feature-head `52634ea302e2adbd9bb28b5f25c7164927d61f90` completed all four Windows CI checks **SUCCESS**. The user's local changed files at this stage are `example/.metadata` and `example/pubspec.lock`; neither belongs in the feature.
+- Visual verdict: fine line on right arm remains barely visible, but head / outer head lines become *more* noticeable when zooming out. UV inset improves one part of the symptom but does **not** resolve the issue or prove the original hypothesis was the complete cause.
+- New possible cause: anti-aliasing or final scene compositing at small on-screen character sizes. `flutter_scene` can use MSAA or FXAA depending on GPU support, and `Scene.filterQuality` controls final output scaling. Neither is changed by default.
+- **Stage B opt-in diagnostic only**, in `mtn_minecraft_skin_viewer_3d.dart`: `MTN_SKIN_SEAM_DISABLE_AA=true` forces `AntiAliasingMode.none`; `MTN_SKIN_SEAM_NEAREST_COMPOSITE=true` forces `FilterQuality.none`. Both must be invoked with `--dart-define`, can be tested independently and together, and have zero effect on regular builds. This is not yet a committed production fix to alpha or depth.
+- Next user Windows GPU A/B at matched camera angles / zoom distances, with outer on/off:
+  1. Unmodified baseline: `flutter run -d windows --enable-flutter-gpu`.
+  2. AA off: `flutter run -d windows --enable-flutter-gpu --dart-define=MTN_SKIN_SEAM_DISABLE_AA=true`.
+  3. Final canvas sampling nearest: `flutter run -d windows --enable-flutter-gpu --dart-define=MTN_SKIN_SEAM_NEAREST_COMPOSITE=true`.
+  4. Both toggles can be tried together if either test is inconclusive.
+- Interpret carefully: if AA-off removes head lines but adds staircase edges, tune antialiasing rather than depth. If composite nearest helps at distances, focus output downscale. If neither changes behavior, investigate partially transparent outer shell sorting (blended material) or adjacent cube-face rasterization/depth, without blindly inflating geometry. Do not claim that a compile-time diagnostic resolves the artifact.
+- Current exact-head CI must rerun after stage B change. PR remains Draft pending GPU visual evidence. Release EXE interactive visual smoke not yet observed for R7-F1.
+
 ## 2026-10-25 — R7-F1 3D atlas seam sampling fix (APPROVED, verification pending)
 
 - User Windows Slim skin screenshots show fine head and arm-edge hairlines, including head upper-right with outer layer disabled and additional edges with outer enabled. Hypothesis: exact face-boundary atlas UVs cause occasional neighboring texel selection. The root cause is **not yet GPU-proven**.
