@@ -229,3 +229,16 @@ controller.setPose(MtnMinecraftSkinPose.live); // breathing + glances
 Live and Walk reuse the viewer's existing ticker. Skin/cape textures are not
 re-uploaded when changing pose; 2D previews remain still. Dispose a controller
 you create yourself. See `docs/continuity/R7_LIVE_CHARACTER_ANIMATION.md`.
+
+## R7-F1 — 3D skin edge quality (Windows verification pending)
+
+The GPU 3D viewer now uses a very small per-face atlas UV inset to reduce
+neighboring texel sampling at cube edges, while canonical skin UVs remain
+unchanged for 2D previews and atlas tests. Its Scene selects
+`AntiAliasingMode.smaa` by default to preserve visually smooth character
+edges without the zoom-dependent hairlines seen under automatic AA.
+This follows an accepted Windows test with SMAA explicitly enabled. No
+`--dart-define` flags are needed by callers and none of the temporary
+R7-F1 diagnostic flags remain. The extra GPU cost of SMAA has not been
+measured; final no-define Windows release confirmation is pending.
+See `docs/continuity/R7_F1_RENDER_SEAM_FIX.md`.

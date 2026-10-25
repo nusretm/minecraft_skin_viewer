@@ -2,11 +2,57 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** None. R1–R7 are merged into `main`; launcher integration continues separately in `mtn_launcher_app`. Direct GPU-memory telemetry and standalone interactive release visual smoke remain unverified.
+**Active implementation:** R7-F1 3D render hairline fix in `feature/r7-f1-render-seam-fix`, Draft PR #9. SMAA is the viewer default; user verified hairline-free Windows Impeller debug without dart-defines and exact functional-head Windows CI 4/4 SUCCESS. Windows release EXE interactive visual smoke remains PENDING; R1–R7 merged into `main`.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4), [#5 — R5 Public API](https://github.com/nusretm/minecraft_skin_viewer/pull/5), [#7 — R6 Auto Skin Model Detection](https://github.com/nusretm/minecraft_skin_viewer/pull/7), [#8 — R7 Live Character Animation](https://github.com/nusretm/minecraft_skin_viewer/pull/8)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
 **Current checkpoint:** R7 CLOSED; PR #8 squash-merged into `main` as `89796975c8ec52bab256670545f0a4f75b3f477b` from approved final feature HEAD `9b6e5b27fd1bed1bfeb9b1c3a63ff8a7b997afbe`. Exact-head Windows CI 4/4 SUCCESS; user root analyzer PASS, 63/63 tests PASS, Windows GPU debug visual Live accepted, Windows release build and EXE start confirmed. Separate interactive release visual check and dedicated GPU-memory measurements not recorded.
+
+## 2026-10-25 — R7-F1 final default Windows GPU smoke PASS (release pending)
+
+- User pulled final source `fcfcda202a5de1443e50588beb18fe1a612b390f` and executed `flutter run -d windows --enable-flutter-gpu` **without any diagnostic dart-defines**. Windows debug executable built, Impeller OpenGLES backend active, and user reported `tertemiz 🥳`: head/outer hairlines no longer visible. `Lost connection to device` at closure is not proof of crash.
+- On the exact functional source SHA `fcfcda202a5de1443e50588beb18fe1a612b390f`, Windows CI R1 [#40227272802](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/40227272802), R2 [#40227272669](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/40227272669), R3 [#40227272645](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/40227272645), R4 [#40227272677](https://github.com/nusretm/minecraft_skin_viewer/actions/runs/40227272677) all **SUCCESS**.
+- Existing user local verification on earlier UV branch: root Flutter analyzer PASS, 67/67 tests PASS, example analyzer PASS. These precede final default SMAA selection; exact functional-head CI covers source compilation and regressions.
+- Remaining gate: final no-define Windows **release build and interactive EXE visual** smoke. PR #9 remains Draft, unmerged until required validation/authorization. User local `example/.metadata` and `example/pubspec.lock` are outside the feature. A documentation-only follow-up commit may trigger separate CI and must not be confused with the successful functional-head CI.
+
+## 2026-10-25 — R7-F1 SMAA accepted visually; default selected (verification pending)
+
+- User reported `🥳 şahane görünüyor` after the `--dart-define=MTN_SKIN_SEAM_SMAA=true` Windows GPU experiment. This is explicit **visual acceptance of the SMAA trial**, not proof that release builds have been exercised with the final default code.
+- Make the 3D viewer's new `Scene()` use `AntiAliasingMode.smaa` unconditionally. Remove `MTN_SKIN_SEAM_DISABLE_AA`, `MTN_SKIN_SEAM_SMAA` and `MTN_SKIN_SEAM_NEAREST_COMPOSITE` temporary diagnostic flags. Keep the 0.02 texel UV inset that helped right-arm boundaries, nearest atlas sampling, existing depth priorities and R7 animations untouched. No new dependencies or controller API changes.
+- SMAA offers preferred clean hairline-free appearance but uses additional postprocess passes; GPU performance/VRAM impact has not been measured. Keep PR [#9](https://github.com/nusretm/minecraft_skin_viewer/pull/9) Draft until latest-head Windows CI, user's default **without define** Windows visual comparison and release interactive smoke (or explicit acceptance of residual gate) are available. Do not claim merge/closure prematurely.
+- User's locally modified `example/.metadata` and `example/pubspec.lock` remain out of GitHub feature edits. This entry supersedes the earlier A/B-plan snapshot below.
+
+## 2026-10-25 — A/B root-cause isolation: AA-related hairlines
+
+- **User Windows A/B:** setting `MTN_SKIN_SEAM_NEAREST_COMPOSITE=true` leaves fine head lines visible; setting `MTN_SKIN_SEAM_DISABLE_AA=true` removes the lines. This strongly isolates the artifact to the active anti-aliasing stage (rather than proving physical outer shell depth/z-fighting), especially when zoomed out. This does not yet identify whether auto picked MSAA or FXAA on that specific device.
+- `flutter_scene` 0.24.3 supports `AntiAliasingMode.smaa`; its documentation says SMAA preserves texture details more than FXAA at a higher postprocess cost. Final comparison added as opt-in `--dart-define=MTN_SKIN_SEAM_SMAA=true`; explicit no-AA has priority if both are set. The production default remains unchanged during diagnostic comparisons.
+- Next decision: test SMAA at the same camera distance and outer-layer setting. If no seams and pleasing edge quality, consider SMAA despite three postprocess passes; if seams persist or cost is unnecessary, make `AntiAliasingMode.none` the viewer-only default to respect Minecraft pixel-art, preserving current UV inset. No global renderer, controller or upstream SDK setting should be changed without a measured reason.
+- Release smoke, exact latest-head CI and final A/B choice remain pending. PR #9 stays Draft; no merge yet.
+
+## 2026-10-25 — Real Windows GPU feedback: sampling improvement, distant head artifact remains
+
+- User checked out the feature branch and ran root `flutter analyze --no-pub` **PASS**, `flutter test --no-pub test/` **67/67 PASS**, example analyzer **PASS**, Windows debug `flutter run -d windows --enable-flutter-gpu` build/launch **PASS**, Impeller (OpenGLES) confirmed. The normal `flutter_scene` 24-bit reversed-depth note appeared; `Lost connection to device` after closing is not evidence of an application crash.
+- PR #9 feature-head `52634ea302e2adbd9bb28b5f25c7164927d61f90` completed all four Windows CI checks **SUCCESS**. The user's local changed files at this stage are `example/.metadata` and `example/pubspec.lock`; neither belongs in the feature.
+- Visual verdict: fine line on right arm remains barely visible, but head / outer head lines become *more* noticeable when zooming out. UV inset improves one part of the symptom but does **not** resolve the issue or prove the original hypothesis was the complete cause.
+- New possible cause: anti-aliasing or final scene compositing at small on-screen character sizes. `flutter_scene` can use MSAA or FXAA depending on GPU support, and `Scene.filterQuality` controls final output scaling. Neither is changed by default.
+- **Stage B opt-in diagnostic only**, in `mtn_minecraft_skin_viewer_3d.dart`: `MTN_SKIN_SEAM_DISABLE_AA=true` forces `AntiAliasingMode.none`; `MTN_SKIN_SEAM_NEAREST_COMPOSITE=true` forces `FilterQuality.none`. Both must be invoked with `--dart-define`, can be tested independently and together, and have zero effect on regular builds. This is not yet a committed production fix to alpha or depth.
+- Next user Windows GPU A/B at matched camera angles / zoom distances, with outer on/off:
+  1. Unmodified baseline: `flutter run -d windows --enable-flutter-gpu`.
+  2. AA off: `flutter run -d windows --enable-flutter-gpu --dart-define=MTN_SKIN_SEAM_DISABLE_AA=true`.
+  3. Final canvas sampling nearest: `flutter run -d windows --enable-flutter-gpu --dart-define=MTN_SKIN_SEAM_NEAREST_COMPOSITE=true`.
+  4. Both toggles can be tried together if either test is inconclusive.
+- Interpret carefully: if AA-off removes head lines but adds staircase edges, tune antialiasing rather than depth. If composite nearest helps at distances, focus output downscale. If neither changes behavior, investigate partially transparent outer shell sorting (blended material) or adjacent cube-face rasterization/depth, without blindly inflating geometry. Do not claim that a compile-time diagnostic resolves the artifact.
+- Current exact-head CI must rerun after stage B change. PR remains Draft pending GPU visual evidence. Release EXE interactive visual smoke not yet observed for R7-F1.
+
+## 2026-10-25 — R7-F1 3D atlas seam sampling fix (APPROVED, verification pending)
+
+- User Windows Slim skin screenshots show fine head and arm-edge hairlines, including head upper-right with outer layer disabled and additional edges with outer enabled. Hypothesis: exact face-boundary atlas UVs cause occasional neighboring texel selection. The root cause is **not yet GPU-proven**.
+- Base `main` `ca4e97b62c909a0ac4e1984e68799953c6ad6b3f`. Branch `feature/r7-f1-render-seam-fix`, Draft [PR #9](https://github.com/nusretm/minecraft_skin_viewer/pull/9).
+- Existing renderer already uses nearest sampling, no mipmaps, per-part outer geometry inflation and depthLayer priorities. No speculative filtering/depth changes are approved for the initial fix.
+- `MtnMinecraftSkinBoxMesh.texCoordsWithInset(insetTexels: 0.02)` derives a new GPU sampling UV buffer from the canonical R2 face UVs; preserves flipped bottom V, Classic/Slim, and base/outer. Production 3D scene opts in; canonical UVs, 2D previews, mesh dimensions, cape and animations stay unchanged.
+- Added focused tests of per-face texel interiors, R2 UV immutability, invalid inputs and untouched outer geometry.
+- **Pending:** source patch review, exact-head Windows CI, root and example local analyzer/tests, and matching-angle real Windows GPU screenshots with outer on/off. Do not mark CLOSED or merge until actual seams are visually checked; if necessary, investigate separate depth/alpha overlap as an explicit second stage. Preserve prior four local generated/lock modifications.
+- Details: `docs/continuity/R7_F1_RENDER_SEAM_FIX.md`.
 
 ## 2026-10-23 — R7 squash merged into main (CLOSED)
 

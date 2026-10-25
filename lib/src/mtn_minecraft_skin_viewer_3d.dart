@@ -176,7 +176,11 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
     try {
       await Scene.initializeStaticResources();
       if (!mounted || generation != _generation) return;
-      pending = Scene();
+      pending = Scene()
+        // SMAA avoids the zoom-dependent head/outer-layer hairlines
+        // observed under automatic AA while keeping character edges smooth.
+        // This is local to the skin viewer; no global scene policy changes.
+        ..antiAliasingMode = AntiAliasingMode.smaa;
       final skinAtlas = Texture2D.fromPixels(
         skin.rgba, MtnMinecraftSkinTexture.width, MtnMinecraftSkinTexture.height,
         sampling: const TextureSampling(
@@ -220,7 +224,9 @@ class _MtnMinecraftSkinViewerState extends State<MtnMinecraftSkinViewer>
             mesh: Mesh(MeshGeometry.fromArrays(
               positions: box.positions,
               normals: box.normals,
-              texCoords: box.texCoords,
+              // Sample *inside* each atlas face to avoid hairline seams at
+              // shared UV borders. Canonical face UVs remain unchanged.
+              texCoords: box.texCoordsWithInset(),
               indices: box.indices,
             ), material),
           )..position = vm.Vector3(
