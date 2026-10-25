@@ -53,3 +53,11 @@ No `mtn_launcher_app` changes, R7 animation changes, new dependencies, SDK upgra
 - Interpret carefully: if AA-off removes head lines but adds staircase edges, tune antialiasing rather than depth. If composite nearest helps at distances, focus output downscale. If neither changes behavior, investigate partially transparent outer shell sorting (blended material) or adjacent cube-face rasterization/depth, without blindly inflating geometry. Do not claim that a compile-time diagnostic resolves the artifact.
 - Current exact-head CI must rerun after stage B change. PR remains Draft pending GPU visual evidence. Release EXE interactive visual smoke not yet observed for R7-F1.
 
+
+## 2026-10-25 — A/B root-cause isolation: AA-related hairlines
+
+- **User Windows A/B:** setting `MTN_SKIN_SEAM_NEAREST_COMPOSITE=true` leaves fine head lines visible; setting `MTN_SKIN_SEAM_DISABLE_AA=true` removes the lines. This strongly isolates the artifact to the active anti-aliasing stage (rather than proving physical outer shell depth/z-fighting), especially when zoomed out. This does not yet identify whether auto picked MSAA or FXAA on that specific device.
+- `flutter_scene` 0.24.3 supports `AntiAliasingMode.smaa`; its documentation says SMAA preserves texture details more than FXAA at a higher postprocess cost. Final comparison added as opt-in `--dart-define=MTN_SKIN_SEAM_SMAA=true`; explicit no-AA has priority if both are set. The production default remains unchanged during diagnostic comparisons.
+- Next decision: test SMAA at the same camera distance and outer-layer setting. If no seams and pleasing edge quality, consider SMAA despite three postprocess passes; if seams persist or cost is unnecessary, make `AntiAliasingMode.none` the viewer-only default to respect Minecraft pixel-art, preserving current UV inset. No global renderer, controller or upstream SDK setting should be changed without a measured reason.
+- Release smoke, exact latest-head CI and final A/B choice remain pending. PR #9 stays Draft; no merge yet.
+
