@@ -2,11 +2,21 @@
 
 **Repository:** `nusretm/minecraft_skin_viewer`
 **Base branch:** `main`
-**Active implementation:** None. R1–R7 are merged into `main`; launcher integration continues separately in `mtn_launcher_app`. Direct GPU-memory telemetry and standalone interactive release visual smoke remain unverified.
+**Active implementation:** R7-F1 GPU skin atlas seam correction in `feature/r7-f1-render-seam-fix`, Draft PR #9; source/tests implemented, Windows CI and user GPU visual acceptance PENDING. R1–R7 remain merged into `main`.
 **Merged PRs:** [#1 — R1](https://github.com/nusretm/minecraft_skin_viewer/pull/1), [#2 — R2](https://github.com/nusretm/minecraft_skin_viewer/pull/2), [#3 — R3 2D Previews](https://github.com/nusretm/minecraft_skin_viewer/pull/3), [#4 — R4 Full 3D](https://github.com/nusretm/minecraft_skin_viewer/pull/4), [#5 — R5 Public API](https://github.com/nusretm/minecraft_skin_viewer/pull/5), [#7 — R6 Auto Skin Model Detection](https://github.com/nusretm/minecraft_skin_viewer/pull/7), [#8 — R7 Live Character Animation](https://github.com/nusretm/minecraft_skin_viewer/pull/8)
 **R1 squash commit:** `530dd4a757b29a162d932bd658d269a7d35f5e23`
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
 **Current checkpoint:** R7 CLOSED; PR #8 squash-merged into `main` as `89796975c8ec52bab256670545f0a4f75b3f477b` from approved final feature HEAD `9b6e5b27fd1bed1bfeb9b1c3a63ff8a7b997afbe`. Exact-head Windows CI 4/4 SUCCESS; user root analyzer PASS, 63/63 tests PASS, Windows GPU debug visual Live accepted, Windows release build and EXE start confirmed. Separate interactive release visual check and dedicated GPU-memory measurements not recorded.
+
+## 2026-10-25 — R7-F1 3D atlas seam sampling fix (APPROVED, verification pending)
+
+- User Windows Slim skin screenshots show fine head and arm-edge hairlines, including head upper-right with outer layer disabled and additional edges with outer enabled. Hypothesis: exact face-boundary atlas UVs cause occasional neighboring texel selection. The root cause is **not yet GPU-proven**.
+- Base `main` `ca4e97b62c909a0ac4e1984e68799953c6ad6b3f`. Branch `feature/r7-f1-render-seam-fix`, Draft [PR #9](https://github.com/nusretm/minecraft_skin_viewer/pull/9).
+- Existing renderer already uses nearest sampling, no mipmaps, per-part outer geometry inflation and depthLayer priorities. No speculative filtering/depth changes are approved for the initial fix.
+- `MtnMinecraftSkinBoxMesh.texCoordsWithInset(insetTexels: 0.02)` derives a new GPU sampling UV buffer from the canonical R2 face UVs; preserves flipped bottom V, Classic/Slim, and base/outer. Production 3D scene opts in; canonical UVs, 2D previews, mesh dimensions, cape and animations stay unchanged.
+- Added focused tests of per-face texel interiors, R2 UV immutability, invalid inputs and untouched outer geometry.
+- **Pending:** source patch review, exact-head Windows CI, root and example local analyzer/tests, and matching-angle real Windows GPU screenshots with outer on/off. Do not mark CLOSED or merge until actual seams are visually checked; if necessary, investigate separate depth/alpha overlap as an explicit second stage. Preserve prior four local generated/lock modifications.
+- Details: `docs/continuity/R7_F1_RENDER_SEAM_FIX.md`.
 
 ## 2026-10-23 — R7 squash merged into main (CLOSED)
 
