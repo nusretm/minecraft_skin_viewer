@@ -61,3 +61,10 @@ No `mtn_launcher_app` changes, R7 animation changes, new dependencies, SDK upgra
 - Next decision: test SMAA at the same camera distance and outer-layer setting. If no seams and pleasing edge quality, consider SMAA despite three postprocess passes; if seams persist or cost is unnecessary, make `AntiAliasingMode.none` the viewer-only default to respect Minecraft pixel-art, preserving current UV inset. No global renderer, controller or upstream SDK setting should be changed without a measured reason.
 - Release smoke, exact latest-head CI and final A/B choice remain pending. PR #9 stays Draft; no merge yet.
 
+
+## 2026-10-25 — Final A/B decision: select SMAA for viewer only
+
+- After user confirmed that `MTN_SKIN_SEAM_NEAREST_COMPOSITE` did not help and `MTN_SKIN_SEAM_DISABLE_AA` removed the seams, the user tested `MTN_SKIN_SEAM_SMAA=true` and explicitly reported `🥳 şahane görünüyor`. Treat this as **SMAA trial visually accepted** on Windows. The specific user comment did not independently report final default build/release behavior or GPU memory.
+- Production 3D scene now sets `AntiAliasingMode.smaa` at scene creation with no caller setting or dart defines. Remove all R7-F1 temporary anti-aliasing/nearest-composite diagnostic flags so shipped behavior matches the successful SMAA experiment. R2 canonical UVs and the prior GPU-only sub-texel inset are unchanged. All cape/layer depth/material, Live/Walk/Idle and 2D widgets are unchanged.
+- Expected additional SMAA postprocessing expense remains an **unmeasured performance tradeoff**. Root analyzer, 67 existing tests and example analyzer passed in the *previous* UV-inset branch; exact current-head CI and no-define Windows debug/release checks remain **PENDING**.
+- Merge/closure: do not equate successful earlier A/B render with final-head release visual smoke. Draft PR #9 is open until applicable verification and user/authorized gate. No generated/lockfile changes are included.
