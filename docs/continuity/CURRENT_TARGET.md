@@ -8,6 +8,13 @@
 **R4 squash commit:** `6b4bc2016c76473b1d77d7021fb1b3457c5c67b2`
 **Current checkpoint:** R7 CLOSED; PR #8 squash-merged into `main` as `89796975c8ec52bab256670545f0a4f75b3f477b` from approved final feature HEAD `9b6e5b27fd1bed1bfeb9b1c3a63ff8a7b997afbe`. Exact-head Windows CI 4/4 SUCCESS; user root analyzer PASS, 63/63 tests PASS, Windows GPU debug visual Live accepted, Windows release build and EXE start confirmed. Separate interactive release visual check and dedicated GPU-memory measurements not recorded.
 
+## 2026-10-25 — A/B root-cause isolation: AA-related hairlines
+
+- **User Windows A/B:** setting `MTN_SKIN_SEAM_NEAREST_COMPOSITE=true` leaves fine head lines visible; setting `MTN_SKIN_SEAM_DISABLE_AA=true` removes the lines. This strongly isolates the artifact to the active anti-aliasing stage (rather than proving physical outer shell depth/z-fighting), especially when zoomed out. This does not yet identify whether auto picked MSAA or FXAA on that specific device.
+- `flutter_scene` 0.24.3 supports `AntiAliasingMode.smaa`; its documentation says SMAA preserves texture details more than FXAA at a higher postprocess cost. Final comparison added as opt-in `--dart-define=MTN_SKIN_SEAM_SMAA=true`; explicit no-AA has priority if both are set. The production default remains unchanged during diagnostic comparisons.
+- Next decision: test SMAA at the same camera distance and outer-layer setting. If no seams and pleasing edge quality, consider SMAA despite three postprocess passes; if seams persist or cost is unnecessary, make `AntiAliasingMode.none` the viewer-only default to respect Minecraft pixel-art, preserving current UV inset. No global renderer, controller or upstream SDK setting should be changed without a measured reason.
+- Release smoke, exact latest-head CI and final A/B choice remain pending. PR #9 stays Draft; no merge yet.
+
 ## 2026-10-25 — Real Windows GPU feedback: sampling improvement, distant head artifact remains
 
 - User checked out the feature branch and ran root `flutter analyze --no-pub` **PASS**, `flutter test --no-pub test/` **67/67 PASS**, example analyzer **PASS**, Windows debug `flutter run -d windows --enable-flutter-gpu` build/launch **PASS**, Impeller (OpenGLES) confirmed. The normal `flutter_scene` 24-bit reversed-depth note appeared; `Lost connection to device` after closing is not evidence of an application crash.
