@@ -29,3 +29,10 @@ Before doing **anything** in this repository:
 - Update `CURRENT_TARGET.md` **in the same checkpoint** with factual dates, branch/PR/commit references, checks passed/failed/not run, unresolved issues, deferred work and next action. Never turn a proposed feature into an implemented claim.
 
 These rules adapt the project-wide workflow of `nusretm/mtn_launcher_app/docs/WORKING_RULES.md` to this independent renderer. That repository's `main` had no `AGENTS.md` at adaptation time; this file is a concise companion to the authoritative working rules, not an exact copy.
+
+## Codex visual-acceptance boundary (2026-11-10)
+
+- **Do not delegate visual/UI acceptance to Codex.** Codex must not use computer-use, screenshots, remote desktop, GUI automation, or manual window inspection to perform or claim visual verification. Do not request permission to do so.
+- **The user performs visual acceptance.** If visual inspection is required, stop at that gate, give the user concise manual verification steps, and record the result as **NOT VISUALLY VERIFIED** until the user explicitly reports acceptance.
+- Non-visual work remains allowed: source review, implementation, automated tests (including widget/integration tests), static analysis, builds, CLI/API checks, artifact integrity, executable metadata, and logs. These checks are not substitutes for user-observed UI acceptance.
+- Never assert that a window rendered correctly, an interaction looked right, or visual acceptance passed solely from test results, process existence, screenshots, or tool output.
